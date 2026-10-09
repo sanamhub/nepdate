@@ -11,7 +11,7 @@
 | `data_sanity.py` (task H1-04) | `py tools/data_sanity.py` | Runs the checks behind `data/README.md` "Known data questions"; exits 1 on a finding not in `data/known-questions.json`. |
 | `make_ics.py` (task H4-01) | `py tools/make_ics.py` | Writes `holidays.ics` from `data/patro/`. |
 | `catalog_csharp_tests.py` (task H5) | `py tools/catalog_csharp_tests.py <path-to-NepDate-clone> [--check]` | Writes `spec/vectors/csharp-tests/catalog.tsv`, one row per `[Fact]` and per `[InlineData]` of C# NepDate's tests, with the phase from `tools/csharp_tests_phase.tsv` (reviewed by the human; an unmapped test fails the tool). `--check` exits 1 when the committed file differs. Last run: 542 rows (395 + 147) on `cb05cb65`. |
-| `data_status.py` (task H1-02) | `py tools/data_status.py [--strict] [--today YYYY-MM-DD]` | Prints how far tithi, holiday and event data reach; exits 1 when holidays end within 183 days, and with `--strict` also when tithi or events do. |
+| `data_status.py` (task H1-02) | `py tools/data_status.py [--strict] [--today YYYY-MM-DD]` | Prints how far tithi, holiday and event data reach; exits 1 when holidays end within 183 days, and with `--strict` also when tithi or events do. `--today` (AD) replaces today's date. CI runs it as information only. |
 
 Tests for the tools live in `tools/tests/` (`py -m unittest discover -s tools/tests`, run by `scripts/ci.sh`).
 

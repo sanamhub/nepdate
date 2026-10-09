@@ -24,3 +24,6 @@ jobs:
         with:
           python-version: "3.13"
       - run: ./scripts/ci.sh
+      # Information only: the weekly upstream sync (H2) raises the issue when data runs out.
+      - run: python tools/data_status.py
+        continue-on-error: true
