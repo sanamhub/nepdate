@@ -22,6 +22,14 @@ ecosystem's conventions (ADR-0004). Every library meets the same acceptance crit
 `spec/PORT-PLAN.md`, implements the C# test catalogue (`spec/vectors/csharp-tests/catalog.tsv`)
 and is benchmarked by `spec/BENCHMARK.md`, using the names in its own `docs/API.md`.
 
+**Where the repositories live.** All nine are local git repositories, side by side under
+`E:\github\sanamhub\` (`E:\github\sanamhub\nepdate`, `E:\github\sanamhub\nepdate-rust`, and so on),
+each on branch `main`. A spoke reads the hub at `..\nepdate` when it re-syncs `shared/`. There are no
+GitHub remotes yet: the human creates them and pushes from these folders once the work is finished,
+and development continues there afterwards. Exception: `nepdate-swift` and `nepdate-mobile` may get
+their remotes earlier, because Swift and iOS build only on GitHub's macOS runners (`nepdate-mobile`
+ADR-0010).
+
 ## 2. Order of work
 
 Do one phase at a time, in this order. A later item may start only when its preconditions (in its
@@ -76,10 +84,12 @@ The last task of every phase ends at a **checkpoint**. At a checkpoint the imple
 3. adds a line `| <phase> checkpoint | ready for review | <commit> | ... |` to `PROGRESS.md`;
 4. stops. It doesn't start the next phase.
 
-The human then asks the reviewer (the lead agent) to review that phase against the phase file's
-"Checkpoint" section and section 8 below. The reviewer fixes what is wrong, records each fix in
-`PROGRESS.md` as `| <phase> review | fixed: ... |`, and hands back. Only then does the
-implementation agent continue with the next phase.
+The reviewer (the lead agent) then does a **light check** of that phase: CI green from a clean
+checkout, no public symbol or dependency outside `docs/API.md` and the ADRs, the phase's catalogue
+rows covered, and the phase file's "Checkpoint" list ticked. It records the result in `PROGRESS.md`
+as `| <phase> light check | ok |` or `| <phase> light check | fix: ... |` and hands back; the
+implementation agent fixes any `fix:` item before it continues. The **full review** against section 8
+happens once, at the end, before any remote is created or anything is published.
 
 ## 5. Stop and ask, don't guess
 
@@ -114,7 +124,7 @@ Stop the task, mark it `blocked` in `PROGRESS.md` and ask the human when:
 | before M0 | confirm the app ID `np.nepdate`; Apple Developer Program; Play Console account |
 | before A3 and I3 | ask Raju where NepDate's tithi, holiday and event data came from (`docs/upstream/proposals.md`, U-04); ask the Panchanga Samiti whether a digital calendar needs approval |
 | A3 | 12 Play testers for 14 days |
-| before C0 | install a C++ compiler on the reference machine: the Visual Studio 2026 "Desktop development with C++" workload, or LLVM |
+| before C0 | C++ compiler: zig 0.17.0 (Clang 22) at `E:\tools\zig` is used for now; the Visual Studio "Desktop development with C++" workload (MSVC, the C++ ADR's main Windows target) is installed before C5 |
 | before H6 and each phase 5 | the language toolchains for benchmarking on the reference machine (Go and Rust are installed; Node, Python, .NET and Android Studio's JDK already were); Swift benchmarks run in CI |
 | before April 2027 | event data ends (tithi on BS 2083-12-30): get BS 2084 data upstream, or apps show "no data" |
 
