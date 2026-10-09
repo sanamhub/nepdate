@@ -2,7 +2,7 @@
 
 | Tool | Run from repo root | Purpose |
 |---|---|---|
-| `extract_from_csharp.py` | `py tools/extract_from_csharp.py <path-to-NepDate-clone> --commit <sha>` | Imports C# NepDate tables into `data/` and cross-validates them. Run weekly by `upstream-sync.yml` (ADR-0002 §6); by hand only to test the importer. It leaves a file untouched when its content didn't change. |
+| `extract_from_csharp.py` | `py tools/extract_from_csharp.py <path-to-NepDate-clone> [--commit <sha>] [--summary <file>]` | Imports C# NepDate tables into `data/` and cross-validates them. Run weekly by `upstream-sync.yml` (ADR-0002 §6); by hand only to test the importer. A file is rewritten only when its content, ignoring `source`, changed. Writes `data/UPSTREAM` (the commit, default the clone's `HEAD`) and `data/NOTICE` from `NOTICE.template`. `--summary` writes the changed BS months as a Markdown list. Run `make_vectors.py` afterwards. |
 | `csharp-golden/` | `dotnet run --project tools/csharp-golden -- spec/vectors/csharp-golden` | Records the behaviour of the NepDate NuGet package (version pinned in the `.csproj`) as golden TSV files (ADR-0003, `spec/PARITY.md`). Needs the .NET 8 SDK. Regenerating against a new NepDate version is a human decision. |
 | `csharp-exhaustive/` | `dotnet run -c Release --project tools/csharp-exhaustive -p:NepDateSource=<NepDate-clone> -- <out-dir>` | Builds C# NepDate from source and writes what it computes for every BS day, every AD day and every metadata day. Needs the .NET 8 SDK. |
 | `compare_exhaustive.py` | `py tools/compare_exhaustive.py <out-dir>` | Compares that output with `data/` using only Python's `datetime`. Exits 1 on any difference. Last run: 0 differences on `cb05cb65`. |

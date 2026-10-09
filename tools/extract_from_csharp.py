@@ -1,11 +1,16 @@
-"""One-time importer: C# NepDate data tables -> language-neutral JSON under data/.
+"""Importer: C# NepDate data tables to language-neutral JSON under data/.
 
 Why this exists: see docs/adr/0002-canonical-data-and-upstream-first.md.
 data/ is the source of truth for every port. Ports generate their tables
 from a vendored copy of data/, never from the C# repo (docs/adr/0001).
 
 Usage:
-    py tools/extract_from_csharp.py <path-to-NepDate-repo> [--commit <sha>]
+    py tools/extract_from_csharp.py <path-to-NepDate-repo> [--commit <sha>] [--summary <file>]
+    py tools/make_vectors.py      # then regenerate the vectors
+
+A data file is rewritten only when its content, ignoring "source", changed, so "commit" and
+"imported" move only with real data changes. data/UPSTREAM always records the commit last
+imported, and data/NOTICE is rendered from tools/NOTICE.template with that commit.
 
 Checks performed (script exits non-zero on any mismatch):
   1. NepaliToEnglish month-end AD dates are contiguous with month lengths.
@@ -20,6 +25,8 @@ import argparse
 import datetime as dt
 import json
 import re
+import string
+import subprocess
 import sys
 from pathlib import Path
 
@@ -28,6 +35,10 @@ DICT_DIR = Path("src/NepDate/Core/Dictionaries")
 
 TUPLE4 = re.compile(r"\((\d+),\s*(\d+),\s*(\d+),\s*(\d+)\)")
 STRING_PAIR = re.compile(r'\("((?:[^"\\]|\\.)*)",\s*"((?:[^"\\]|\\.)*)"\)')
+
+
+def unescape(text: str) -> str:
+    return re.sub(r"\\(.)", r"\1", text)
 
 
 def read(repo: Path, name: str) -> str:
@@ -52,12 +63,25 @@ def fail(message: str) -> None:
     sys.exit(1)
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("repo", type=Path)
-    parser.add_argument("--commit", default="unknown")
-    args = parser.parse_args()
+def head_commit(repo: Path) -> str:
+    try:
+        result = subprocess.run(["git", "-C", str(repo), "rev-parse", "HEAD"],
+                                capture_output=True, text=True, check=True)
+    except (OSError, subprocess.CalledProcessError):
+        fail(f"{repo} is not a git checkout: pass --commit <sha>")
+    return result.stdout.strip()
+
+
+def main(argv: list[str] | None = None, root: Path = ROOT, today: dt.date | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Import C# NepDate's data tables into data/.")
+    parser.add_argument("repo", type=Path, help="a checkout of https://github.com/RajuPrasai/NepDate")
+    parser.add_argument("--commit", help="upstream commit of that checkout (default: its git HEAD)")
+    parser.add_argument("--summary", type=Path,
+                        help="write a Markdown list of the changed BS years and months here")
+    args = parser.parse_args(argv)
     repo: Path = args.repo
+    commit = args.commit or head_commit(repo)
+    today = today or dt.date.today()
 
     # ---- 1. BS month lengths + epoch -------------------------------------
     n2e = data_tuples(read(repo, "NepaliToEnglish.cs"))
@@ -118,7 +142,7 @@ def main() -> None:
         return f"{y:04}-{m:02}-{d:02}"
 
     # ---- 4. Metadata -----------------------------------------------------
-    pool = [(np_, en) for np_, en in STRING_PAIR.findall(read(repo, "CalendarStrings.cs"))]
+    pool = [(unescape(np_), unescape(en)) for np_, en in STRING_PAIR.findall(read(repo, "CalendarStrings.cs"))]
     days: dict[str, dict] = {}
 
     tithi_src = read(repo, "TithiData.cs")
@@ -139,9 +163,9 @@ def main() -> None:
         names = [{"np": pool[e][0], "en": pool[e][1]} for e in entries[slices[i]:slices[i + 1]]]
         days.setdefault(offset_to_bs(offset), {})["events"] = names
 
-    # ---- Write outputs ---------------------------------------------------
-    source = {"repo": "https://github.com/RajuPrasai/NepDate", "commit": args.commit,
-              "license": "MIT", "imported": dt.date.today().isoformat()}
+    # ---- Write outputs -------------------------------------------------
+    source = {"repo": "https://github.com/RajuPrasai/NepDate", "commit": commit,
+              "license": "MIT", "imported": today.isoformat()}
     calendar = {
         "schema": 1,
         "source": source,
@@ -150,39 +174,99 @@ def main() -> None:
         "epoch": {"bs": f"{min_year}-01-01", "ad": epoch_ad.isoformat()},
         "month_lengths": {str(y): lengths[y] for y in sorted(lengths)},
     }
-    write_json(ROOT / "data/calendar/bs-calendar.json", calendar, compact_lists=True)
+    changes: list[str] = []
+    old_calendar = write_if_changed(root / "data/calendar/bs-calendar.json", calendar, compact_lists=True)
+    if old_calendar is not None:
+        changes += calendar_changes(old_calendar, calendar)
 
-    events_dir = ROOT / "data/patro"
-    for old in events_dir.glob("*.json"):
-        old.unlink()
     by_year: dict[str, dict] = {}
     for key in sorted(days):
         by_year.setdefault(key[:4], {})[key] = days[key]
+    patro_dir = root / "data/patro"
+    for path in sorted(patro_dir.glob("*.json")):
+        if path.stem not in by_year:
+            old = json.loads(path.read_text(encoding="utf-8"))
+            path.unlink()
+            changes += patro_changes(old.get("days", {}), {})
     for year, year_days in by_year.items():
-        write_json(events_dir / f"{year}.json",
-                   {"schema": 1, "source": source, "year": int(year), "days": year_days})
+        old = write_if_changed(patro_dir / f"{year}.json",
+                               {"schema": 1, "source": source, "year": int(year), "days": year_days})
+        if old is not None:
+            changes += patro_changes(old.get("days", {}), year_days)
 
-    write_vectors(month_start, lengths)
+    write_text_if_changed(root / "data/UPSTREAM", commit + "\n")
+    write_notice(root, commit, today)
+    if args.summary:
+        lines = changes or ["No data changes."]
+        args.summary.write_text("".join(f"- {line}\n" for line in lines), encoding="utf-8", newline="\n")
 
     print(f"OK epoch {min_year}-01-01 BS = {epoch_ad} AD")
     print(f"OK {len(n2e)} BS months, {checked} AD month-ends cross-checked")
     print(f"OK {len(meta_starts)} metadata month offsets cross-checked")
     print(f"OK metadata years {min(by_year)}..{max(by_year)}, {len(days)} days")
+    print(f"OK {len(changes)} changed BS months; next: py tools/make_vectors.py")
+    return 0
 
 
-def write_vectors(month_start: dict, lengths: dict) -> None:
-    """Conformance vectors: first and last day of every BS month (every port must pass)."""
-    weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    rows = ["bs,ad,weekday,month_length"]
-    for (year, month), start in sorted(month_start.items()):
-        length = lengths[year][month - 1]
-        for day in (1, length):
-            ad = start + dt.timedelta(days=day - 1)
-            rows.append(f"{year:04}-{month:02}-{day:02},{ad.isoformat()},"
-                        f"{weekdays[(ad.weekday() + 1) % 7]},{length}")
-    path = ROOT / "spec/vectors/month-boundaries.csv"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(rows) + "\n", encoding="utf-8", newline="\n")
+def without_source(doc: dict) -> dict:
+    return {k: v for k, v in doc.items() if k != "source"}
+
+
+def write_if_changed(path: Path, doc: dict, compact_lists: bool = False) -> dict | None:
+    """Write doc unless the file holds the same content apart from "source".
+
+    Returns None when the file was left alone, else the previous document ({} for a new file).
+    """
+    old: dict = {}
+    if path.exists():
+        old = json.loads(path.read_text(encoding="utf-8"))
+        if without_source(old) == without_source(doc):
+            return None
+    write_json(path, doc, compact_lists)
+    return old
+
+
+def calendar_changes(old: dict, new: dict) -> list[str]:
+    changes = []
+    rest = lambda doc: {k: v for k, v in doc.items() if k not in ("source", "month_lengths")}  # noqa: E731
+    if rest(old) != rest(new):
+        changes.append("calendar: range or epoch changed")
+    old_lengths = old.get("month_lengths", {})
+    for year, lengths in new["month_lengths"].items():
+        before = old_lengths.get(year, [None] * 12)
+        for month, (a, b) in enumerate(zip(before, lengths), 1):
+            if a != b:
+                changes.append(f"BS {year}-{month:02}: month length {a} to {b}")
+    return changes
+
+
+def patro_changes(old: dict, new: dict) -> list[str]:
+    """One line per BS month whose tithi, holidays or events differ."""
+    fields: dict[str, set[str]] = {}
+    for key in sorted(set(old) | set(new)):
+        a, b = old.get(key, {}), new.get(key, {})
+        for field in ("tithi", "holiday", "events"):
+            if a.get(field) != b.get(field):
+                fields.setdefault(key[:7], set()).add(field)
+    return [f"BS {month}: {', '.join(sorted(names))} changed" for month, names in sorted(fields.items())]
+
+
+def write_text_if_changed(path: Path, text: str) -> None:
+    if not path.exists() or path.read_text(encoding="utf-8") != text:
+        path.write_text(text, encoding="utf-8", newline="\n")
+
+
+def write_notice(root: Path, commit: str, today: dt.date) -> None:
+    # Keep the date while the commit stays the same, so a re-run changes no file.
+    path = root / "data/NOTICE"
+    date = today.isoformat()
+    if path.exists():
+        old = path.read_text(encoding="utf-8")
+        found = re.search(r"\bon (\d{4}-\d{2}-\d{2})\b", old)
+        if commit in old and found:
+            date = found.group(1)
+    template = string.Template((root / "tools/NOTICE.template").read_text(encoding="utf-8"))
+    write_text_if_changed(path, template.substitute(commit=commit, date=date))
 
 
 def write_json(path: Path, value: dict, compact_lists: bool = False) -> None:
@@ -194,4 +278,4 @@ def write_json(path: Path, value: dict, compact_lists: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -7,8 +7,9 @@ files at runtime.
 | File | Content |
 |---|---|
 | `calendar/bs-calendar.json` | `epoch` (1901-01-01 BS = 1844-04-11 AD) + `month_lengths` for BS 1901–2199 (12 values each, 29–32) |
-| `events/<year>.json` | per-day tithi, public-holiday flag and events (BS 2077–2084) |
-| `NOTICE` | MIT notice of the upstream NepDate project |
+| `patro/<year>.json` | per-day tithi, public-holiday flag and events (BS 2077–2084) |
+| `UPSTREAM` | the NepDate commit last imported, whether or not data changed |
+| `NOTICE` | MIT notice of the upstream NepDate project, rendered from `tools/NOTICE.template` by the importer |
 
 Rules:
 - Data comes from C# NepDate through the weekly sync PR. Hand edits only when upstream can't
