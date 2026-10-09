@@ -15,6 +15,8 @@ run() {
 }
 
 run "$PYTHON" spec/reference/verify_vectors.py
+run "$PYTHON" tools/make_vectors.py --check
+run "$PYTHON" -m unittest discover -s tools/tests
 
 # actionlint isn't on GitHub's runners; locally set ACTIONLINT or put it on PATH.
 ACTIONLINT="${ACTIONLINT:-$(command -v actionlint || true)}"
