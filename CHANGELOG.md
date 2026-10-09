@@ -31,7 +31,16 @@ releases; ports pin a commit in `shared/VERSION` (ADR-0001).
 - C# baseline rerun on an idle machine (H6-03, `docs/benchmarks/dotnet.md`): B5 is 153 ns, not 208,
   and B3, B4 and B6 are 2 to 4 ns faster than the first run.
 
+- Tools (H1): `spec/reference/nepcal.py` (calendar functions shared by the checks and tools),
+  `tools/make_vectors.py --check`, `tools/data_status.py` (how far patro data reaches; exit 1 under
+  183 days of holidays), `tools/data_sanity.py` with `data/known-questions.json`, and unit tests in
+  `tools/tests/`. CI runs them through `scripts/ci.sh`.
+- `data/UPSTREAM`: the NepDate commit last imported.
+- Community files, issue templates and `ci.yml` (H0).
+
 ### Changed
+- The importer rewrites a data file only when its content changed, writes `--summary`, and renders
+  `data/NOTICE` from `tools/NOTICE.template`. `verify_vectors.py` runs from any directory.
 - The second package is now called the **patro** (पात्रो: tithi, holidays, events), named by each
   ecosystem's conventions (ADR-0004, rewritten with a naming table): `data/patro/`,
   `spec/PATRO.md`. Adds the C++ port `nepdate-cpp`.

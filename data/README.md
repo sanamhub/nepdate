@@ -30,7 +30,8 @@ Rules:
 | Metadata range | Upstream's changelog and XML docs say metadata covers BS 2001–2089; the data covers 2077-01-01 to 2084-08-20 (the 2001–2089 figure is the range of its offset table) | documentation error upstream (U-05) |
 | BS 2087–2090 | 2087 has **367** days and 2090 has **364**; every other year has 365 or 366. BS New Year 2088 falls on AD 2031-04-16, two days later than its neighbours (Apr 14), and 2089–2090 on Apr 15 | probably one day too many in the 2087 projection, taken back in 2090. If so, conversions from about BS 2087-12 to 2090-12 are off by one or two days. Not verified against an official calendar (not yet published for those years) |
 
-Checks behind this table: year lengths (364: 1 year, 365: 221, 366: 76, 367: 1) and the AD date of
+Checks behind this table (`py tools/data_sanity.py`; `data/known-questions.json` lists the same
+entries for the script): year lengths (364: 1 year, 365: 221, 366: 76, 367: 1) and the AD date of
 every BS New Year compared with the median of its ten neighbours (only 2088 is off by 2 days).
 Known correct anchors all match: 2000-01-01 = 1943-04-14, 2065-02-15 = 2008-05-28,
 2072-06-03 = 2015-09-20, 2077-01-01 = 2020-04-13, 2080-01-01 = 2023-04-14,
