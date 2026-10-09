@@ -1,0 +1,32 @@
+name: Data error
+description: A wrong BS date, month length, public holiday, tithi or event.
+labels: ["data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Data comes from C# NepDate and is fixed there first (docs/runbooks/data-update.md).
+        An official source is required: the Government of Nepal notice for holidays, the
+        Nepal Panchanga Nirnayak Samiti calendar for month lengths, tithi and events.
+  - type: input
+    id: date
+    attributes:
+      label: Date
+      description: The BS date (YYYY-MM-DD), and the AD date if you know it.
+      placeholder: 2083-05-15 (2026-08-31)
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What is wrong
+      description: What the data says now, and what it should say.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official source
+      description: A link to the official notice or calendar, or its number and date.
+    validations:
+      required: true

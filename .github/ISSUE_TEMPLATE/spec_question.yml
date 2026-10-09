@@ -1,0 +1,24 @@
+name: Spec question
+description: The spec is unclear, a vector disagrees with the spec, or a behaviour change is proposed.
+labels: ["spec"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: The spec file and section, vector file and row, or deviation ID.
+      placeholder: spec/PARSING.md §3, parse.tsv row "15 shrawan 80", PARITY D-04
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question or proposal
+      description: What is unclear or wrong, and what you expected. For a behaviour change, say which ports it affects and why.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Inputs and outputs, C# NepDate's result if you checked it, or a port's failing test.
