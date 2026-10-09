@@ -16,3 +16,4 @@ blocked on the human.
 | H1-03 | done | 9c87f18 | `ci: 4 checks passed` | Tested against a fake upstream checkout generated from `data/` (`tools/tests/fake_upstream.py`). Run twice on the real clone at cb05cb65: second run changes no file. The importer no longer writes `month-boundaries.csv` (one writer: `make_vectors.py`); `--commit` defaults to the clone's `HEAD`; C# string escapes are now unescaped. NOTICE keeps its date while the commit is unchanged. |
 | H1-04 | done | e1ed40b | `ci: 5 checks passed` | Findings on current data: year-length 2087 and 2090, new-year 2088, all listed in `data/known-questions.json`. |
 | H1 checkpoint | ready for review | 7ca3f5d | `ci: 5 checks passed` (clean clone, 31 tests) | none blocked |
+| H1 light check | ok | | | |

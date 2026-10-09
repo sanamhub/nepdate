@@ -1,0 +1,48 @@
+# Reusable: fails when a spoke's shared/ differs from the hub at the commit in shared/VERSION
+# (ADR-0001 decision 3). Call it from the spoke's CI, pinned to a full hub commit SHA:
+#
+#   shared-check:
+#     permissions:
+#       contents: read
+#     uses: sanamhub/nepdate/.github/workflows/shared-check.yml@<sha> # main 2026-10-09
+#
+# Local equivalent: py ../nepdate/tools/shared_sync.py . --check
+name: shared-check
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  shared-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Compare shared/ with the hub at shared/VERSION
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="$(tr -d '[:space:]' < shared/VERSION)"
+          if ! [[ "$version" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error file=shared/VERSION::not a full hub commit SHA: '$version'"
+            exit 1
+          fi
+          hub="$RUNNER_TEMP/hub"
+          mkdir -p "$hub"
+          gh api "repos/sanamhub/nepdate/tarball/$version" > "$RUNNER_TEMP/hub.tar.gz"
+          tar -xzf "$RUNNER_TEMP/hub.tar.gz" -C "$hub" --strip-components=1
+          status=0
+          for part in data spec; do
+            diff -r --exclude=__pycache__ "$hub/$part" "shared/$part" || status=1
+          done
+          if [ "$status" -ne 0 ]; then
+            echo "::error::shared/ differs from sanamhub/nepdate@$version. Never edit shared/ by hand: re-sync it."
+            exit 1
+          fi
+          echo "shared/ matches sanamhub/nepdate@$version"
