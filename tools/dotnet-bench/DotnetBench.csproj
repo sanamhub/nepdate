@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- H6-01: C# NepDate baseline for spec/BENCHMARK.md (B1 to B8). See README.md in this folder. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Same version as tools/csharp-golden. Changing it is a human decision. -->
+    <PackageReference Include="NepDate" Version="2.0.7" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The 64 dates come from the hub's canonical month lengths, not from NepDate. -->
+    <EmbeddedResource Include="..\..\data\calendar\bs-calendar.json" LogicalName="bs-calendar.json" />
+  </ItemGroup>
+</Project>

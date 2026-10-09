@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Builds C# NepDate from a local clone (NepDateSource) and dumps every date and every
+       metadata row, so tools/compare_exhaustive.py can check data/ against the C# code itself. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <NepDateSource Condition="'$(NepDateSource)' == ''">../../../NepDate</NepDateSource>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(NepDateSource)/src/NepDate/NepDate.csproj" />
+  </ItemGroup>
+</Project>

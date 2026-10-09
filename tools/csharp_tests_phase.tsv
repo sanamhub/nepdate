@@ -1,0 +1,52 @@
+# Phase of each C# NepDate test, read by tools/catalog_csharp_tests.py.
+# Columns: pattern<TAB>phase. The pattern is fnmatch over "<file>:<method>"; first match wins.
+# Phases follow spec/PORT-PLAN.md: 1 core and conversion, 2 arithmetic/fiscal/range,
+# 3 format and parse, 4 patro and platform interop; n/a = C#-only API; D-xx = PARITY deviation.
+# Reviewed by the human; a test with no match fails the tool.
+
+Core/OptimizationVerificationTests.cs:Constructor*	1
+Core/OptimizationVerificationTests.cs:CompareTo*	1
+Core/OptimizationVerificationTests.cs:Equals*	1
+Core/OptimizationVerificationTests.cs:GetHashCode*	1
+Core/OptimizationVerificationTests.cs:Operator*	1
+Core/OptimizationVerificationTests.cs:DayOfWeek*	1
+Core/OptimizationVerificationTests.cs:EnglishDate*	1
+Core/OptimizationVerificationTests.cs:MonthEndDay*	1
+Core/OptimizationVerificationTests.cs:IsDefault*	1
+Core/OptimizationVerificationTests.cs:IsLeapYear*	1
+Core/OptimizationVerificationTests.cs:Subtraction*	2
+Core/OptimizationVerificationTests.cs:ToString*	3
+Core/OptimizationVerificationTests.cs:ToLongDateString*	3
+Core/OptimizationVerificationTests.cs:ToUnicodeString*	3
+Core/OptimizationVerificationTests.cs:UnicodeConversion*	3
+Core/OptimizationVerificationTests.cs:SmartDateParser*	3
+Core/OptimizationVerificationTests.cs:BulkConvert*	n/a
+
+Core/NepaliDateConstructionTests.cs:*	1
+Core/NepaliDatePropertiesTests.cs:*	1
+Abilities/NepaliDateComparableTests.cs:*	1
+Core/DictionaryIntegrityTests.cs:*	1
+
+Core/NepaliDateArithmeticEdgeCaseTests.cs:*	2
+Core/NepaliDateManipulationTests.cs:*	2
+Core/FiscalYearTests.cs:*	2
+Core/FiscalYearInstanceMethodTests.cs:*	2
+Core/NepaliDateRangeTests.cs:*	2
+Core/NepaliDateRangeExtendedTests.cs:*	2
+
+Core/NepaliDateIsRelativeTests.cs:*	D-14
+
+Core/NepaliDateMonthNameTests.cs:*	3
+Core/SmartDateParserTests.cs:*	3
+Abilities/NepaliDateFormattableTests.cs:*	3
+Abilities/NepaliDateParsableTests.cs:*	3
+Extensions/StringExtensionsTests.cs:*	3
+
+Core/CalendarDataTests.cs:*	4
+Extensions/DateTimeExtensionsTests.cs:*	4
+
+Core/BulkConvertTests.cs:*	n/a
+Abilities/NepaliDateTypeConverterTests.cs:*	n/a
+Serialization/NepaliDateSerializationTests.cs:*	n/a
+Integration/MemoryUsageTests.cs:*	n/a
+Integration/MemoryOptimizationBenchmark.cs:*	n/a

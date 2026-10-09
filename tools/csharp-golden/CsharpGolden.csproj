@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Generates spec/vectors/csharp-golden/*.csv from the published NepDate NuGet package.
+       Run from repo root (see tools/README.md): dotnet run with project tools/csharp-golden -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="NepDate" Version="2.0.7" />
+  </ItemGroup>
+</Project>
