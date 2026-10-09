@@ -55,6 +55,11 @@ updates one PR on branch `bot/shared-sync`, assigned like the hub's. The PR body
 commits since the previous `VERSION`. After merge, release a **patch** version of that port
 (data change, no API change).
 
+The workflow runs the port's generator in a job without secrets or write permission and hands a
+patch to a second job that opens the PR. For a spoke without a GitHub remote, or to test by hand,
+`py tools/shared_sync.py ../nepdate-<language>` does the same copy from a hub commit and
+`--check` does what `shared-check.yml` does in CI.
+
 ## When upstream is not updated in time
 
 If the government has published next year's holidays and NepDate has no update yet:

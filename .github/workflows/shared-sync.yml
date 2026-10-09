@@ -1,0 +1,160 @@
+# Reusable: replaces a spoke's shared/ with the hub's main, runs the spoke's generator and opens or
+# updates one PR on branch bot/shared-sync (ADR-0001 decision 3, docs/runbooks/data-update.md).
+# Call it weekly from the spoke, pinned to a full hub commit SHA, secrets passed by name:
+#
+#   on:
+#     schedule:
+#       - cron: "15 3 * * 2"
+#     workflow_dispatch:
+#   permissions:
+#     contents: read
+#   jobs:
+#     sync:
+#       permissions:
+#         contents: write
+#         pull-requests: write
+#       uses: sanamhub/nepdate/.github/workflows/shared-sync.yml@<sha> # main 2026-10-09
+#       with:
+#         regenerate: ./gradlew codegen
+#       secrets:
+#         SYNC_APP_PRIVATE_KEY: ${{ secrets.SYNC_APP_PRIVATE_KEY }}
+#
+# Local equivalent: py ../nepdate/tools/shared_sync.py . then the regenerate command.
+name: shared-sync
+
+on:
+  workflow_call:
+    inputs:
+      regenerate:
+        description: Shell command that regenerates the spoke's tables from shared/data, run from the repository root.
+        type: string
+        default: ""
+      runs-on:
+        description: Runner for the regenerate step.
+        type: string
+        default: ubuntu-24.04
+    secrets:
+      SYNC_APP_PRIVATE_KEY:
+        description: Private key of the sync GitHub App. Without it the PR is opened with GITHUB_TOKEN and CI doesn't start on it.
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  # Runs the spoke's generator, so it gets no secrets and no write permission. It hands a patch to
+  # the publish job instead of pushing.
+  prepare:
+    runs-on: ${{ inputs.runs-on }}
+    timeout-minutes: 30
+    outputs:
+      changed: ${{ steps.patch.outputs.changed }}
+      short: ${{ steps.hub.outputs.short }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Replace shared/ with the hub's main
+        id: hub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          old="$(tr -d '[:space:]' < shared/VERSION 2>/dev/null || true)"
+          new="$(gh api repos/sanamhub/nepdate/commits/main --jq .sha)"
+          echo "short=${new:0:7}" >> "$GITHUB_OUTPUT"
+          hub="$RUNNER_TEMP/hub"
+          mkdir -p "$hub"
+          gh api "repos/sanamhub/nepdate/tarball/$new" > "$RUNNER_TEMP/hub.tar.gz"
+          tar -xzf "$RUNNER_TEMP/hub.tar.gz" -C "$hub" --strip-components=1
+          rm -rf shared/data shared/spec
+          mkdir -p shared
+          cp -R "$hub/data" "$hub/spec" shared/
+          echo "$new" > shared/VERSION
+          body="$RUNNER_TEMP/body.md"
+          {
+            echo "Syncs \`shared/\` with [sanamhub/nepdate@${new:0:7}](https://github.com/sanamhub/nepdate/commit/$new) and regenerates the tables."
+            echo
+            echo "Hub commits since \`${old:0:7}\`:"
+            echo
+            if [[ "$old" =~ ^[0-9a-f]{40}$ ]]; then
+              gh api "repos/sanamhub/nepdate/compare/$old...$new" \
+                --jq '.commits[] | "- [`\(.sha[0:7])`](\(.html_url)) \(.commit.message | split("\n")[0])"'
+            else
+              echo "- (no previous VERSION)"
+            fi
+            echo
+            echo "After merge, release a patch version (docs/runbooks/data-update.md)."
+          } > "$body"
+      - name: Regenerate
+        if: inputs.regenerate != ''
+        env:
+          REGENERATE: ${{ inputs.regenerate }}
+        run: bash -euo pipefail -c "$REGENERATE"
+      - name: Make the patch
+        id: patch
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/out"
+          git add -A
+          git diff --cached --binary > "$RUNNER_TEMP/out/sync.patch"
+          cp "$RUNNER_TEMP/body.md" "$RUNNER_TEMP/out/body.md"
+          if [ -s "$RUNNER_TEMP/out/sync.patch" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "shared/ is already at the hub's main"
+          fi
+      - if: steps.patch.outputs.changed == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: shared-sync
+          path: ${{ runner.temp }}/out
+          retention-days: 7
+
+  # Never runs the spoke's code: it applies the patch and opens or updates the PR.
+  publish:
+    needs: prepare
+    if: needs.prepare.outputs.changed == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: sync
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: App token
+        id: app-token
+        if: vars.SYNC_APP_ID != ''
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.SYNC_APP_ID }}
+          private-key: ${{ secrets.SYNC_APP_PRIVATE_KEY }}
+          repositories: ${{ github.event.repository.name }}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: shared-sync
+          path: ${{ runner.temp }}/in
+      - name: Apply the patch
+        env:
+          NO_APP: ${{ vars.SYNC_APP_ID == '' }}
+        run: |
+          set -euo pipefail
+          git apply --index "$RUNNER_TEMP/in/sync.patch"
+          if [ "$NO_APP" = "true" ]; then
+            printf '\n%s\n' "Opened with GITHUB_TOKEN, so CI doesn't start on its own: close and reopen this PR once." \
+              >> "$RUNNER_TEMP/in/body.md"
+          fi
+      - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ steps.app-token.outputs.token || github.token }}
+          branch: bot/shared-sync
+          commit-message: "chore(shared): sync from nepdate ${{ needs.prepare.outputs.short }}"
+          title: "chore(shared): sync from nepdate ${{ needs.prepare.outputs.short }}"
+          body-path: ${{ runner.temp }}/in/body.md
+          labels: shared-sync
+          assignees: ${{ vars.SYNC_ASSIGNEE || github.repository_owner }}
+          delete-branch: true
