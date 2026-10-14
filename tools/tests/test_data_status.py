@@ -85,9 +85,14 @@ class DataStatusTest(unittest.TestCase):
         self.assertIn('BS 2077-01-01 to 2084-08-18 (AD 2020-04-13 to 2027-12-03)', out)
 
     def test_runs_on_the_committed_data(self):
-        code, out = run([], ROOT)
-        self.assertIn(code, (0, 1))
+        # A fixed --today keeps the test independent of the clock: the committed tithi data
+        # ends AD 2027-04-13, which is under the 183-day warning from 2026-10-13 on.
+        code, out = run(['--today', '2026-10-01'], ROOT)
+        self.assertEqual(code, 0, out)
         self.assertEqual(len([line for line in out.splitlines() if 'days left' in line]), 3, out)
+        code, out = run(['--strict', '--today', '2026-10-13'], ROOT)
+        self.assertEqual(code, 1, out)
+        self.assertIn('tithi', out)
 
     def test_rejects_a_bad_today(self):
         with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
