@@ -2,9 +2,9 @@
 
 Drafts of issues for [RajuPrasai/NepDate](https://github.com/RajuPrasai/NepDate), checked against
 commit `cb05cb65` (2026-06-04) and the NuGet package 2.0.7. Each is posted by the human after talking
-to the author; fixes are made in a fork (`sanamhub/nepdate-fork`) and sent back as one PR per issue
-(hub ADR-0002, upstream first). The fork is not named `NepDate`: GitHub repository names are
-case-insensitive, so `sanamhub/NepDate` would take the name the hub needs (`sanamhub/nepdate`).
+to the author; the owner is a co-maintainer of NepDate, so fixes are made on a branch in
+RajuPrasai/NepDate (local clone `E:\github\RajuPrasai\NepDate`) and sent as one PR per issue
+(hub ADR-0002, upstream first). No fork is used.
 
 Order: U-01, U-02 and U-05 are safe patch fixes (2.0.8). U-04 is a question to answer before any
 NepDate app ships events, and U-08 goes with it. U-06 can go in 2.x if the API doesn't change. U-03 was declined by the
@@ -120,7 +120,7 @@ entries are named two ways ("सन् २०२४ आरम्भ" for 2024, "
 would avoid confusing them with the BS New Year. The hub's `tools/data_sanity.py` (`new-year-name`)
 flags the 2084 name and will go quiet once the fix is synced.
 
-Sent as [RajuPrasai/NepDate#25](https://github.com/RajuPrasai/NepDate/pull/25) on 2026-10-18
+Sent as [RajuPrasai/NepDate#26](https://github.com/RajuPrasai/NepDate/pull/26) on 2026-10-18
 (edits the generated files, adds a test for 2083 and 2084, and notes the generator source).
 
 ## Effect on the hub
