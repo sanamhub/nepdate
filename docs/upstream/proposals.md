@@ -120,6 +120,9 @@ entries are named two ways ("सन् २०२४ आरम्भ" for 2024, "
 would avoid confusing them with the BS New Year. The hub's `tools/data_sanity.py` (`new-year-name`)
 flags the 2084 name and will go quiet once the fix is synced.
 
+Sent as [RajuPrasai/NepDate#25](https://github.com/RajuPrasai/NepDate/pull/25) on 2026-10-18
+(edits the generated files, adds a test for 2083 and 2084, and notes the generator source).
+
 ## Effect on the hub
 
 `tools/extract_from_csharp.py` reads upstream's generated C# files. When U-03 or U-06 moves or
