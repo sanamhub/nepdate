@@ -27,6 +27,22 @@ class DataSanityTest(unittest.TestCase):
         cal = data_sanity.nepcal.load(ROOT)
         self.assertEqual([f.year for f in data_sanity.new_year_findings(cal)], [2088])
 
+    def test_only_2084_new_year_name_is_wrong(self):
+        findings = data_sanity.new_year_name_findings(ROOT)
+        self.assertEqual([(f.year, f.detail) for f in findings],
+                         [(2084, '2084-01-01 is named "New Year 2083"')])
+
+    def test_wrong_new_year_name_exits_1(self):
+        root = scratch_root(self, 'data')
+        path = root / 'data/patro/2083.json'
+        patro = json.loads(path.read_text(encoding='utf-8'))
+        patro['days']['2083-01-01']['events'][0]['np'] = 'नयाँ वर्ष २०८२'
+        path.write_text(json.dumps(patro, ensure_ascii=False), encoding='utf-8')
+        code, out = run(root)
+        self.assertEqual(code, 1)
+        self.assertIn('new-year-name 2083', out)
+        self.assertIn('NEW', out)
+
     def test_finding_not_in_known_questions_exits_1(self):
         root = scratch_root(self, 'data')
         (root / 'data/known-questions.json').write_text(

@@ -3,6 +3,7 @@
 - year-length: every BS year has 365 or 366 days.
 - new-year: the AD date of each BS New Year (1 Baishakh) is within 1 day of the median of its ten
   nearest neighbouring years.
+- new-year-name: a "नयाँ वर्ष <year>" event on 1 Baishakh in data/patro/ names that BS year.
 
 Prints every finding. Exits 1 only on a finding that data/known-questions.json doesn't list; that
 file and the README table describe the same entries.
@@ -12,6 +13,7 @@ file and the README table describe the same entries.
 import argparse
 import datetime as dt
 import json
+import re
 import statistics
 import sys
 from collections import Counter
@@ -23,6 +25,8 @@ sys.path.insert(0, str(ROOT / 'spec' / 'reference'))
 import nepcal  # noqa: E402
 
 NEIGHBOURS = 10
+NEW_YEAR_NAME = re.compile('नयाँ वर्ष ([०-९]+)')
+DEVANAGARI_DIGITS = str.maketrans('०१२३४५६७८९', '0123456789')
 NEW_YEAR_TOLERANCE_DAYS = 1
 
 
@@ -61,9 +65,21 @@ def new_year_findings(cal):
     return findings
 
 
+def new_year_name_findings(root):
+    findings = []
+    for path in sorted((Path(root) / 'data/patro').glob('*.json')):
+        year = int(path.stem)
+        day = json.loads(path.read_text(encoding='utf-8')).get('days', {}).get(f'{year}-01-01', {})
+        for event in day.get('events', []):
+            match = NEW_YEAR_NAME.search(event['np'])
+            if match and int(match.group(1).translate(DEVANAGARI_DIGITS)) != year:
+                findings.append(Finding('new-year-name', year, f'{year}-01-01 is named "{event["en"]}"'))
+    return findings
+
+
 def main(argv=None, root=ROOT):
     parser = argparse.ArgumentParser(
-        description='Check year lengths and New Year dates; exit 1 on a finding not listed in '
+        description='Check year lengths, New Year dates and New Year names; exit 1 on a finding not listed in '
                     'data/known-questions.json.')
     parser.parse_args(argv)
     cal = nepcal.load(root)
@@ -74,7 +90,7 @@ def main(argv=None, root=ROOT):
     lengths = Counter(year_length(cal, y) for y in range(nepcal.MIN, nepcal.MAX + 1))
     print('year lengths: ' + ', '.join(f'{n}: {count}' for n, count in sorted(lengths.items())))
     new = 0
-    for finding in year_length_findings(cal) + new_year_findings(cal):
+    for finding in year_length_findings(cal) + new_year_findings(cal) + new_year_name_findings(root):
         status = 'known' if (finding.check, finding.year) in known else 'NEW'
         new += status == 'NEW'
         print(f'{finding.check} {finding.year}: {finding.detail} ({status})')

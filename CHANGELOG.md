@@ -18,6 +18,8 @@ releases; ports pin a commit in `shared/VERSION` (ADR-0001).
 - Exhaustive check against the C# code (`tools/csharp-exhaustive`, `tools/compare_exhaustive.py`):
   all 109,212 days in both directions and all 2408 metadata days match.
 - Known data question recorded: BS 2087 has 367 days and 2090 has 364 (`data/README.md`).
+- Known data question recorded: BS 2084 New Year is named "New Year 2083" (U-08); `tools/data_sanity.py`
+  checks the year in every BS New Year event name.
 
 - Port plan shared by every port: phases 0–5 with acceptance criteria (`spec/PORT-PLAN.md`).
 - Ports table lists Swift and Kotlin (for the mobile apps) and `nepdate-mobile`.
