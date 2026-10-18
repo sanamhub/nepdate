@@ -39,6 +39,8 @@ releases; ports pin a commit in `shared/VERSION` (ADR-0001).
   `tools/tests/`. CI runs them through `scripts/ci.sh`.
 - `data/UPSTREAM`: the NepDate commit last imported.
 - Community files, issue templates and `ci.yml` (H0).
+- `spec/PATRO.md`: tithi names ending in `*` / " (K)" are shown unchanged; their meaning is open
+  question U-09.
 
 ### Changed
 - The importer rewrites a data file only when its content changed, writes `--summary`, and renders

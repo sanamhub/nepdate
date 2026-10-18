@@ -7,7 +7,7 @@ RajuPrasai/NepDate (local clone `E:\github\RajuPrasai\NepDate`) and sent as one 
 (hub ADR-0002, upstream first). No fork is used.
 
 Order: U-01, U-02 and U-05 are safe patch fixes (2.0.8). U-04 is a question to answer before any
-NepDate app ships events, and U-08 goes with it. U-06 can go in 2.x if the API doesn't change. U-03 was declined by the
+NepDate app ships events, and U-08 and U-09 go with it. U-06 can go in 2.x if the API doesn't change. U-03 was declined by the
 author on 2026-10-07 (events stay in the one C# package); the ports split them anyway (ADR-0004,
 PARITY D-13).
 
@@ -122,6 +122,20 @@ flags the 2084 name and will go quiet once the fix is synced.
 
 Sent as [RajuPrasai/NepDate#26](https://github.com/RajuPrasai/NepDate/pull/26) on 2026-10-18
 (edits the generated files, adds a test for 2083 and 2084, and notes the generator source).
+
+## U-09 Question: what does `*` / "(K)" on a tithi name mean?
+
+`CalendarStrings.cs` has 16 tithi names that end in `*`, and their English names end in "(K)", for
+example `("तृतिया*", "Tritiya (K)")` at `[16]`. Nothing in the repository explains either mark. In
+the hub data, 152 of the 2190 tithi days carry it, all in BS 2078 to 2081, none in 2082 or 2083.
+
+It does not look like a skipped (kshaya) tithi. Compared with the day before, 117 starred days are
+simply the next tithi, 22 follow a skipped tithi and 3 repeat one, while 56 skips and 49 repeats
+have no mark. For example 2078-01-31 is `तृतिया*` and 2078-02-01 is a plain `तृतिया`.
+
+Ask: what the mark means and where it comes from (likely the same source as U-04), and whether
+2082 onward should have it too. Until then the hub's `spec/PATRO.md` tells ports to show the name
+unchanged.
 
 ## Effect on the hub
 
