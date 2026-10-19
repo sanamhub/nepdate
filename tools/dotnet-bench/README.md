@@ -1,4 +1,4 @@
-# tools/dotnet-bench: C# NepDate baseline (task H6)
+# tools/dotnet-bench: C# NepDate baseline
 
 BenchmarkDotNet project that measures the NepDate NuGet package (2.0.7, the version pinned in
 `tools/csharp-golden`) on operations B1 to B8 of [`spec/BENCHMARK.md`](../../spec/BENCHMARK.md).

@@ -1,4 +1,4 @@
-# C# NepDate baseline (task H6)
+# C# NepDate baseline
 
 Time and allocation of the NepDate NuGet package 2.0.7 on operations B1 to B8 of
 [`spec/BENCHMARK.md`](../../spec/BENCHMARK.md), measured with [`tools/dotnet-bench`](../../tools/dotnet-bench/README.md).
@@ -18,7 +18,7 @@ numbers is in [`docs/research/dotnet-internals.md`](../research/dotnet-internals
 | Runtimes | .NET 10.0.12 (10.0.1226.42308) and .NET 8.0.31 (8.0.3126.42015), X64 RyuJIT x86-64-v3 |
 | BenchmarkDotNet | 0.15.8, default job, `[MemoryDiagnoser]` |
 | NepDate | 2.0.7 from nuget.org (the `lib/net8.0` assembly is used on both runtimes) |
-| Date of run | 2026-10-09 (H6-03 rerun with no other jobs; first run 2026-10-07) |
+| Date of run | 2026-10-09 (rerun with no other jobs; first run 2026-10-07) |
 
 ## Command
 
@@ -50,8 +50,8 @@ interval. "0" means BenchmarkDotNet measured no allocation.
 | B8 | patro month grid | 3,132.66 | 53.87 | 1,429 | 3,567.93 | 67.16 | 1,429 |
 
 The first run (2026-10-07, other jobs active on the machine) gave .NET 10 B1 13.48, B2 19.54, B3
-19.84, B4 21.71, B5 208.35, B6 25.67, B7 47.49 and B8 3,256.05 ns. The table above replaces it
-(task H6-03); ports copy only the table above.
+19.84, B4 21.71, B5 208.35, B6 25.67, B7 47.49 and B8 3,256.05 ns. The table above replaces it;
+ports copy only the table above.
 
 ## Notes on the numbers
 

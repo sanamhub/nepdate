@@ -1,4 +1,4 @@
-"""The workflow rules of AGENTS.md section 2, checked on every file in .github/workflows/."""
+"""Workflow rules from CONTRIBUTING.md, checked on every file in .github/workflows/."""
 import re
 import unittest
 

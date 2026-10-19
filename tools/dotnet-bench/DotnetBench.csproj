@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <!-- H6-01: C# NepDate baseline for spec/BENCHMARK.md (B1 to B8). See README.md in this folder. -->
+  <!-- C# NepDate baseline for spec/BENCHMARK.md (B1 to B8). See README.md in this folder. -->
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net10.0;net8.0</TargetFrameworks>

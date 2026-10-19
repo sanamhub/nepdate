@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The hub's CI command. .github/workflows/ci.yml runs this same script, so a green local run
-# means a green CI run. Standard library Python only (AGENTS.md §2).
+# means a green CI run. Standard library Python only.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."

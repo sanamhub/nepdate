@@ -2,7 +2,7 @@
 # Columns: pattern<TAB>phase. The pattern is fnmatch over "<file>:<method>"; first match wins.
 # Phases follow spec/PORT-PLAN.md: 1 core and conversion, 2 arithmetic/fiscal/range,
 # 3 format and parse, 4 patro and platform interop; n/a = C#-only API; D-xx = PARITY deviation.
-# Reviewed by the human; a test with no match fails the tool.
+# A test with no match fails the tool.
 
 Core/OptimizationVerificationTests.cs:Constructor*	1
 Core/OptimizationVerificationTests.cs:CompareTo*	1

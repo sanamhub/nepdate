@@ -24,7 +24,11 @@ C# NepDate ──(Mon) upstream-sync.yml──► hub PR "chore(data): sync from
 
 ## Hub: `upstream-sync.yml`
 
-Runs every Monday and on demand (*Actions → upstream-sync → Run workflow*). Five checks, each
+This workflow is designed but not in the repository yet. Until it lands, run the import by hand:
+`py tools/extract_from_csharp.py <NepDate clone> --summary changes.md`, then
+`py tools/make_vectors.py` and `./scripts/ci.sh`, and open the PR yourself.
+
+Once added, it runs every Monday and on demand (*Actions → upstream-sync → Run workflow*). Five checks, each
 reported to the assignee (`vars.SYNC_ASSIGNEE`, default the repository owner):
 
 | Check | When it fires | What you get |
@@ -79,7 +83,7 @@ Acceptable sources for a hand edit:
 | Month lengths | Nepal Panchanga Nirnayak Samiti official calendar. Only change *published* years |
 | Tithi, events | the official panchang. Don't scrape commercial calendar apps or sites |
 
-## One-time setup (human)
+## One-time setup (maintainer)
 
 PRs opened with the default `GITHUB_TOKEN` don't start CI, so both workflows use a GitHub App
 token:
@@ -95,7 +99,6 @@ token:
 3. Optional: variable `SYNC_ASSIGNEE` to a GitHub username.
 4. In each of those repositories, create the label `upstream-sync` (hub) or `shared-sync`
    (spokes).
-5. Hub only, for H4: Settings, Pages, Source: "GitHub Actions".
 
 Without the app the workflows still run with `GITHUB_TOKEN`. Their PR body then asks you to
 close and reopen the PR once so CI starts.
