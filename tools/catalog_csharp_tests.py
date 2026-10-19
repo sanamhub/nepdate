@@ -1,4 +1,4 @@
-"""Catalogue of C# NepDate's own unit tests (hub task H5).
+"""Catalogue of C# NepDate's own unit tests.
 
 Reads every *.cs file under tests/NepDate.Tests/ of a NepDate clone and writes
 spec/vectors/csharp-tests/catalog.tsv: one row per [Fact] and one row per

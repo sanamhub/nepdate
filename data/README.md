@@ -15,8 +15,8 @@ Rules:
 - Data comes from C# NepDate through the weekly sync PR. Hand edits only when upstream can't
   take a fix in time, with a source for every change. Procedure, sources and one-time setup:
   [`docs/runbooks/data-update.md`](https://github.com/sanamhub/nepdate/blob/main/docs/runbooks/data-update.md).
-- After any change: `py tools/make_vectors.py` (from task H1-01), then `py spec/reference/verify_vectors.py`.
-  Month-length changes also need a human decision about the C# golden vectors.
+- After any change: `py tools/make_vectors.py`, then `py spec/reference/verify_vectors.py`.
+  Month-length changes also need a maintainer decision about the C# golden vectors.
 - Accuracy: `data/` matches C# NepDate exactly (every day, both directions, every metadata day;
   `tools/compare_exhaustive.py`). Whether NepDate's own data matches the official calendar is a
   separate question. Month lengths for years beyond the officially published calendar are
@@ -26,7 +26,7 @@ Rules:
 
 | Years | Finding | Likely cause |
 |---|---|---|
-| Metadata provenance (`data/patro/`) | Upstream's solution file lists `tools/HamroPatroScraper` and `tools/CalendarDataGenerator`, but `/tools` is git-ignored, so the source of the tithi, holiday and event data isn't published. The project name suggests the data was scraped from Hamro Patro | ask the author where the data came from before any port ships `nepdate-patro` in a public release; if it came from Hamro Patro, rebuild it from primary sources (the government holiday notice and the Panchanga Samiti panchang). See `docs/upstream/proposals.md`, U-04 |
+| Metadata provenance (`data/patro/`) | Upstream's generator projects are git-ignored, so the source and licence of the tithi, holiday and event data aren't published | confirm the source and terms before any port ships `nepdate-patro` in a public release; if redistribution isn't allowed, rebuild from primary sources (the government holiday notice and the Panchanga Samiti panchang). See `docs/upstream/proposals.md`, U-04 |
 | Metadata range | Upstream's changelog and XML docs say metadata covers BS 2001–2089; the data covers 2077-01-01 to 2084-08-20 (the 2001–2089 figure is the range of its offset table) | documentation error upstream (U-05) |
 | BS 2084 New Year name | The 1 Baishakh 2084 event reads "नयाँ वर्ष २०८३" / "New Year 2083". Upstream's generated `CalendarStrings.cs` has one pool entry for that name (index 722) and `EventData.cs` points both 2083-01-01 and 2084-01-01 at it | copied in upstream's data source or generator, which is not published (U-04). Fix upstream in the source and regenerate (U-08); `tools/data_sanity.py` flags it as `new-year-name` |
 | Tithi `*` / "(K)" | 152 tithi days in BS 2078–2081 have names ending in `*` (np) and " (K)" (en). Nothing upstream defines the mark, and it does not match skipped or repeated tithis in the data | from upstream's unpublished data source (U-04). Ask what it means (U-09); ports show the name unchanged |

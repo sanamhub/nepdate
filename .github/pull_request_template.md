@@ -1,5 +1,5 @@
-<!-- What this changes and why, in two or three sentences. Link the task ID (H1-02) or issue
-     (Closes #12). A spec, vector or PARITY change needs the maintainer's approval here. -->
+<!-- What this changes and why, in two or three sentences. Link the issue (Closes #12).
+     A spec, vector or PARITY change needs the maintainer's approval here. -->
 
 ## What to look at first
 

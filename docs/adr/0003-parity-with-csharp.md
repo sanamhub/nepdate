@@ -1,12 +1,12 @@
 # ADR-0003: Parity with C# NepDate, one set of deviations for every port
 
-- Status: Accepted
-- Date: 2026-09-24 (moved from nepdate-rust ADR-0009 on 2026-09-25)
-- Deciders: Sanam Pakuwal
+- **Status:** accepted
+- **Date:** 2026-09-24 (moved from nepdate-rust ADR-0009 on 2026-09-25)
+- **Approved by:** Sanam
 
 ## Context
 
-"Port" can mean "same behaviour" or "same idea". Agents need to know which. The C# docs
+"Port" can mean "same behaviour" or "same idea". Every port has to mean the same one. The C# docs
 disagree with the C# code in several places (listed in `spec/PARITY.md` §1).
 
 ## Decision

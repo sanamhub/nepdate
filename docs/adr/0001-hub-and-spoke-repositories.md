@@ -1,8 +1,8 @@
 # ADR-0001: Hub-and-spoke repositories for NepDate ports
 
-- Status: Accepted
-- Date: 2026-09-25
-- Deciders: Sanam Pakuwal
+- **Status:** accepted
+- **Date:** 2026-09-25
+- **Approved by:** Sanam
 
 ## Context
 

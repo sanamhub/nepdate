@@ -1,10 +1,8 @@
 # Proposals for upstream NepDate (C#)
 
 Drafts of issues for [RajuPrasai/NepDate](https://github.com/RajuPrasai/NepDate), checked against
-commit `cb05cb65` (2026-06-04) and the NuGet package 2.0.7. Each is posted by the human after talking
-to the author; the owner is a co-maintainer of NepDate, so fixes are made on a branch in
-RajuPrasai/NepDate (local clone `E:\github\RajuPrasai\NepDate`) and sent as one PR per issue
-(hub ADR-0002, upstream first). No fork is used.
+commit `cb05cb65` (2026-06-04) and the NuGet package 2.0.7. Each is discussed with the NepDate
+author first, then sent as one PR per issue (ADR-0002, upstream first).
 
 Order: U-01, U-02 and U-05 are safe patch fixes (2.0.8). U-04 is a question to answer before any
 NepDate app ships events, and U-08 and U-09 go with it. U-06 can go in 2.x if the API doesn't change. U-03 was declined by the
@@ -72,19 +70,17 @@ extension properties for C# 14 callers, so most call sites only need the new pac
 
 ## U-04 Question: where does the tithi, holiday and event data come from?
 
-`NepDate.sln` lists `tools/HamroPatroScraper`, `tools/HamroPatroScraper.Tests`,
-`tools/CalendarDataGenerator` and `tools/CalendarDataGenerator.Tests`, but `/tools` is in
+`NepDate.sln` lists four projects under `tools/` that generate the metadata, but `/tools` is in
 `.gitignore`. Consequences:
 
 - `dotnet build NepDate.sln` fails on a fresh clone (MSB3202, 4 projects not found).
 - Nobody else can regenerate or check the generated `*Data.cs` files.
-- If the data was scraped from Hamro Patro, publishing it under MIT may not be ours to do: a
-  compiled panchang may be protected, and scraping is likely against that site's terms. Every port
-  and app built on this data inherits the risk.
+- The source and licence of the tithi, holiday and event data are not recorded, so the ports can't
+  say what they redistribute.
 
-Ask: where the data came from, and whether the generator and its input can be published. If the
-source is Hamro Patro, rebuild the metadata from primary sources: the government's public holiday
-notice and the Nepal Panchanga Nirnayak Samiti's panchang. A longer-term option is for NepDate to
+Ask: where the data came from, under what terms, and whether the generator and its input can be
+published. If the terms don't allow redistribution, rebuild the metadata from primary sources: the
+government's public holiday notice and the Nepal Panchanga Nirnayak Samiti's panchang. A longer-term option is for NepDate to
 generate its C# files from the hub's `data/` JSON, giving one reviewed source for every language.
 
 ## U-05 Docs: metadata range

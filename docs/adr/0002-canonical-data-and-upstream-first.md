@@ -1,8 +1,8 @@
 # ADR-0002: Canonical, language-neutral calendar data, upstream first
 
-- Status: Accepted
-- Date: 2026-09-24 (moved from nepdate-rust ADR-0003 on 2026-09-25)
-- Deciders: Sanam Pakuwal
+- **Status:** accepted
+- **Date:** 2026-09-24 (moved from nepdate-rust ADR-0003 on 2026-09-25)
+- **Approved by:** Sanam
 
 ## Context
 
@@ -52,7 +52,7 @@ encode the same information.
    is then sent upstream.
 7. `spec/vectors/` are conformance vectors every port must pass. `month-boundaries.csv` lists
    the first and last day of every BS month with its AD date and weekday (7176 rows). It is
-   derived from `data/` by `tools/make_vectors.py` (hub task H1-01).
+   derived from `data/` by `tools/make_vectors.py`.
 
 ## Consequences
 

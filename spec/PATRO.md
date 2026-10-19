@@ -61,7 +61,7 @@ each port's choice, but these facts should shape it:
   holidays and event slices) give O(1) lookups with no binary search. A port may use them when its
   benchmark shows they are faster at an acceptable size (the C++ plan does, about 82 KB in total).
 
-The Rust layout is in `nepdate-rust` (task L5-01) as a worked example.
+The Rust layout is in `nepdate-rust` as a worked example.
 
 ## 4. Test anchors (from the C# test suite, confirmed against data)
 

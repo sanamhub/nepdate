@@ -37,7 +37,7 @@ def write_patro(test, ends):
     return root
 
 
-# The data at upstream cb05cb65 (H1 acceptance criteria): tithi ends BS 2083-12-30 = AD 2027-04-13,
+# The data at upstream cb05cb65: tithi ends BS 2083-12-30 = AD 2027-04-13,
 # holidays BS 2084-08-18 = AD 2027-12-03, events BS 2084-08-20.
 AC_ENDS = {'tithi': '2083-12-30', 'holiday': '2084-08-18', 'events': '2084-08-20'}
 
