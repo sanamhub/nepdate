@@ -8,6 +8,7 @@ PYTHON="${PYTHON:-python3}"
 if ! "$PYTHON" --version >/dev/null 2>&1; then PYTHON=python; fi
 
 checks=0
+skipped=()
 run() {
   echo "ci: $*"
   "$@"
@@ -25,6 +26,13 @@ if [ -n "$ACTIONLINT" ]; then
   run "$ACTIONLINT" -shellcheck= -pyflakes=
 else
   echo "ci: actionlint not found, workflow lint skipped"
+  skipped+=("workflow lint")
 fi
 
-echo "ci: $checks checks passed"
+# A skipped check is reported as such and never counted as passed.
+if [ "${#skipped[@]}" -eq 0 ]; then
+  echo "ci: $checks checks passed"
+else
+  joined=$(IFS=,; echo "${skipped[*]}")
+  echo "ci: $checks checks passed, ${#skipped[@]} skipped (${joined//,/, })"
+fi

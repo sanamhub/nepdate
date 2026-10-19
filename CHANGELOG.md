@@ -43,6 +43,8 @@ releases; ports pin a commit in `shared/VERSION` (ADR-0001).
   question U-09.
 
 ### Changed
+- `scripts/ci.sh` reports a skipped check in its last line (`ci: 4 checks passed, 1 skipped
+  (workflow lint)`) instead of printing only the passed count when actionlint is missing.
 - The importer rewrites a data file only when its content changed, writes `--summary`, and renders
   `data/NOTICE` from `tools/NOTICE.template`. `verify_vectors.py` runs from any directory.
 - The second package is now called the **patro** (पात्रो: tithi, holidays, events), named by each

@@ -26,7 +26,9 @@ Python 3.10 or later, standard library only (no `pip install`). Before a PR:
 ./scripts/ci.sh
 ```
 
-The last line reads `ci: <n> checks passed`. CI runs the same script.
+The last line reads `ci: <n> checks passed`, followed by `, <k> skipped (<names>)` when a check
+could not run (for example workflow lint without actionlint). A skipped check is never counted as
+passed. CI runs the same script.
 
 ## Commits and PRs
 
