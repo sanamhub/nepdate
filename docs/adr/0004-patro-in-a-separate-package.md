@@ -1,8 +1,8 @@
 # ADR-0004: Patro (tithi, holidays, events) in a separate package
 
-- Status: Accepted
-- Date: 2026-10-07
-- Deciders: Sanam Pakuwal
+- **Status:** accepted
+- **Date:** 2026-10-07
+- **Approved by:** Sanam
 
 ## Context
 
@@ -34,7 +34,7 @@ users. "Patro" is what every Nepali calls exactly this; each README explains it 
    | C++ | vcpkg/Conan `nepdate`, CMake target `nepdate::nepdate`, namespace `nepdate` | vcpkg/Conan `nepdate-patro`, CMake target `nepdate::patro`, namespace `nepdate::patro`, header `<nepdate/patro.hpp>` | lowercase packages, `ns::target` CMake targets |
    | Go | package `github.com/sanamhub/nepdate-go` (name `nepdate`) | package `github.com/sanamhub/nepdate-go/patro` (name `patro`) | short lowercase package names; one module |
    | TypeScript | npm `nepdate` | npm `nepdate-patro` (`nepdate` as a peer dependency) | npm kebab case |
-   | Python | distribution `nepdate` (name decided in P0-06), import `nepdate` | distribution `nepdate-patro`, import `nepdate_patro` | PEP 8 / PEP 423 |
+   | Python | distribution `nepdate-core` (`nepdate` on PyPI is an unrelated project), import `nepdate` | distribution `nepdate-patro`, import `nepdate_patro` | PEP 8 / PEP 423 |
    | Swift | product and module `NepDate` | product and module `NepDatePatro` | UpperCamelCase modules; one package |
    | Kotlin / Java | `io.github.sanamhub:nepdate`, package `io.github.sanamhub.nepdate` | `io.github.sanamhub:nepdate-patro`, package `io.github.sanamhub.nepdate.patro` | Maven kebab artifacts, lowercase packages |
 
