@@ -1,32 +1,52 @@
-# nepdate
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sanamhub/nepdate/main/assets/logo/nepdate-128.png" width="128" alt="NepDate logo">
+</p>
 
-Shared data and specification for the NepDate family of Bikram Sambat (Nepali calendar)
-libraries. There is no library code here. This repository holds what has to be identical in every
-language: the calendar data, the spec, the conformance vectors, and the import from the C#
-[NepDate](https://github.com/RajuPrasai/NepDate) library.
+<h1 align="center">nepdate</h1>
 
-Supported range: BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to 2143-04-15). Tithi, holidays and
-events cover BS 2077 to 2084, with tithi until 2083-12-30.
+<p align="center">
+  <a href="https://github.com/sanamhub/nepdate/actions/workflows/ci.yml"><img src="https://github.com/sanamhub/nepdate/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/sanamhub/nepdate/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT"></a>
+</p>
 
-## Ports
+Bikram Sambat (the Nepali calendar) for eight languages, and the shared data and specification
+behind them. Every library converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD
+1844-04-11 to 2143-04-15), gives the same answer as the others, and checks that against the same
+test vectors. This repository holds no library code: it has what must be identical in every
+language, imported from the C# [NepDate](https://github.com/RajuPrasai/NepDate) library.
 
-| Language | Repository | Status |
+Tithi, public holidays and events cover BS 2077 to 2084 (tithi until 2083-12-30). They are
+informational, not an official calendar.
+
+## Packages
+
+Every port ships two packages, one version: the core (conversion, arithmetic, formatting, parsing)
+and the patro (पात्रो: tithi, holidays, events), so an app that only converts dates carries no
+almanac data ([ADR-0004](docs/adr/0004-patro-in-a-separate-package.md)). The first public
+version of the ports is `0.1.0-beta.1`; the API can still change before 0.1.0.
+
+| Language | Core | Patro | Version | Repository |
+|---|---|---|---|---|
+| C# (upstream) | [`NepDate`](https://www.nuget.org/packages/NepDate) | in the same package | [![NuGet](https://img.shields.io/nuget/v/NepDate?logo=nuget&label=)](https://www.nuget.org/packages/NepDate) | [RajuPrasai/NepDate](https://github.com/RajuPrasai/NepDate) |
+| Rust | [`nepdate`](https://crates.io/crates/nepdate) | [`nepdate-patro`](https://crates.io/crates/nepdate-patro) | [![crates.io](https://img.shields.io/crates/v/nepdate?include_prereleases&logo=rust&label=)](https://crates.io/crates/nepdate) | [nepdate-rust](https://github.com/sanamhub/nepdate-rust) |
+| Go | [`nepdate`](https://pkg.go.dev/github.com/sanamhub/nepdate-go) | [`nepdate/patro`](https://pkg.go.dev/github.com/sanamhub/nepdate-go/patro) | [![Go](https://img.shields.io/github/v/tag/sanamhub/nepdate-go?include_prereleases&sort=semver&logo=go&label=)](https://pkg.go.dev/github.com/sanamhub/nepdate-go) | [nepdate-go](https://github.com/sanamhub/nepdate-go) |
+| TypeScript, JavaScript | [`nepdate`](https://www.npmjs.com/package/nepdate) | [`nepdate-patro`](https://www.npmjs.com/package/nepdate-patro) | [![npm](https://img.shields.io/npm/v/nepdate/beta?logo=npm&label=)](https://www.npmjs.com/package/nepdate) | [nepdate-typescript](https://github.com/sanamhub/nepdate-typescript) |
+| Python | [`nepdate-core`](https://pypi.org/project/nepdate-core/) | [`nepdate-patro`](https://pypi.org/project/nepdate-patro/) | [![PyPI](https://img.shields.io/pypi/v/nepdate-core?logo=python&logoColor=white&label=)](https://pypi.org/project/nepdate-core/) | [nepdate-python](https://github.com/sanamhub/nepdate-python) |
+| Swift | `NepDate` | `NepDatePatro` | [![SwiftPM](https://img.shields.io/github/v/tag/sanamhub/nepdate-swift?include_prereleases&sort=semver&logo=swift&label=)](https://github.com/sanamhub/nepdate-swift/releases) | [nepdate-swift](https://github.com/sanamhub/nepdate-swift) |
+| Kotlin, Java, Android | [`io.github.sanamhub:nepdate`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [`io.github.sanamhub:nepdate-patro`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-patro) | [![Maven Central](https://img.shields.io/maven-central/v/io.github.sanamhub/nepdate?logo=apachemaven&label=)](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) |
+| C++20 | `nepdate::nepdate` | `nepdate::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-cpp?include_prereleases&sort=semver&logo=cplusplus&label=)](https://github.com/sanamhub/nepdate-cpp/releases) | [nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) |
+
+The Python core is `nepdate-core` on PyPI because `nepdate` there belongs to an unrelated package;
+you still `import nepdate`. Swift and C++ have no central registry: add the repository with
+SwiftPM, or with CMake `FetchContent` pinned to a tag. Install lines, with the exact version, are in
+each repository's README and its GitHub release notes.
+
+### Apps
+
+| App | What it is | Where |
 |---|---|---|
-| C# (upstream) | [RajuPrasai/NepDate](https://github.com/RajuPrasai/NepDate) | released |
-| Rust, plus the MitiBar desktop widget | [sanamhub/nepdate-rust](https://github.com/sanamhub/nepdate-rust) | 0.1.0 ready, not published |
-| Go | [sanamhub/nepdate-go](https://github.com/sanamhub/nepdate-go) | 0.1.0 ready, not published |
-| TypeScript and JavaScript | [sanamhub/nepdate-typescript](https://github.com/sanamhub/nepdate-typescript) | 0.1.0 ready, not published |
-| Python | [sanamhub/nepdate-python](https://github.com/sanamhub/nepdate-python) | 0.1.0 ready, not published |
-| Swift | [sanamhub/nepdate-swift](https://github.com/sanamhub/nepdate-swift) | 0.1.0 ready, not published |
-| Kotlin and Java | [sanamhub/nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) | 0.1.0 ready, not published |
-| C++ | [sanamhub/nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) | 0.1.0 ready, not published |
-
-The Android and iOS apps live in [sanamhub/nepdate-mobile](https://github.com/sanamhub/nepdate-mobile)
-and are in development.
-
-Every port ships two packages: the core (conversion, arithmetic, formatting, parsing) and the
-patro (tithi, holidays, events). Names follow each ecosystem; see
-[ADR-0004](docs/adr/0004-patro-in-a-separate-package.md).
+| MitiBar | Tray calendar for Windows, macOS and Linux, built on the Rust library | [nepdate-rust releases](https://github.com/sanamhub/nepdate-rust/releases) |
+| NepDate for Android and iOS | Month view, holidays, widgets; no ads, account or network | [nepdate-mobile](https://github.com/sanamhub/nepdate-mobile), in development |
 
 ## How the ports use this repository
 
@@ -37,12 +57,14 @@ each port fails if `shared/` drifts from the hub
 
 Calendar data comes from C# NepDate first, then here, then the ports
 ([ADR-0002](docs/adr/0002-canonical-data-and-upstream-first.md)). Report a wrong date, holiday or
-tithi with the "Data error" issue form.
+tithi with the [data error form](https://github.com/sanamhub/nepdate/issues/new/choose); one fix
+here reaches every port.
 
 ```
 data/            calendar and patro data (JSON), NOTICE
 spec/            algorithm, formatting, parsing, patro, parity, vectors, reference checker
 tools/           C# importer, golden vector generator, data checks
+assets/logo/     the family logo and one per port
 docs/adr/        decisions that bind every port
 docs/runbooks/   data updates and syncing
 ```
@@ -57,6 +79,7 @@ py spec/reference/verify_vectors.py
 
 It checks the algorithm spec against 7176 month-boundary vectors and 20,360 golden rows (dates,
 add days, add months) recorded from C# NepDate, plus the formatting and parsing specs.
+`scripts/ci.sh` runs that and the data checks, the same as CI.
 
 ## Credits and license
 
