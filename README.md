@@ -32,20 +32,21 @@ version of the ports is `0.1.0-beta.1`; the API can still change before 0.1.0.
 | Go | [`nepdate`](https://pkg.go.dev/github.com/sanamhub/nepdate-go) | [`nepdate/patro`](https://pkg.go.dev/github.com/sanamhub/nepdate-go/patro) | [![Go](https://img.shields.io/github/v/tag/sanamhub/nepdate-go?include_prereleases&sort=semver&logo=go&label=)](https://pkg.go.dev/github.com/sanamhub/nepdate-go) | [nepdate-go](https://github.com/sanamhub/nepdate-go) |
 | TypeScript, JavaScript | [`nepdate-core`](https://www.npmjs.com/package/nepdate-core) | [`nepdate-patro`](https://www.npmjs.com/package/nepdate-patro) | [![npm](https://img.shields.io/npm/v/nepdate-core/beta?logo=npm&label=)](https://www.npmjs.com/package/nepdate-core) | [nepdate-typescript](https://github.com/sanamhub/nepdate-typescript) |
 | Python | [`nepdate-core`](https://pypi.org/project/nepdate-core/) | [`nepdate-patro`](https://pypi.org/project/nepdate-patro/) | [![PyPI](https://img.shields.io/pypi/v/nepdate-core?logo=python&logoColor=white&label=)](https://pypi.org/project/nepdate-core/) | [nepdate-python](https://github.com/sanamhub/nepdate-python) |
-| Swift | `NepDate` | `NepDatePatro` | [![SwiftPM](https://img.shields.io/github/v/tag/sanamhub/nepdate-swift?include_prereleases&sort=semver&logo=swift&label=)](https://github.com/sanamhub/nepdate-swift/releases) | [nepdate-swift](https://github.com/sanamhub/nepdate-swift) |
+| Swift | [`NepDate`](https://swiftpackageindex.com/sanamhub/nepdate-swift) | [`NepDatePatro`](https://swiftpackageindex.com/sanamhub/nepdate-swift) | [![SwiftPM](https://img.shields.io/github/v/tag/sanamhub/nepdate-swift?include_prereleases&sort=semver&logo=swift&label=)](https://github.com/sanamhub/nepdate-swift/releases) | [nepdate-swift](https://github.com/sanamhub/nepdate-swift) |
 | Kotlin, Java, Android | [`io.github.sanamhub:nepdate`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [`io.github.sanamhub:nepdate-patro`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-patro) | [![Maven Central](https://img.shields.io/maven-central/v/io.github.sanamhub/nepdate?logo=apachemaven&label=)](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) |
 | C++20 | `nepdate::nepdate` | `nepdate::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-cpp?include_prereleases&sort=semver&logo=cplusplus&label=)](https://github.com/sanamhub/nepdate-cpp/releases) | [nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) |
 
 The core is `nepdate-core` on PyPI and npm: on PyPI `nepdate` belongs to an unrelated package, and
-npm refuses it as too close to the existing `nep-date`. In Python you still `import nepdate`. Swift and C++ have no central registry: add the repository with
-SwiftPM, or with CMake `FetchContent` pinned to a tag. Install lines, with the exact version, are in
-each repository's README and its GitHub release notes.
+npm refuses it as too close to the existing `nep-date`. In Python you still `import nepdate`. Swift is
+listed on the [Swift Package Index](https://swiftpackageindex.com/sanamhub/nepdate-swift) and added
+with SwiftPM; C++ has no central registry, so use CMake `FetchContent` pinned to a tag. Install
+lines, with the exact version, are in each repository's README and its GitHub release notes.
 
 ### Apps
 
 | App | What it is | Where |
 |---|---|---|
-| MitiBar | Tray calendar for Windows, macOS and Linux, built on the Rust library | [nepdate-rust releases](https://github.com/sanamhub/nepdate-rust/releases) |
+| MitiBar | Tray calendar for Windows, macOS and Linux, with a floating date bar on Windows, built on the Rust library | [0.1.0-beta.1](https://github.com/sanamhub/nepdate-rust/releases/tag/mitibar-v0.1.0-beta.1), unsigned pre-release |
 | NepDate for Android and iOS | Month view, holidays, widgets; no ads, account or network | [nepdate-mobile](https://github.com/sanamhub/nepdate-mobile), in development |
 
 ## How the ports use this repository
