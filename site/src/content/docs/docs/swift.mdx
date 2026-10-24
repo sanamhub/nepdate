@@ -1,0 +1,82 @@
+---
+title: Swift
+description: Add the NepDate and NepDatePatro products with Swift Package Manager.
+---
+
+import { Code } from "@astrojs/starlight/components";
+import { VERSION } from "../../../data/ports";
+
+One SwiftPM package with two products: `NepDate` (conversion, formatting, parsing, arithmetic,
+fiscal year) and `NepDatePatro` (tithi, public holidays and events for BS 2077-01-01 to
+2084-08-20). `NepDatePatro` depends on `NepDate`, never the reverse, so an app that only converts
+dates links no patro data.
+
+Pure Swift in the Swift 6 language mode, every type `Sendable`, no dependencies. The core doesn't
+need Foundation; `Date` interop compiles in where Foundation exists. Small enough for widget and
+watch extensions. Apple platforms, Linux and Windows are all built in CI.
+
+:::caution[Pre-release]
+This is the first public pre-release. The API may still change before 0.1.0.
+:::
+
+:::note[Not `Calendar.Identifier.vikram`]
+Foundation's `vikram` calendar (iOS 26 and later) is the Indian lunisolar Vikram calendar, not
+Nepal's solar Bikram Sambat, and its months don't match. Apple has no Nepali calendar.
+:::
+
+## Install
+
+Add the package to `Package.swift`. SwiftPM only picks a pre-release when the requirement names one:
+
+<Code lang="swift" code={`.package(url: "https://github.com/sanamhub/nepdate-swift", exact: "${VERSION}")`} />
+
+Then depend on `NepDate`, and on `NepDatePatro` as well for tithi, holidays and events:
+
+```swift
+.product(name: "NepDate", package: "nepdate-swift"),
+.product(name: "NepDatePatro", package: "nepdate-swift"),
+```
+
+The package is listed on the [Swift Package Index](https://swiftpackageindex.com/sanamhub/nepdate-swift).
+
+## Quick start
+
+Conversion, formatting and parsing, with no patro data linked:
+
+```swift
+import NepDate
+
+do {
+  let date = try NepaliDate(year: 2081, month: 4, day: 15)
+  print(date.format("s"))
+  print(date.long(weekday: true))
+  print(try NepaliDate.parse("2081-04-15").description)
+} catch {
+  print("error: \(error)")
+}
+```
+
+## Tithi, holidays and events
+
+```swift
+import NepDate
+import NepDatePatro
+
+let date = (try? NepaliDate(year: 2081, month: 1, day: 1)) ?? .min
+let info = date.calendarInfo
+print(info.tithi?.english ?? "no tithi")
+for event in info.events {
+  print(event.english)
+}
+```
+
+Both blocks are the repository's `Examples` programs, so CI builds and runs them.
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Every public symbol | [docs/API.md](https://github.com/sanamhub/nepdate-swift/blob/main/docs/API.md) |
+| Speed and allocations against the other Swift libraries and C# NepDate | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-swift/blob/main/docs/benchmarks.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-swift/blob/main/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-swift](https://github.com/sanamhub/nepdate-swift) |

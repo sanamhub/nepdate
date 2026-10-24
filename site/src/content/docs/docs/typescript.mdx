@@ -1,0 +1,134 @@
+---
+title: TypeScript and JavaScript
+description: Install and use nepdate-core and nepdate-patro from npm, in Node, Deno, Bun and browsers.
+---
+
+import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
+import { VERSION } from "../../../data/ports";
+
+Two npm packages, released together with the same version:
+
+- [`nepdate-core`](https://www.npmjs.com/package/nepdate-core): dates, conversion, arithmetic,
+  formatting and parsing. ESM only, types included, zero dependencies, no event data.
+- [`nepdate-patro`](https://www.npmjs.com/package/nepdate-patro): tithi, public holidays and events
+  from BS 2077-01-01 to 2084-08-20. It needs `nepdate-core` as a peer dependency.
+
+Pure TypeScript, no WASM and no time zone guessing. Node 22.12.0 and later, Deno, Bun and current
+browsers.
+
+:::caution[Pre-release]
+This is the first public pre-release, on the `beta` dist-tag. The API may still change before
+0.1.0.
+:::
+
+:::note[Why not `nepdate`?]
+npm refuses the name `nepdate` as too close to an existing package, so the core is `nepdate-core`.
+:::
+
+## Install
+
+<Tabs syncKey="pkg">
+  <TabItem label="npm">
+    <Code lang="sh" code="npm install nepdate-core@beta" />
+  </TabItem>
+  <TabItem label="pnpm">
+    <Code lang="sh" code="pnpm add nepdate-core@beta" />
+  </TabItem>
+  <TabItem label="yarn">
+    <Code lang="sh" code="yarn add nepdate-core@beta" />
+  </TabItem>
+  <TabItem label="bun">
+    <Code lang="sh" code="bun add nepdate-core@beta" />
+  </TabItem>
+</Tabs>
+
+## Quick start
+
+<Tabs syncKey="runtime">
+  <TabItem label="Node, Bun, bundlers">
+
+```ts
+import { NepaliDate } from "nepdate-core";
+
+const republicDay = NepaliDate.of(2081, 2, 15);
+console.log(republicDay.toGregorian()); // { year: 2024, month: 5, day: 28 }
+console.log(republicDay.toJSON()); // "2081-02-15"
+console.log(republicDay.long({ weekday: true })); // "Tuesday, Jestha 15, 2081"
+```
+
+  </TabItem>
+  <TabItem label="Deno">
+
+<Code
+  lang="ts"
+  code={`import { NepaliDate } from "npm:nepdate-core@${VERSION}";
+
+console.log(NepaliDate.of(2081, 2, 15).toJSON()); // "2081-02-15"`}
+/>
+
+  </TabItem>
+  <TabItem label="Browser">
+
+<Code
+  lang="html"
+  code={`<script type="module">
+  import { NepaliDate } from "https://esm.sh/nepdate-core@${VERSION}";
+  document.body.textContent = NepaliDate.of(2081, 2, 15).toJSON();
+</script>`}
+/>
+
+  </TabItem>
+</Tabs>
+
+`toJSON()` is the interchange form, `"YYYY-MM-DD"`. `toString()` is the display form,
+`"YYYY/MM/DD"`. Months are 1-based everywhere, unlike JavaScript's `Date`.
+
+## Today, time zones and Temporal
+
+`today(timeZone = "Asia/Kathmandu")` reads the clock through `Intl.DateTimeFormat` with that zone,
+so the machine's own zone never changes the answer.
+
+`GregorianDate` is structural: a `Temporal.PlainDate` satisfies it, so no Temporal dependency is
+needed. `fromJSDate` and `toJSDate` take an explicit zone because a `Date` holds an instant, not a
+calendar day.
+
+```ts
+import { NepaliDate } from "nepdate-core";
+
+if (globalThis.Temporal !== undefined) {
+  const date = NepaliDate.fromGregorian(Temporal.PlainDate.from("2024-07-30"));
+  console.log(date.toJSON()); // "2081-04-15"
+  console.log(Temporal.PlainDate.from(date.toGregorian()).toString()); // "2024-07-30"
+}
+```
+
+## Tithi, holidays and events
+
+```sh
+npm install nepdate-core@beta nepdate-patro@beta
+```
+
+```ts
+import { NepaliDate } from "nepdate-core";
+import { info } from "nepdate-patro";
+
+const day = info(NepaliDate.of(2081, 2, 15));
+console.log(day.isPublicHoliday); // true
+console.log(day.tithi?.en); // "Panchami"
+console.log(day.events.map((event) => event.en)); // ["Republic Day"]
+```
+
+`info()` never fails: a day without data returns the shared empty object (`tithi: null`,
+`isPublicHoliday: false`, `events: []`). `coverage()` gives the range with any data and
+`publicHolidays()` yields the holiday dates in ascending order.
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Every exported name | [docs/API.md](https://github.com/sanamhub/nepdate-typescript/blob/main/docs/API.md) |
+| Speed and bundle size, with the C# baseline | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-typescript/blob/main/docs/benchmarks.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-typescript/blob/main/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-typescript](https://github.com/sanamhub/nepdate-typescript) |
+
+The converter on the [home page](/#convert) runs `nepdate-core` in your browser.

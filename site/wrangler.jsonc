@@ -1,0 +1,19 @@
+// nepdate.com (ADR-0005): the static files Astro builds into dist/, served by a Cloudflare Worker
+// with no code of its own. Workers Builds runs `npm ci && npm run build` in site/ and then
+// `npx wrangler deploy` on main; pull requests get `wrangler versions upload`, reachable at the
+// preview URL because of preview_urls. www.nepdate.com redirects here through a zone redirect rule.
+{
+  "name": "nepdate",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [
+    { "pattern": "nepdate.com", "custom_domain": true }
+  ],
+  "workers_dev": false,
+  "preview_urls": true,
+  "observability": { "enabled": false }
+}

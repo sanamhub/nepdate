@@ -1,0 +1,53 @@
+---
+title: Contributing
+description: Where to report a problem, propose a change, or work on a port or on this site.
+---
+
+import { DATA_ERROR_FORM } from "../../../../data/ports";
+
+## Report something
+
+<ul>
+  <li>
+    <strong>A wrong date, holiday or tithi</strong>: the hub's <a href={DATA_ERROR_FORM}>data error form</a>. One
+    fix reaches every language.
+  </li>
+  <li>
+    <strong>A bug in one language</strong>: an issue in that port's repository, linked from its page here.
+  </li>
+  <li>
+    <strong>A security problem</strong>: privately, as each repository's <code>SECURITY.md</code> says, never in a
+    public issue.
+  </li>
+</ul>
+
+## Change the behaviour
+
+The behaviour is decided once, for every port. A change to how dates convert, format or parse, or to
+the data, starts as a pull request to the hub's
+[`spec/`](https://github.com/sanamhub/nepdate/tree/main/spec) or
+[`data/`](https://github.com/sanamhub/nepdate/tree/main/data), with the vectors updated and
+`python spec/reference/verify_vectors.py` passing. The ports follow from there.
+
+Calendar data goes to [NepDate](https://github.com/RajuPrasai/NepDate) first, then reaches the hub.
+
+## Work on a port
+
+Each repository's `CONTRIBUTING.md` has its build, its checks and how pull requests are reviewed.
+Every repository uses [Conventional Commits](https://www.conventionalcommits.org/) and requires CI to
+pass before a merge.
+
+## Work on this site
+
+The site is `site/` in the hub: [Astro](https://astro.build) with
+[Starlight](https://starlight.astro.build) for these pages. Node 22.12 or later:
+
+```sh
+cd site
+npm ci
+npm run dev
+```
+
+`npm run check` type-checks the site and fails if a page types a version instead of importing it from
+`src/data/ports.ts`; `npm run build` also fails on a broken internal link. Each page has an "Edit
+page" link at the bottom.

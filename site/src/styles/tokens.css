@@ -1,0 +1,43 @@
+/* Design tokens shared by the landing page and the docs. The colours are MitiBar's
+   (nepdate-rust docs/design/widget-design.md): lokta-paper surfaces, warm ink, and one accent,
+   sindoor, kept for "today" and public holidays as in the app. Links and focus use the app's
+   Saturday slate, so sindoor never turns into a generic button colour. */
+
+:root {
+  --nd-font-sans: "Noto Sans Variable", "Noto Sans Devanagari Variable", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --nd-font-deva: "Noto Sans Devanagari Variable", "Noto Sans Variable", sans-serif;
+  --nd-font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --nd-surface: #fdfbf8;
+  --nd-raised: #ffffff;
+  --nd-sunken: #f6f2ec;
+  --nd-ink: #211c17;
+  --nd-ink-muted: #6e655c;
+  --nd-hairline: #e7e0d6;
+  --nd-sindoor: #c12b2b;
+  --nd-on-sindoor: #ffffff;
+  --nd-marigold: #e8a33d;
+  --nd-slate: #3f6383;
+  --nd-slate-soft: #e3ebf2;
+  --nd-shadow: 0 1px 2px rgb(33 28 23 / 0.06), 0 12px 32px -12px rgb(33 28 23 / 0.18);
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --nd-surface: #16120e;
+  --nd-raised: #201b16;
+  --nd-sunken: #1b1612;
+  --nd-ink: #f1ece4;
+  --nd-ink-muted: #9b9288;
+  --nd-hairline: #2c2620;
+  --nd-sindoor: #e05b5b;
+  --nd-on-sindoor: #16120e;
+  --nd-marigold: #e8a33d;
+  --nd-slate: #8fb1d0;
+  --nd-slate-soft: #1d2833;
+  --nd-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px -16px rgb(0 0 0 / 0.7);
+
+  color-scheme: dark;
+}

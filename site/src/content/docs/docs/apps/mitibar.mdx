@@ -1,0 +1,77 @@
+---
+title: MitiBar
+description: A Nepali calendar in your tray on Windows, macOS and Linux, with a floating date bar on Windows.
+---
+
+import { Code } from "@astrojs/starlight/components";
+import { MITIBAR_RELEASE, MITIBAR_VERSION } from "../../../../data/ports";
+
+MitiBar keeps today's BS date in the tray, with a month grid, tithi, public holidays, a converter and
+settings one click away. On Windows a small floating bar shows the date and time wherever you put it.
+The popup opens from the tray, the bar or a global shortcut, Win+Shift+N, and closes when it loses
+focus. It makes no network requests.
+
+It is built on the [Rust library](/docs/rust/) and lives in the same repository,
+[sanamhub/nepdate-rust](https://github.com/sanamhub/nepdate-rust/tree/main/apps/mitibar).
+
+## Download
+
+<p>
+  <a href={MITIBAR_RELEASE}><strong>MitiBar {MITIBAR_VERSION}</strong></a> on GitHub Releases has:
+</p>
+
+| Platform | Files |
+|---|---|
+| Windows 10 and 11 | NSIS installer or portable zip, x64 and ARM64 |
+| macOS | universal `.dmg` |
+| Linux | `.AppImage` or `.deb` |
+
+:::caution[Unsigned beta]
+The beta is not code-signed, so Windows SmartScreen and macOS Gatekeeper warn before the first run.
+The release notes say how to open it on each platform. Its idle memory, CPU and cold-start targets
+are not yet confirmed on a quiet machine.
+:::
+
+## Check a download
+
+Every release has a `SHA256SUMS` file and a build provenance attestation. With the
+[GitHub CLI](https://cli.github.com/):
+
+<Code
+  lang="sh"
+  code={`sha256sum --check --ignore-missing SHA256SUMS
+gh attestation verify mitibar_${MITIBAR_VERSION}_x64-setup.exe --repo sanamhub/nepdate-rust`}
+/>
+
+## What it does
+
+- **Tray**: today's BS day on the icon on Windows and Linux, and the day and month as the menu-bar
+  title on macOS (the next release shows the bar's top line there instead). The tooltip has the BS and AD dates. The menu has Open, Copy today (BS), Copy
+  today (AD), Show bar (Windows), Settings and Quit.
+- **Floating bar (Windows)**: one or two lines you choose from weekday, time, a second clock, BS and
+  AD dates, tithi and today's holiday. Drag it anywhere; it snaps to edges and stays above the
+  taskbar.
+- **Month view**: BS and AD day numbers, tithi under each day, holidays in red, events marked with a
+  dot. Zoom out to a year or a decade, go to any date, or pin the popup open.
+- **Settings**: language (English or Nepali), theme, the bar's two lines, the shortcut, a second
+  time zone, and start at login.
+
+## Build it yourself
+
+```sh
+cargo run -p mitibar --release
+```
+
+On Linux it needs a tray (StatusNotifierItem or the GNOME AppIndicator extension), fontconfig,
+xkbcommon and D-Bus. The renderer is software only, so no OpenGL or GPU driver is needed.
+
+## More
+
+| Topic | Where |
+|---|---|
+| Requirements and design | [docs/design](https://github.com/sanamhub/nepdate-rust/blob/main/docs/design/widget-requirements.md) |
+| Idle memory, CPU and cold start | [docs/benchmarks-widget.md](https://github.com/sanamhub/nepdate-rust/blob/main/docs/benchmarks-widget.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-rust/blob/main/apps/mitibar/CHANGELOG.md) |
+
+MitiBar follows [NepDateWidget](https://github.com/RajuPrasai/NepDateWidget), with its author's
+permission. It is made with [Slint](https://slint.dev) and uses the Noto fonts.

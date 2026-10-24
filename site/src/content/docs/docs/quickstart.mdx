@@ -1,0 +1,48 @@
+---
+title: Quick start
+description: Install NepDate in your language and convert your first date.
+---
+
+import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
+import { ports } from "../../../data/ports";
+
+Pick your language. The tab you choose here is remembered on every page with the same tabs.
+
+## 1. Install the core
+
+<Tabs syncKey="lang">
+  {ports.map((port) => (
+    <TabItem label={port.name}>
+      <Code lang={port.installLang} code={port.install} />
+    </TabItem>
+  ))}
+</Tabs>
+
+The core has no dependencies and no almanac data. Add the patro package later if you need tithi,
+holidays or events ([Core and patro](/docs/concepts/core-and-patro/)).
+
+## 2. Convert a date
+
+Each snippet turns BS 2081-04-15 into AD 2024-07-30 and writes it the long way, `Shrawan 15, 2081`.
+
+<Tabs syncKey="lang">
+  {ports.map((port) => (
+    <TabItem label={port.name}>
+      <Code lang={port.lang} code={port.sample} />
+    </TabItem>
+  ))}
+</Tabs>
+
+## 3. Go further
+
+Each language page has the full install, formatting and parsing in that language's style, and the
+patro:
+
+- [Rust](/docs/rust/), [Go](/docs/go/), [TypeScript and JavaScript](/docs/typescript/),
+  [Python](/docs/python/), [Swift](/docs/swift/), [Kotlin and Java](/docs/kotlin/), [C++](/docs/cpp/)
+
+The behaviour behind every port is described once:
+
+- [The Bikram Sambat calendar](/docs/concepts/calendar/): range, month lengths and what "today" means.
+- [Formatting](/docs/concepts/formatting/) and [parsing](/docs/concepts/parsing/): the patterns and
+  input every port accepts.

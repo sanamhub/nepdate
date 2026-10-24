@@ -1,0 +1,90 @@
+---
+title: Kotlin and Java
+description: Add io.github.sanamhub:nepdate and nepdate-patro from Maven Central, for the JVM and Android.
+---
+
+import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
+import { VERSION } from "../../../data/ports";
+
+Bikram Sambat for Kotlin, Java and Android. Neither `java.time`, ThreeTen-Extra, ICU4J nor
+`android.icu` has a Bikram Sambat calendar.
+
+| Artifact | Contains | Depends on |
+|---|---|---|
+| `io.github.sanamhub:nepdate` | Conversion, formatting, parsing, arithmetic, fiscal year | `kotlin-stdlib` |
+| `io.github.sanamhub:nepdate-patro` | Tithi, public holidays and events, BS 2077-01-01 to 2084-08-20 | `nepdate` |
+
+Both run on any JVM 11 or later and on Android API 21 or later without desugaring.
+
+:::caution[Pre-release]
+This is the first public pre-release. The API may still change before 0.1.0.
+:::
+
+## Install
+
+<Tabs syncKey="build">
+  <TabItem label="Gradle (Kotlin)">
+    <Code
+      lang="kotlin"
+      title="build.gradle.kts"
+      code={`dependencies {
+    implementation("io.github.sanamhub:nepdate:${VERSION}")
+    implementation("io.github.sanamhub:nepdate-patro:${VERSION}") // only for tithi, holidays, events
+}`}
+    />
+  </TabItem>
+  <TabItem label="Maven">
+    <Code
+      lang="xml"
+      title="pom.xml"
+      code={`<dependency>
+  <groupId>io.github.sanamhub</groupId>
+  <artifactId>nepdate</artifactId>
+  <version>${VERSION}</version>
+</dependency>`}
+    />
+  </TabItem>
+</Tabs>
+
+Every file on Maven Central is signed by the release key
+`44ED6E4129D97536CAE086175B979A307721A17B`.
+
+## Quick start
+
+<Tabs syncKey="jvm">
+  <TabItem label="Kotlin">
+
+```kotlin
+val date = NepaliDate.of(2081, 4, 15)
+val fromAd = NepaliDate.ofGregorian(2024, 7, 30)
+val longForm = date.toLongString(lang = Lang.NEPALI)
+val parsed = NepaliDate.parseLenient("15 Shrawan 2080")
+val tithi = date.calendarInfo.tithi
+```
+
+  </TabItem>
+  <TabItem label="Java">
+
+```java
+NepaliDate date = NepaliDate.of(2081, 4, 15);
+NepaliDate fromAd = NepaliDate.ofGregorian(2024, 7, 30);
+String longForm = date.toLongString(false, true, true, Lang.NEPALI);
+NepaliDate parsed = NepaliDate.parseLenient("15 Shrawan 2080");
+Named tithi = Patro.info(date).getTithi();
+```
+
+  </TabItem>
+</Tabs>
+
+`NepaliDate.ofGregorian(2024, 7, 30)` is BS 2081-04-15. `toLongString` in Nepali gives `साउन १५,
+२०८१`; `parseLenient` accepts month names such as `15 Shrawan 2080`. The `calendarInfo` Kotlin
+extension, from `nepdate-patro`, is `Patro.info` in Java.
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Every public type and function | [docs/API.md](https://github.com/sanamhub/nepdate-kotlin/blob/main/docs/API.md) |
+| Speed, allocations and size, with the C# baseline | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-kotlin/blob/main/docs/benchmarks.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-kotlin/blob/main/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) |

@@ -1,0 +1,66 @@
+---
+title: The Bikram Sambat calendar
+description: The supported range, where month lengths come from, and what "today" means.
+---
+
+Bikram Sambat (BS, बिक्रम सम्बत्) is the official calendar of Nepal. It is a solar calendar about 56
+years and 8 months ahead of the Gregorian one: BS 2081 began on 13 April 2024. A year has 12 months,
+from Baishakh to Chaitra, and the new year falls in mid-April.
+
+## Months
+
+| # | English | Nepali |
+|---|---|---|
+| 1 | Baishakh | <span lang="ne">बैशाख</span> |
+| 2 | Jestha | <span lang="ne">जेठ</span> |
+| 3 | Ashad | <span lang="ne">असार</span> |
+| 4 | Shrawan | <span lang="ne">साउन</span> |
+| 5 | Bhadra | <span lang="ne">भदौ</span> |
+| 6 | Ashoj | <span lang="ne">असोज</span> |
+| 7 | Kartik | <span lang="ne">कार्तिक</span> |
+| 8 | Mangsir | <span lang="ne">मंसिर</span> |
+| 9 | Poush | <span lang="ne">पुष</span> |
+| 10 | Magh | <span lang="ne">माघ</span> |
+| 11 | Falgun | <span lang="ne">फागुन</span> |
+| 12 | Chaitra | <span lang="ne">चैत</span> |
+
+Months are numbered from 1 in every port, including TypeScript, where JavaScript's own `Date`
+counts from 0.
+
+## Month lengths come from data
+
+A BS month has 29 to 32 days, and the lengths change from year to year. No formula gives them; they
+are published in the official calendar. Every port reads them from one table in the hub's `data/`,
+imported from C# NepDate, and never computes them.
+
+Lengths beyond the officially published years are projections carried over from NepDate. When a new
+calendar is published and a projected year changes, the hub updates the table and every port takes
+it in a patch release ([Calendar data](/docs/project/data/)).
+
+## The supported range
+
+**BS 1901-01-01 to 2199-12-30**, which is AD 1844-04-11 to 2143-04-15. A date outside that range is
+an error in every port, never a guess.
+
+The patro data (tithi, holidays, events) covers less: BS 2077 to 2084
+([Core and patro](/docs/concepts/core-and-patro/)).
+
+## What "today" means
+
+A BS date is a calendar day, not an instant. Which day it is depends on where you are, and Nepal is
+at UTC+05:45. The ports that read the clock default to Nepal time, so the machine's own time zone
+doesn't change the answer:
+
+- TypeScript: `NepaliDate.today(timeZone = "Asia/Kathmandu")`.
+- C++: `today(utc_offset)`, with +05:45 by default.
+- Python: `NepaliDate.today(tz=None)`, with `Asia/Kathmandu` when no zone is given. On Windows it
+  needs the `tzdata` package for the zone database.
+
+Converting a timestamp to a BS date is always explicit about the zone: pass a calendar date, or say
+which zone the instant should be read in.
+
+## Fiscal year
+
+Nepal's fiscal year starts on Shrawan 1. The fiscal year that starts in BS 2080 is labelled
+`2080/81` and ends on the last day of Ashad 2081. Every port's `fiscal_year` (or its idiomatic name)
+gives the start, the end and that label.

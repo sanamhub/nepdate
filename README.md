@@ -15,6 +15,8 @@ behind them. Every library converts between BS and AD for BS 1901-01-01 to 2199-
 test vectors. This repository holds no library code: it has what must be identical in every
 language, imported from the C# [NepDate](https://github.com/RajuPrasai/NepDate) library.
 
+Documentation for every language, and a converter: **[nepdate.com](https://nepdate.com)**.
+
 Tithi, public holidays and events cover BS 2077 to 2084 (tithi until 2083-12-30). They are
 informational, not an official calendar.
 
@@ -68,6 +70,7 @@ tools/           C# importer, golden vector generator, data checks
 assets/logo/     the family logo and one per port
 docs/adr/        decisions that bind every port
 docs/runbooks/   data updates and syncing
+site/            nepdate.com: landing page and docs (ADR-0005)
 ```
 
 ## Check the spec and data

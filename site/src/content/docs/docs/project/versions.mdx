@@ -1,0 +1,41 @@
+---
+title: Versions and status
+description: Where every package stands, how versions work across the ports, and what pre-release means here.
+---
+
+import { MITIBAR_RELEASE, MITIBAR_VERSION, PYPI_VERSION, VERSION } from "../../../../data/ports";
+
+<p>
+  Every port is at <code>{VERSION}</code>, the first public pre-release. The API can still change
+  before 0.1.0, and each release's changelog says what changed. MitiBar is at
+  <a href={MITIBAR_RELEASE}><code>{MITIBAR_VERSION}</code></a>.
+</p>
+
+## How versions work
+
+- Each port follows [Semantic Versioning](https://semver.org/) on its own schedule. The core and the
+  patro of one port always share a version and are released together.
+- A data change, such as a new year's holidays, is a **patch** release of each port: no API change.
+- Pre-releases need asking for by name in most package managers: an exact pin in Cargo and SwiftPM,
+  the `beta` tag on npm, and `--pre` with pip.
+- Python spells the version the PEP 440 way, <code>{PYPI_VERSION}</code>.
+
+## Releases are checked
+
+Each port's release workflow publishes from CI only, after the full test run, with build provenance
+where the registry supports it: trusted publishing to crates.io, npm and PyPI, signed artifacts on
+Maven Central, and attested archives for C++ and MitiBar. Each release's notes say how to check its
+files.
+
+## Where to find each release
+
+| Language | Releases |
+|---|---|
+| Rust | [crates.io/crates/nepdate](https://crates.io/crates/nepdate) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/sanamhub/nepdate-go?tab=versions) |
+| TypeScript | [npmjs.com/package/nepdate-core](https://www.npmjs.com/package/nepdate-core?activeTab=versions) |
+| Python | [pypi.org/project/nepdate-core](https://pypi.org/project/nepdate-core/#history) |
+| Swift | [GitHub releases](https://github.com/sanamhub/nepdate-swift/releases) |
+| Kotlin and Java | [Maven Central](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate/versions) |
+| C++ | [GitHub releases](https://github.com/sanamhub/nepdate-cpp/releases) |
+| MitiBar | [GitHub releases](https://github.com/sanamhub/nepdate-rust/releases) |

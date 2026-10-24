@@ -1,0 +1,121 @@
+---
+title: C++
+description: Use the header-only nepdate core and the nepdate-patro library from C++20 with CMake.
+---
+
+import { Code } from "@astrojs/starlight/components";
+import { VERSION } from "../../../data/ports";
+
+Bikram Sambat dates for C++20. The core is header-only with no dependencies, the `to_chars` and
+parse paths allocate nothing, and conversion is `constexpr`, so it also runs at compile time.
+`nepdate-patro` is a compiled library on top of it for tithi, public holidays and events.
+
+:::caution[Pre-release]
+This is the first public pre-release. The API may still change before 0.1.0.
+:::
+
+## Install
+
+C++ has no central registry, so pull the release tag with CMake `FetchContent`:
+
+<Code
+  lang="cmake"
+  title="CMakeLists.txt"
+  code={`include(FetchContent)
+FetchContent_Declare(nepdate
+    GIT_REPOSITORY https://github.com/sanamhub/nepdate-cpp.git
+    GIT_TAG v${VERSION})
+FetchContent_MakeAvailable(nepdate)
+target_link_libraries(your_app PRIVATE nepdate::nepdate nepdate::patro)`}
+/>
+
+Set `NEPDATE_BUILD_PATRO` to `OFF` before `FetchContent_MakeAvailable` if you need only the core.
+
+Each [GitHub release](https://github.com/sanamhub/nepdate-cpp/releases) also has a source archive
+with `SHA256SUMS`, `SHA512SUMS` and a provenance attestation; its notes show the same
+`FetchContent_Declare` with the archive URL and `URL_HASH`. The vcpkg and Conan Center submissions
+are prepared but not merged upstream yet; the overlay ports in the repository work until then.
+
+| Compiler | Minimum, proved by CI |
+|---|---|
+| GCC | 12 |
+| Clang | 16, with libstdc++ and with libc++ |
+| Apple Clang | Xcode 16 |
+| MSVC | 19.44 (Visual Studio 2022 17.14) |
+
+## Quick start
+
+```cpp
+#include <nepdate/nepdate.hpp>
+
+#include <iomanip>
+#include <iostream>
+
+int main() {
+    const nepdate::date d = nepdate::make_date(2081, 4, 15).value();
+    const auto ad = d.to_year_month_day();
+    std::cout << nepdate::to_string(d) << '\n';
+    std::cout << static_cast<int>(ad.year()) << '-' << std::setfill('0') << std::setw(2)
+              << static_cast<unsigned>(ad.month()) << '-' << std::setw(2)
+              << static_cast<unsigned>(ad.day()) << '\n';
+    std::cout << nepdate::to_string(nepdate::from_gregorian(ad).value()) << '\n';
+}
+```
+
+**Arithmetic and fiscal year.** `add_days`, `add_months` and `add_years` return `result<date>` with
+`overflow::clamp` or `overflow::spill`. `diff` returns whole years, months and days. `fiscal_year`
+gives the start, end, range and the `2082/83` label.
+
+**Formatting.** `to_chars`, `to_chars_iso`, `to_chars_short`, `to_chars_long` and
+`to_chars_pattern` write into the caller's buffer and allocate nothing. The `to_string` twins return
+`std::string`. `std::formatter<nepdate::date>` prints `{}` as `YYYY/MM/DD`.
+
+**`<chrono>` interop.** `to_year_month_day`, `to_sys_days`, `from_gregorian`, `from_sys_days` and
+`from_sys_time` use the standard calendar types. `today(utc_offset)` returns the current BS date in a
+fixed-offset zone, Nepal's +05:45 by default.
+
+## Parsing
+
+```cpp
+#include <nepdate/nepdate.hpp>
+
+#include <iostream>
+
+int main() {
+    const nepdate::result<nepdate::date> strict = nepdate::parse("2081/04/15");
+    const nepdate::result<nepdate::date> lenient = nepdate::parse_lenient("2081 Shrawan 15");
+    std::cout << nepdate::to_string(strict.value()) << '\n';
+    std::cout << nepdate::to_string(lenient.value()) << '\n';
+}
+```
+
+## Tithi, holidays and events
+
+```cpp
+#include <nepdate/patro.hpp>
+
+#include <iostream>
+
+int main() {
+    const nepdate::date d = nepdate::make_date(2081, 4, 15).value();
+    const nepdate::patro::day_info day = nepdate::patro::info(d);
+    if (const auto t = day.tithi()) {
+        std::cout << t->name(nepdate::lang::en) << '\n';
+    }
+    std::cout << "holiday: " << (day.is_public_holiday() ? 1 : 0) << '\n';
+    for (const nepdate::patro::event e : day.events()) {
+        std::cout << e.name(nepdate::lang::en) << '\n';
+    }
+}
+```
+
+`nepdate::patro::info` returns an empty `day_info` outside BS 2077-01-01 to 2084-08-20.
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Every public name, with signatures | [docs/API.md](https://github.com/sanamhub/nepdate-cpp/blob/main/docs/API.md) |
+| Benchmarks against C# NepDate | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-cpp/blob/main/docs/benchmarks.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-cpp/blob/main/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) |
