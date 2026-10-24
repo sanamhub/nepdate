@@ -1,0 +1,77 @@
+---
+title: Rust
+description: Install and use the nepdate and nepdate-patro crates.
+---
+
+import { Code } from "@astrojs/starlight/components";
+import { VERSION } from "../../../data/ports";
+
+`nepdate` converts between BS and AD, formats and parses Nepali dates, does date arithmetic and
+fiscal years. `nepdate-patro` adds tithi, public holidays and events. The core is `no_std` with no
+dependencies by default, allocates nothing, and contains no `unsafe` code.
+
+:::caution[Pre-release]
+This is the first public pre-release. The API may still change before 0.1.0.
+:::
+
+## Install
+
+<Code
+  lang="toml"
+  title="Cargo.toml"
+  code={`[dependencies]
+nepdate = "=${VERSION}"
+nepdate-patro = "=${VERSION}"   # only if you need tithi, holidays or events`}
+/>
+
+Cargo never picks a pre-release for a plain `"0.1"` requirement, so the beta is pinned exactly.
+
+The MSRV is Rust 1.85. The `std` feature is on by default; `serde`, `chrono` and `jiff` are
+optional features.
+
+## Convert and format
+
+```rust
+use nepdate::{Lang, NepaliDate};
+
+fn main() -> Result<(), nepdate::Error> {
+    let date = NepaliDate::new(2081, 4, 15)?;
+    let ad = date.to_gregorian();
+    assert_eq!((ad.year(), ad.month(), ad.day()), (2024, 7, 30));
+    assert_eq!(date.weekday().name(Lang::En), "Tuesday");
+    println!("{}", date.long(nepdate::LongDate::default(), Lang::En));
+    Ok(())
+}
+```
+
+It prints `Shrawan 15, 2081`. Formatting in Nepali takes `Lang::Ne`, which gives Devanagari names
+and digits (`साउन १५, २०८१`).
+
+## Tithi, holidays and events
+
+```rust
+use nepdate::{Lang, NepaliDate};
+
+fn main() -> Result<(), nepdate::Error> {
+    let date = NepaliDate::new(2081, 1, 1)?;
+    let info = nepdate_patro::info(date);
+    assert_eq!(info.tithi().map(|t| t.name(Lang::En)), Some("Panchami"));
+    assert!(info.is_public_holiday());
+    Ok(())
+}
+```
+
+`nepdate-patro` depends on `nepdate`, never the other way round, so an app that only converts dates
+carries no patro data. The data covers BS 2077-01-01 to 2084-08-20.
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Every public item | [docs.rs/nepdate](https://docs.rs/nepdate), [docs.rs/nepdate-patro](https://docs.rs/nepdate-patro) |
+| The API in one page | [docs/API.md](https://github.com/sanamhub/nepdate-rust/blob/main/docs/API.md) |
+| Speed against C# NepDate and other crates | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-rust/blob/main/docs/benchmarks.md) |
+| What changed | [nepdate](https://github.com/sanamhub/nepdate-rust/blob/main/crates/nepdate/CHANGELOG.md), [nepdate-patro](https://github.com/sanamhub/nepdate-rust/blob/main/crates/nepdate-patro/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-rust](https://github.com/sanamhub/nepdate-rust) |
+
+The same repository holds [MitiBar](/docs/apps/mitibar/), the desktop calendar built on these crates.

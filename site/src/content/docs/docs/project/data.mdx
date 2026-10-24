@@ -1,0 +1,52 @@
+---
+title: Calendar data
+description: Where the month lengths and the patro data come from, how far they reach, and how to report a mistake.
+---
+
+import { DATA_ERROR_FORM } from "../../../../data/ports";
+
+All the calendar data lives once, in the hub's
+[`data/`](https://github.com/sanamhub/nepdate/tree/main/data) directory, as JSON:
+
+- **Month lengths** for BS 1901 to 2199, the table every conversion reads.
+- **Patro** files, one per year from BS 2077 to 2084: tithi, public holidays and events per day.
+
+## Where it comes from
+
+The data is imported from [NepDate](https://github.com/RajuPrasai/NepDate), the C# library by Raju
+Prasai and contributors (MIT), used with the author's agreement. Fixes go upstream first:
+
+```
+C# NepDate  ──►  sanamhub/nepdate (the hub)  ──►  every port's shared/ copy  ──►  patch release
+```
+
+Each port keeps a read-only copy of `data/` in its own `shared/` directory, with the hub commit in
+`shared/VERSION`, and turns it into constant tables at build time. A check in each port fails if the
+copy drifts from the hub, and nothing parses JSON at run time.
+
+Month lengths beyond the officially published years are projections inherited from NepDate. When the
+official calendar for such a year is published and differs, the table changes in the hub and every
+port takes it in a patch release.
+
+## How far it reaches
+
+| Data | Range |
+|---|---|
+| Conversion | BS 1901-01-01 to 2199-12-30 |
+| Tithi | until BS 2083-12-30 (13 April 2027) |
+| Public holidays | BS 2077-01-01 to 2084-08-18 |
+| Events | BS 2077-01-01 to 2084-08-20 |
+
+The 2084 tithi and holiday data arrives when the next year's calendar is published and NepDate takes
+it in. Until then, days after the end of the data have no tithi or holiday, and nothing fails.
+
+## Report a mistake
+
+<p>
+  A wrong date, holiday or tithi is fixed once, in the hub, and reaches every language. Use the
+  <a href={DATA_ERROR_FORM}>data error form</a> and include the date, what NepDate shows, what it should
+  be, and a source: the Government of Nepal's notice or a published patro.
+</p>
+
+Patro data is informational, not an official calendar. NepDate is not affiliated with the Government
+of Nepal.

@@ -1,0 +1,300 @@
+---
+import { Image } from "astro:assets";
+import { Code } from "astro:components";
+import { NepaliDate, toNepaliDigits, monthName } from "nepdate-core";
+import { info } from "nepdate-patro";
+import popupDarkEn from "../assets/mitibar/popup-dark-en.png";
+import popupLightEn from "../assets/mitibar/popup-light-en.png";
+import barDark from "../assets/mitibar/bar-dark.png";
+import barLight from "../assets/mitibar/bar-light.png";
+import Landing from "../layouts/Landing.astro";
+import { DATA_ERROR_FORM, HUB, MITIBAR_RELEASE, MITIBAR_VERSION, VERSION, ports, repoUrl } from "../data/ports";
+
+// Rendered at build time so the page reads right without JavaScript; the script in
+// scripts/landing.ts replaces it with the visitor's own "today in Nepal" on load.
+const today = NepaliDate.today();
+const todayAd = today.toGregorian();
+const adLong = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(
+  new Date(Date.UTC(todayAd.year, todayAd.month - 1, todayAd.day)),
+);
+
+// The patro strip: the first Sunday-to-Saturday week from today that has a public holiday, read
+// from nepdate-patro at build time and labelled with its dates.
+function holidayWeek(from: NepaliDate) {
+  let start = from.addDays(-from.weekday);
+  for (let i = 0; i < 26; i++) {
+    const days = Array.from({ length: 7 }, (_, n) => start.addDays(n));
+    if (days.some((d) => info(d).isPublicHoliday)) return days;
+    start = start.addDays(7);
+  }
+  return Array.from({ length: 7 }, (_, n) => from.addDays(-from.weekday + n));
+}
+const week = holidayWeek(today).map((d) => {
+  const ad = d.toGregorian();
+  const day = info(d);
+  return {
+    key: d.toJSON(),
+    bs: toNepaliDigits(d.day),
+    ad: ad.day,
+    weekday: d.long({ weekday: true, year: false, pad: false }).split(",")[0],
+    tithi: day.tithi,
+    holiday: day.isPublicHoliday,
+    event: day.events[0] ?? null,
+  };
+});
+const weekFirst = holidayWeek(today)[0];
+const weekLast = holidayWeek(today)[6];
+const weekLabel =
+  weekFirst.month === weekLast.month
+    ? `${monthName(weekFirst.month)} ${weekFirst.day} to ${weekLast.day}, ${weekLast.year}`
+    : `${weekFirst.long({ year: false, pad: false })} to ${weekLast.long({ pad: false })}`;
+
+const title = "NepDate: the Nepali calendar for every language you ship";
+const description =
+  "Bikram Sambat (BS) date libraries for Rust, Go, TypeScript, Python, Swift, Kotlin and C++, built from one dataset and one spec so every port gives the same answer. Plus MitiBar, a Nepali calendar for your desktop.";
+---
+
+<Landing title={title} description={description}>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="today-label">Today in Nepal</p>
+        <p class="today" lang="ne" data-today>
+          <span class="today-month" data-today-month>{monthName(today.month, "ne")}</span>
+          <span class="today-day" data-today-day>{toNepaliDigits(today.day)}</span>
+          <span class="today-year" data-today-year>{toNepaliDigits(today.year)}</span>
+        </p>
+        <p class="today-en" data-today-en>
+          {adLong} is {today.long({ weekday: false, pad: false })}.
+        </p>
+
+        <h1>Nepali dates, the same in every language.</h1>
+        <p class="lede">
+          Bikram Sambat for Rust, Go, TypeScript, Python, Swift, Kotlin and C++. One dataset and one spec, checked
+          against the same test vectors, so every port converts BS 1901 to 2199 to the same day.
+        </p>
+        <div class="actions">
+          <a class="button primary" href="/docs/quickstart/">Get started</a>
+          <a class="button" href="#mitibar">Get MitiBar for your desktop</a>
+        </div>
+      </div>
+
+      <div class="code-card" data-tabs>
+        <div class="tabs" role="tablist" aria-label="Language">
+          {
+            ports.map((port, i) => (
+              <button
+                type="button"
+                role="tab"
+                id={`tab-${port.id}`}
+                aria-controls={`panel-${port.id}`}
+                aria-selected={i === 0 ? "true" : "false"}
+                tabindex={i === 0 ? 0 : -1}
+              >
+                {port.name}
+              </button>
+            ))
+          }
+        </div>
+        {
+          ports.map((port, i) => (
+            <div role="tabpanel" id={`panel-${port.id}`} aria-labelledby={`tab-${port.id}`} hidden={i !== 0} tabindex="0">
+              <Code code={port.sample} lang={port.lang as any} themes={{ light: "github-light-default", dark: "github-dark-default" }} />
+            </div>
+          ))
+        }
+        <p class="code-foot">
+          <span>BS 2081-04-15 is AD 2024-07-30</span>
+          <span>in every port</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="languages" aria-labelledby="languages-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="languages-title">Install</h2>
+        <p>
+          Every port ships two packages with one version, now <code>{VERSION}</code>: the core for conversion,
+          arithmetic, formatting and parsing, and the patro for tithi, public holidays and events. Take only the core
+          and no almanac data ships with your app.
+        </p>
+      </div>
+      <ul class="install-list">
+        {
+          ports.map((port) => (
+            <li>
+              <a class="install-name" href={`/docs/${port.id}/`}>
+                {port.name}
+              </a>
+              <div class="install-cmd">
+                <code translate="no">{port.install}</code>
+                <button type="button" class="copy" data-copy={port.install} aria-label={`Copy the ${port.name} install line`}>
+                  Copy
+                </button>
+              </div>
+              <div class="install-links">
+                <a href={port.registry.href}>{port.registry.label}</a>
+                <a href={repoUrl(port)}>Source</a>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section convert" id="convert" aria-labelledby="convert-title">
+    <div class="wrap convert-grid">
+      <div class="section-head">
+        <h2 id="convert-title">Convert a date</h2>
+        <p>
+          This runs <a href="/docs/typescript/"><code>nepdate-core</code></a> in your browser. Type a BS date in
+          numbers or with the month name, or pick an AD date.
+        </p>
+      </div>
+      <form class="converter" data-converter novalidate>
+        <div class="field">
+          <label for="bs-input">Bikram Sambat</label>
+          <input
+            id="bs-input"
+            name="bs"
+            type="text"
+            inputmode="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="2081/04/15 or 15 Shrawan 2081…"
+            value={today.toString()}
+          />
+          <p class="result" aria-live="polite" data-bs-result></p>
+        </div>
+        <div class="field">
+          <label for="ad-input">Gregorian (AD)</label>
+          <input
+            id="ad-input"
+            name="ad"
+            type="date"
+            min="1844-04-11"
+            max="2143-04-15"
+            value={`${todayAd.year}-${String(todayAd.month).padStart(2, "0")}-${String(todayAd.day).padStart(2, "0")}`}
+          />
+          <p class="result" aria-live="polite" data-ad-result></p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="patro-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="patro-title">The patro, in its own package</h2>
+        <p>
+          Tithi, public holidays and events for BS 2077 to 2084 come from <code>nepdate-patro</code> and its twins in
+          every language. Below, {weekLabel}, read from it when this page was built.
+        </p>
+      </div>
+      <ol class="week" aria-label={`Week of ${weekLabel}`}>
+        {
+          week.map((d) => (
+            <li class:list={[{ holiday: d.holiday }]}>
+              <span class="week-day">{d.weekday}</span>
+              <span class="week-num" lang="ne">
+                {d.bs}
+                {d.event && <span class="dot" aria-hidden="true" />}
+              </span>
+              <span class="week-ad">{d.ad}</span>
+              <span class="week-tithi">{d.tithi?.en ?? ""}</span>
+              {d.event && <span class="week-event">{d.event.en}</span>}
+              {d.holiday && <span class="visually-hidden">Public holiday</span>}
+            </li>
+          ))
+        }
+      </ol>
+      <p class="note">Holidays in red, events marked with a dot. Patro data is informational, not an official calendar.</p>
+    </div>
+  </section>
+
+  <section class="section proof" aria-labelledby="proof-title">
+    <div class="wrap proof-grid">
+      <div class="section-head">
+        <h2 id="proof-title">Checked, not assumed</h2>
+        <p>
+          The calendar data and the behaviour live once, in the <a href={HUB}>hub repository</a>. Each port copies them
+          and generates its tables at build time; a check fails when a copy drifts. Then every port runs the same files.
+        </p>
+        <a class="text-link" href="/docs/project/conformance/">How the ports are kept in step</a>
+      </div>
+      <dl class="facts">
+        <div>
+          <dt><span class="num">7,176</span> month boundaries</dt>
+          <dd>The first and last day of every BS month from 1901 to 2199.</dd>
+        </div>
+        <div>
+          <dt><span class="num">20,360</span> golden rows</dt>
+          <dd>Dates, added days and added months, recorded from C# NepDate 2.0.7.</dd>
+        </div>
+        <div>
+          <dt><span class="num">0</span> port-only differences</dt>
+          <dd>Where a port differs from C#, every port differs the same way, and it is written down.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section apps" id="mitibar" aria-labelledby="apps-title">
+    <div class="wrap apps-grid">
+      <div class="section-head">
+        <h2 id="apps-title">MitiBar</h2>
+        <p>
+          Today's BS date in the tray, a month with tithi and holidays one click away, and on Windows a small bar with
+          the date and time wherever you put it. Win+Shift+N opens it. No network requests.
+        </p>
+        <div class="actions">
+          <a class="button primary" href={MITIBAR_RELEASE}>Download {MITIBAR_VERSION}</a>
+          <a class="button" href="/docs/apps/mitibar/">Read more</a>
+        </div>
+        <p class="note">Windows, macOS and Linux. The beta is not code-signed; the release notes say how to open and verify it.</p>
+        <h3>On your phone</h3>
+        <p>
+          NepDate for Android and iOS, with home-screen widgets and no ads, account or network, is in development.{" "}
+          <a href="/docs/apps/mobile/">Follow along</a>.
+        </p>
+      </div>
+      <figure class="shots">
+        <div class="shot-popup">
+          <Image class="on-light" src={popupLightEn} alt="MitiBar's month view for Kartik 2083, with tithi under each day and today marked" widths={[360, 720]} sizes="360px" />
+          <Image class="on-dark" src={popupDarkEn} alt="" widths={[360, 720]} sizes="360px" />
+        </div>
+        <div class="shot-bar">
+          <Image class="on-light" src={barLight} alt="The MitiBar floating bar showing the weekday, time and BS date" widths={[236, 472]} sizes="236px" />
+          <Image class="on-dark" src={barDark} alt="" widths={[236, 472]} sizes="236px" />
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section closing" aria-labelledby="data-title">
+    <div class="wrap closing-grid">
+      <div>
+        <h2 id="data-title">Built on NepDate</h2>
+        <p>
+          The calendar data and the algorithm come from <a href="https://github.com/RajuPrasai/NepDate">NepDate</a>, the
+          C# library by Raju Prasai and contributors, used with the author's agreement. Fixes go there first and reach
+          every port from one place.
+        </p>
+      </div>
+      <div>
+        <h2>Found a wrong date?</h2>
+        <p>
+          Report a wrong date, holiday or tithi once, with the <a href={DATA_ERROR_FORM}>data error form</a>. One fix in
+          the hub reaches every language.
+        </p>
+      </div>
+    </div>
+  </section>
+</Landing>
+
+<script>
+  import "../scripts/landing";
+</script>

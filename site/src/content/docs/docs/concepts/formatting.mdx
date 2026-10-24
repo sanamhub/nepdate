@@ -1,0 +1,87 @@
+---
+title: Formatting
+description: The display, short, long and pattern formats every port writes, in English and Nepali.
+---
+
+Every port writes the same strings for the same date. The examples use BS 2081-04-15, a Tuesday,
+unless they say otherwise. The normative text is
+[FORMATTING.md](https://github.com/sanamhub/nepdate/blob/main/spec/FORMATTING.md) in the hub.
+
+## Default display
+
+`YYYY/MM/DD`, zero padded, ASCII digits: `2081/04/15`. It is what `Display`, `toString`, `str()`
+or `description` gives in each language. The interchange form, for JSON and storage, is
+`YYYY-MM-DD`: `2081-04-15`.
+
+## Long form
+
+```
+[<Weekday>, ]<Month> <day>[, <year>]
+```
+
+Options: weekday (off by default), year (on), and padding of the day (on, as in C#).
+
+| Options | English | Nepali |
+|---|---|---|
+| default | `Shrawan 15, 2081` | <span lang="ne">`साउन १५, २०८१`</span> |
+| weekday | `Tuesday, Shrawan 15, 2081` | <span lang="ne">`मङ्गलवार, साउन १५, २०८१`</span> |
+| BS 2079-02-06, weekday, no year, no padding | `Friday, Jestha 6` | <span lang="ne">`शुक्रवार, जेठ ६`</span> |
+
+Nepali uses Devanagari digits, U+0966 to U+096F (`०१२३४५६७८९`). Nothing else changes.
+
+## Short form
+
+Three numbers in one of six orders (`Ymd`, `Ydm`, `Myd`, `Mdy`, `Dym`, `Dmy`), joined by one of
+`/`, `\`, `.`, `_`, `-` or a space, padded or not. For BS 2080-05-15:
+
+| Order, separator, padding, language | Result |
+|---|---|
+| Ymd, `-`, padded, English | `2080-05-15` |
+| Dmy, `-`, not padded, English | `15-5-2080` |
+| Ymd, `/`, padded, Nepali | <span lang="ne">`२०८०/०५/१५`</span> |
+
+## Patterns
+
+A pattern is read left to right in one pass.
+
+| Token | Meaning | 2081-04-15 |
+|---|---|---|
+| `yyyy` (4 or more `y`) | year, 4 digits | `2081` |
+| `yy` (1 to 3 `y`) | year modulo 100, 2 digits | `81` |
+| `MMMM` (4 or more `M`) | month name | `Shrawan` |
+| `MMM` | short month name | `Shr` |
+| `MM` | month, 2 digits | `04` |
+| `M` | month | `4` |
+| `dd` | day, 2 digits | `15` |
+| `d` (any other run of `d`) | day | `15` |
+| `'text'` | literal text | |
+| `\x` | the character `x`, literally | |
+
+Anything else is copied as it is. The single-letter patterns `G`, `g`, `d` and the empty pattern give
+the default display, `D` the long form and `s` gives `YYYY-MM-DD`.
+
+| Pattern | Result |
+|---|---|
+| `yyyy-MM-dd` | `2081-04-15` |
+| `M/d/yyyy` | `4/15/2081` |
+| `yyyy'BS'` | `2081BS` |
+| `MMM yyyy` | `Shr 2081` |
+| `dd.MM.yy` | `15.04.81` |
+
+Digits from tokens follow the language; literal characters never change.
+
+## Short month names
+
+English short names are the first three letters, except **Asa** for Ashad and **Aso** for Ashoj,
+which would otherwise both be "Ash". Nepali has no customary abbreviation, so the short name is the
+full name.
+
+| Weekday | English | Short | Nepali | Short |
+|---|---|---|---|---|
+| 0 | Sunday | Sun | <span lang="ne">आइतवार</span> | <span lang="ne">आइत</span> |
+| 1 | Monday | Mon | <span lang="ne">सोमवार</span> | <span lang="ne">सोम</span> |
+| 2 | Tuesday | Tue | <span lang="ne">मङ्गलवार</span> | <span lang="ne">मङ्गल</span> |
+| 3 | Wednesday | Wed | <span lang="ne">बुधवार</span> | <span lang="ne">बुध</span> |
+| 4 | Thursday | Thu | <span lang="ne">बिहिवार</span> | <span lang="ne">बिहि</span> |
+| 5 | Friday | Fri | <span lang="ne">शुक्रवार</span> | <span lang="ne">शुक्र</span> |
+| 6 | Saturday | Sat | <span lang="ne">शनिवार</span> | <span lang="ne">शनि</span> |

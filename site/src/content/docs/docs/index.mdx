@@ -1,0 +1,57 @@
+---
+title: Introduction
+description: What NepDate is, which languages it covers, and how the libraries and apps fit together.
+---
+
+import { LinkCard, CardGrid } from "@astrojs/starlight/components";
+import { VERSION } from "../../../data/ports";
+
+NepDate is the Bikram Sambat calendar (BS, the official calendar of Nepal) as a family of libraries
+that behave the same in every language, and a few apps built on them.
+
+Every library converts between BS and AD for **BS 1901-01-01 to 2199-12-30** (AD 1844-04-11 to
+2143-04-15), formats and parses Nepali dates in English and Nepali, does date arithmetic and fiscal
+years, and gives the same answer as every other port. The answers are checked against the same test
+vectors in each repository.
+
+## The libraries
+
+Each language ships two packages with one version, now <code>{VERSION}</code>, a public pre-release:
+
+- **The core**: conversion, arithmetic, fiscal year, formatting and parsing. No dependencies and no
+  almanac data.
+- **The patro** (पात्रो, the Nepali almanac): tithi, public holidays and events for BS 2077 to 2084.
+  It depends on the core, never the other way round.
+
+<CardGrid>
+  <LinkCard title="Rust" description="nepdate and nepdate-patro on crates.io" href="/docs/rust/" />
+  <LinkCard title="Go" description="github.com/sanamhub/nepdate-go" href="/docs/go/" />
+  <LinkCard title="TypeScript and JavaScript" description="nepdate-core and nepdate-patro on npm" href="/docs/typescript/" />
+  <LinkCard title="Python" description="nepdate-core and nepdate-patro on PyPI" href="/docs/python/" />
+  <LinkCard title="Swift" description="NepDate and NepDatePatro with SwiftPM" href="/docs/swift/" />
+  <LinkCard title="Kotlin and Java" description="io.github.sanamhub on Maven Central" href="/docs/kotlin/" />
+  <LinkCard title="C++" description="Header-only core, CMake FetchContent" href="/docs/cpp/" />
+</CardGrid>
+
+The C# original, [NepDate](https://github.com/RajuPrasai/NepDate) by Raju Prasai, is where the
+calendar data and the algorithm come from. The ports match it, and where they differ on purpose,
+they all differ the same way ([Same answer everywhere](/docs/project/conformance/)).
+
+## The apps
+
+- **[MitiBar](/docs/apps/mitibar/)**: a tray calendar for Windows, macOS and Linux with a floating
+  date bar on Windows, built on the Rust library.
+- **[NepDate for Android and iOS](/docs/apps/mobile/)**: a month view, holidays and home-screen
+  widgets, in development.
+
+## Where things live
+
+| What | Where |
+|---|---|
+| Calendar data, the spec and the test vectors | [sanamhub/nepdate](https://github.com/sanamhub/nepdate), the hub |
+| Each language | its own repository, linked from its page here |
+| A wrong date, holiday or tithi | the hub's [data error form](https://github.com/sanamhub/nepdate/issues/new/choose) |
+| This site | `site/` in the hub |
+
+Patro data is informational, not an official calendar. NepDate is not affiliated with the
+Government of Nepal.

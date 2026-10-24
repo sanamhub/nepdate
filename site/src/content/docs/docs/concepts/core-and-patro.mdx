@@ -1,0 +1,52 @@
+---
+title: Core and patro
+description: Why every language ships two packages, and what the patro data covers.
+---
+
+Every port ships two packages with the same version, released together:
+
+| | Core | Patro |
+|---|---|---|
+| Contents | Conversion, arithmetic, fiscal year, formatting, parsing | Tithi, public holidays, events |
+| Data | Month lengths for BS 1901 to 2199 | Day-by-day almanac for BS 2077 to 2084 |
+| Depends on | nothing | the core |
+
+The patro (<span lang="ne">पात्रो</span>, the Nepali almanac) is the larger of the two, and most apps
+only need dates. Splitting it out means an app that converts dates carries no almanac data. The
+core never depends on the patro, so the split holds in every language (hub
+[ADR-0004](https://github.com/sanamhub/nepdate/blob/main/docs/adr/0004-patro-in-a-separate-package.md)).
+
+## Package names
+
+| Language | Core | Patro |
+|---|---|---|
+| Rust | `nepdate` | `nepdate-patro` |
+| Go | `github.com/sanamhub/nepdate-go` | `github.com/sanamhub/nepdate-go/patro` |
+| TypeScript | `nepdate-core` | `nepdate-patro` |
+| Python | `nepdate-core` (`import nepdate`) | `nepdate-patro` (`import nepdate_patro`) |
+| Swift | `NepDate` | `NepDatePatro` |
+| Kotlin and Java | `io.github.sanamhub:nepdate` | `io.github.sanamhub:nepdate-patro` |
+| C++ | `nepdate::nepdate` | `nepdate::patro` |
+
+## What one day holds
+
+Asking the patro about a date gives three things, and never fails:
+
+- **Tithi**: the lunar day, with its English and Nepali names, or nothing.
+- **Public holiday**: whether the day is a gazetted public holiday.
+- **Events**: festivals and observances, in display order, possibly none.
+
+A date without data, before 2077 or after the end of the data, gives an empty answer rather than an
+error. Each port also tells you the range that has data (`coverage`) and lists the public holidays in
+order.
+
+## Coverage
+
+The data covers BS 2077 to 2084: tithi until BS 2083-12-30, holidays and events until BS 2084-08-20.
+It comes from C# NepDate and grows when a new year's calendar is published there
+([Calendar data](/docs/project/data/)).
+
+:::caution[Informational]
+Patro data is informational, not an official calendar. Check a holiday that matters against the
+Government of Nepal's notice.
+:::

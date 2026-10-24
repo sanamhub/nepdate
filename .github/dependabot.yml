@@ -8,3 +8,14 @@ updates:
     open-pull-requests-limit: 5
     cooldown:
       default-days: 7
+  # The site's npm packages (ADR-0005), grouped so one PR carries a week's updates.
+  - package-ecosystem: npm
+    directory: /site
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    groups:
+      site:
+        patterns: ["*"]

@@ -1,0 +1,48 @@
+---
+title: Same answer everywhere
+description: How seven ports are kept to the same behaviour, and the few places they differ from C# NepDate on purpose.
+---
+
+"Port" here means the same behaviour, not the same idea. The behaviour is written once, in the hub's
+[`spec/`](https://github.com/sanamhub/nepdate/tree/main/spec), and every port runs the same test
+files from it in its own CI.
+
+## What every port runs
+
+| File | Rows | What it checks |
+|---|---|---|
+| `month-boundaries.csv` | 7,176 | the first and last day of every BS month from 1901 to 2199, in BS and AD |
+| `csharp-golden/dates.tsv` | 1,018 | conversion, weekday, day of year, month length, every format, fiscal year and quarter |
+| `csharp-golden/add-days.tsv` | 9,162 | adding days |
+| `csharp-golden/add-months.tsv` | 10,180 | adding months, clamped and spilled |
+| `csharp-golden/format-pattern.tsv` | 451 | custom patterns |
+| `parse.tsv` | | the strict and lenient parsers, errors included |
+
+The golden files are the recorded output of the published C# NepDate 2.0.7 package. Where C#'s
+documentation and its code disagree, the code is the reference.
+
+Beyond the vectors, every port runs an exhaustive round trip over all 109,212 days in the range.
+
+## Deliberate differences from C#
+
+A few rows differ from C# on purpose, for example the short names **Asa** and **Aso** that keep
+Ashad and Ashoj apart, or a lenient parser that refuses ambiguous input instead of guessing. Each
+difference has an id (D-01 to D-15) in
+[PARITY.md](https://github.com/sanamhub/nepdate/blob/main/spec/PARITY.md), and every port differs
+in the same way: a port skips a golden row only through a filter that names the deviation.
+
+There are no port-only differences. If one seems necessary, it is proposed in the hub, decided once,
+and applied to every port.
+
+## Check it yourself
+
+The hub has an executable version of the spec. With Python 3.10 or newer and nothing else:
+
+```sh
+git clone https://github.com/sanamhub/nepdate
+cd nepdate
+python spec/reference/verify_vectors.py
+```
+
+It checks the algorithm against the month boundaries and the golden rows, plus the formatting and
+parsing specs.

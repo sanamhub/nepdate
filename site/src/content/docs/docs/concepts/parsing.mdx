@@ -1,0 +1,61 @@
+---
+title: Parsing
+description: The strict and lenient parsers every port has, and what each accepts.
+---
+
+Every port has two parsers. Both reject rather than guess, and both give the same answer in every
+language for the same input. The normative text is
+[PARSING.md](https://github.com/sanamhub/nepdate/blob/main/spec/PARSING.md) in the hub, and every
+port runs its `parse.tsv` vectors.
+
+## Strict
+
+Exactly **year, month, day**, in that order.
+
+- Digits are ASCII `0` to `9` or Devanagari `०` to `९`, and may be mixed.
+- Separators are `-`, `/`, `.`, `_`, `\`, a space, `।` or `|`. Leading, trailing and repeated
+  separators are ignored.
+- Anything else is an error, as is a fourth group or a group longer than four digits.
+
+All of these are BS 2080-05-15:
+
+```
+2080/05/15
+2080-5-15
+  2080 / 05 / 15
+/2080/05/15/
+2080।05।15
+२०८०/०५/१५
+```
+
+## Lenient
+
+For what a person types into a form. It tries the strict parser first, then:
+
+- A **month name** with two numbers: the four-digit number is the year and the other is the day,
+  in any order. `15 Shrawan 2080`, `Shrawan 15, 2080` and `2080 Shrawan 15` are the same date.
+- **Three numbers**: `Y M D` when the first has four digits, `D M Y` when the last does.
+- Commas count as separators. Era markers (`BS`, `B.S.`, `VS`, <span lang="ne">`वि.सं.`</span> and
+  their variants) and the words <span lang="ne">`गते`</span> and <span lang="ne">`मिति`</span> are
+  dropped.
+- Month names are matched whole and without regard to case for Latin letters, from a closed list
+  of English spellings and the Nepali names.
+
+It refuses to guess: a two-digit year is never expanded, and input such as `05/06/07` is
+**ambiguous**, an error, rather than one of its three readings.
+
+## Errors
+
+Both parsers report a kind your code can act on:
+
+| Kind | When |
+|---|---|
+| Invalid character | strict: a character that is neither a digit nor a separator |
+| Wrong group count | strict: not exactly three numbers |
+| Number too long | a number with more than four digits |
+| Ambiguous | lenient: no way to tell the year from the day |
+| Unrecognized | lenient: an unknown word, two month names, or nothing at all |
+| Out of range, invalid month, invalid day | the numbers parse but aren't a BS date between 1901 and 2199 |
+
+Each language spells these in its own style, for example `ParseErrorKind::Ambiguous` in Rust or
+`"ambiguous"` in TypeScript.

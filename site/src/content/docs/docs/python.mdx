@@ -1,0 +1,97 @@
+---
+title: Python
+description: Install and use nepdate-core and nepdate-patro from PyPI.
+---
+
+import { Code } from "@astrojs/starlight/components";
+import { PYPI_VERSION } from "../../../data/ports";
+
+Bikram Sambat dates, conversion, formatting and parsing for Python 3.11 and newer. Pure Python, zero
+runtime dependencies (except `tzdata` on Windows, for `today()`), typed (`py.typed`), and works on
+free-threaded 3.14t.
+
+- You `import nepdate`. The distribution is `nepdate-core`, because `nepdate` on PyPI belongs to an
+  unrelated project.
+- Tithi, public holidays and events are a separate distribution, `nepdate-patro`
+  (`import nepdate_patro`). The core has none of that data.
+
+:::caution[Pre-release]
+This is the first public pre-release, <code>{PYPI_VERSION}</code> on PyPI. The API may still change
+before 0.1.0.
+:::
+
+## Install
+
+```sh
+pip install --pre nepdate-core
+```
+
+<p>
+  <code>--pre</code> is needed while only pre-releases exist; pin <code>nepdate-core=={PYPI_VERSION}</code> to stay on this one.
+</p>
+
+## Quick start
+
+```python
+>>> from nepdate import Lang, NepaliDate
+>>> d = NepaliDate(2080, 5, 15)
+>>> str(d)
+'2080/05/15'
+>>> d.to_date()
+datetime.date(2023, 9, 1)
+>>> d.long(weekday=True, lang=Lang.NE)
+'शुक्रवार, भदौ १५, २०८०'
+>>> NepaliDate.parse("2080/05/15") == d
+True
+```
+
+Arithmetic stays on the BS calendar, so month lengths come from the shared data rather than from the
+Gregorian calendar:
+
+```python
+>>> d.add_days(1000)
+NepaliDate(2083, 2, 14)
+>>> d.add_months(13)
+NepaliDate(2081, 6, 15)
+>>> d.fiscal_year().label()
+'2080/81'
+```
+
+## Tithi, holidays and events
+
+```sh
+pip install --pre nepdate-core nepdate-patro
+```
+
+```python
+>>> from nepdate import Lang, NepaliDate
+>>> from nepdate_patro import coverage, info
+>>> day = info(NepaliDate(2080, 5, 15))
+>>> day.is_public_holiday
+True
+>>> day.tithi.label(Lang.EN)
+'Dwitiya'
+>>> [event.label(Lang.EN) for event in day.events]
+['Saparu (Gaijatra) (Kathmandu Holiday)', 'Ropain Jatra']
+>>> coverage().start
+NepaliDate(2077, 1, 1)
+```
+
+`info` never raises: a date outside the coverage returns one shared empty `CalendarInfo`. The data
+covers BS 2077-01-01 to 2084-08-20.
+
+## What each module exports
+
+| Module | Names |
+|---|---|
+| `nepdate` | `MIN`, `MAX`, `NepaliDate`, `Lang`, `Month`, `Weekday`, `Overflow`, `DateOrder`, `Separator`, `DateDiff`, `FiscalYear`, `Quarter`, `DateRange`, `ErrorKind`, `NepDateError`, `to_nepali_digits` |
+| `nepdate_patro` | `Tithi`, `Event`, `CalendarInfo`, `info`, `coverage`, `public_holidays` |
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Signatures, defaults and exceptions | [docs/API.md](https://github.com/sanamhub/nepdate-python/blob/main/docs/API.md) |
+| Benchmarks against the other Python packages and C# NepDate | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-python/blob/main/docs/benchmarks.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-python/blob/main/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-python](https://github.com/sanamhub/nepdate-python) |

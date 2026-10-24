@@ -1,0 +1,27 @@
+---
+title: Mobile
+description: NepDate for Android and iOS, a Nepali calendar with home-screen widgets. In development.
+---
+
+A Nepali calendar for Android and iPhone that does one job: show the BS date, the month, and its
+holidays and events, on the home screen and in the app. No ads, no account, no news, no horoscope
+and no network.
+
+:::note[Not released yet]
+Android is feature complete for a first closed test on Google Play, which starts once the developer
+account exists. F-Droid, IzzyOnDroid and GitHub Releases follow. iOS is built and tested in CI on
+every change but not distributed yet.
+:::
+
+| | Android | iOS |
+|---|---|---|
+| UI | Jetpack Compose, Material 3 | SwiftUI |
+| Widgets | home screen, lock screen (Android 16 QPR1 and later) | home screen, lock screen, StandBy, Control Center |
+| Minimum OS | Android 8.0 (API 26) | iOS 18 |
+| Permissions | none, not even internet | none |
+
+The apps hold no calendar logic of their own: Android uses the [Kotlin library](/docs/kotlin/) and
+iOS the [Swift library](/docs/swift/), each as core and patro.
+
+Follow the work, or build it yourself, at
+[sanamhub/nepdate-mobile](https://github.com/sanamhub/nepdate-mobile).
