@@ -9,6 +9,8 @@ export const VERSION = "0.1.0-beta.1";
 export const PYPI_VERSION = "0.1.0b1";
 /** MitiBar's release, tagged in nepdate-rust. */
 export const MITIBAR_VERSION = "0.1.0-beta.1";
+/** C# NepDate, the original library the ports are checked against (hub ADR-0003). */
+export const CSHARP_VERSION = "2.0.7";
 export const MITIBAR_RELEASE = `https://github.com/sanamhub/nepdate-rust/releases/tag/mitibar-v${MITIBAR_VERSION}`;
 
 export const HUB = "https://github.com/sanamhub/nepdate";
@@ -30,6 +32,8 @@ export interface Port {
   api: { label: string; href: string };
   /** BS 2081-04-15 to AD and the long English form, in this language. */
   sample: string;
+  /** Set for C# NepDate: maintained upstream, with its own version and one package. */
+  upstream?: { href: string; docs: string };
 }
 
 const gh = (repo: string) => `https://github.com/sanamhub/${repo}`;
@@ -155,6 +159,27 @@ const nepdate::date d = nepdate::make_date(2081, 4, 15).value();
 const auto ad = d.to_year_month_day();    // 2024-07-30
 std::cout << nepdate::to_string(d);       // 2081/04/15`,
   },
+  {
+    id: "csharp",
+    name: "C#",
+    lang: "csharp",
+    repo: "NepDate",
+    core: "NepDate",
+    patro: "NepDate",
+    install: `dotnet add package NepDate --version ${CSHARP_VERSION}`,
+    installLang: "sh",
+    registry: { label: "NuGet", href: "https://www.nuget.org/packages/NepDate/" },
+    api: { label: "NepDate docs", href: "https://nepdate.rajuprasai.com.np/" },
+    sample: `using NepDate;
+
+var date = new NepaliDate(2081, 4, 15);
+Console.WriteLine(date.EnglishDate.ToString("yyyy-MM-dd")); // 2024-07-30
+Console.WriteLine(date.ToLongDateString());                 // Shrawan 15, 2081`,
+    upstream: { href: "https://github.com/RajuPrasai/NepDate", docs: "https://nepdate.rajuprasai.com.np/" },
+  },
 ];
 
-export const repoUrl = (port: Port) => gh(port.repo);
+/** The ports built in this family, without upstream C# NepDate. */
+export const familyPorts = ports.filter((port) => !port.upstream);
+
+export const repoUrl = (port: Port) => port.upstream?.href ?? gh(port.repo);

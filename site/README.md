@@ -24,6 +24,9 @@ src/layouts/Landing.astro   its header and footer
 src/scripts/                landing page behaviour: today's date, tabs, copy, converter
 src/content/docs/docs/      the docs, served under /docs/
 src/data/ports.ts           every version, package name, install line and cross-language snippet
+src/data/benchmarks.ts      benchmark numbers, copied from each port's docs/benchmarks.md
+src/components/             Starlight's Head with the fonts, and Fonts.astro for both shells
+fonts.mjs                   the three font families for Astro's font API (fontsource, self-hosted)
 src/styles/tokens.css       colours and fonts, shared by both (from MitiBar's design tokens)
 src/styles/starlight.css    Starlight mapped onto the tokens
 src/styles/landing.css      the landing page
@@ -36,6 +39,8 @@ wrangler.jsonc              the Worker that serves dist/
 
 - A new release: change the version in `src/data/ports.ts`. Nothing else names a version, and
   `npm run check` fails if a page does.
+- Benchmark numbers change only with the port's report they come from. The build fails if a number
+  says a port is not faster than a library it claims to beat.
 - Code samples are copied from the port's README, which its CI runs, or built only from names in its
   `docs/API.md`. Run any new cross-language snippet before it goes on the site.
 - UI changes follow the `frontend-design` skill and are checked with the

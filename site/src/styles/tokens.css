@@ -4,10 +4,10 @@
    Saturday slate, so sindoor never turns into a generic button colour. */
 
 :root {
-  --nd-font-sans: "Noto Sans Variable", "Noto Sans Devanagari Variable", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, sans-serif;
-  --nd-font-deva: "Noto Sans Devanagari Variable", "Noto Sans Variable", sans-serif;
-  --nd-font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* --nd-font-noto, --nd-font-noto-deva and --nd-font-jetbrains come from Fonts.astro. */
+  --nd-font-sans: var(--nd-font-noto-deva), var(--nd-font-noto);
+  --nd-font-deva: var(--nd-font-sans);
+  --nd-font-mono: var(--nd-font-jetbrains);
 
   --nd-surface: #fdfbf8;
   --nd-raised: #ffffff;

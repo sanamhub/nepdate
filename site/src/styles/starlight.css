@@ -116,3 +116,12 @@ h1#_top {
   color: var(--sl-color-white);
   font-size: var(--sl-text-xl);
 }
+
+/* Benchmark tables (performance.mdx): numbers in tabular figures, tight enough for nine columns. */
+.sl-markdown-content table.bench {
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.sl-markdown-content table.bench :is(th, td) {
+  padding-inline: 0.45rem;
+}

@@ -8,6 +8,7 @@ import popupLightEn from "../assets/mitibar/popup-light-en.png";
 import barDark from "../assets/mitibar/bar-dark.png";
 import barLight from "../assets/mitibar/bar-light.png";
 import Landing from "../layouts/Landing.astro";
+import { benchmarks, competitorCount, formatNs, nearest } from "../data/benchmarks";
 import { DATA_ERROR_FORM, HUB, MITIBAR_RELEASE, MITIBAR_VERSION, VERSION, ports, repoUrl } from "../data/ports";
 
 // Rendered at build time so the page reads right without JavaScript; the script in
@@ -49,9 +50,22 @@ const weekLabel =
     ? `${monthName(weekFirst.month)} ${weekFirst.day} to ${weekLast.day}, ${weekLast.year}`
     : `${weekFirst.long({ year: false, pad: false })} to ${weekLast.long({ pad: false })}`;
 
-const title = "NepDate: the Nepali calendar for every language you ship";
+// The speed section: each port's BS to AD time against the fastest other library in its language.
+const race = benchmarks.map((port) => {
+  const next = nearest(port);
+  return {
+    name: port.name,
+    ours: formatNs(port.ops[0]),
+    theirs: formatNs(next.b1),
+    rival: next.name,
+    times: next.times < 10 ? next.times.toFixed(1) : Math.round(next.times).toString(),
+    width: Math.max(1, (port.ops[0] / next.b1) * 100).toFixed(1),
+  };
+});
+
+const title = "NepDate: fast Nepali dates for every language you ship";
 const description =
-  "Bikram Sambat (BS) date libraries for Rust, Go, TypeScript, Python, Swift, Kotlin and C++, built from one dataset and one spec so every port gives the same answer. Plus MitiBar, a Nepali calendar for your desktop.";
+  "Bikram Sambat (BS) date libraries for Rust, Go, TypeScript, Python, Swift, Kotlin and C++, faster than every other BS library we measured and built from one dataset and one spec so every port gives the same answer. Plus MitiBar, a Nepali calendar for your desktop.";
 ---
 
 <Landing title={title} description={description}>
@@ -68,10 +82,11 @@ const description =
           {adLong} is {today.long({ weekday: false, pad: false })}.
         </p>
 
-        <h1>Nepali dates, the same in every language.</h1>
+        <h1>Nepali dates in nanoseconds, the same in every language.</h1>
         <p class="lede">
-          Bikram Sambat for Rust, Go, TypeScript, Python, Swift, Kotlin and C++. One dataset and one spec, checked
-          against the same test vectors, so every port converts BS 1901 to 2199 to the same day.
+          Bikram Sambat for Rust, Go, TypeScript, Python, Swift, Kotlin and C++, plus the C# original. Each port is
+          faster than every other BS library we measured in its language, and all of them give the same day for any
+          date from BS 1901 to 2199.
         </p>
         <div class="actions">
           <a class="button primary" href="/docs/quickstart/">Get started</a>
@@ -118,7 +133,7 @@ const description =
         <p>
           Every port ships two packages with one version, now <code>{VERSION}</code>: the core for conversion,
           arithmetic, formatting and parsing, and the patro for tithi, public holidays and events. Take only the core
-          and no almanac data ships with your app.
+          and no almanac data ships with your app. C# NepDate is one package with its own versions.
         </p>
       </div>
       <ul class="install-list">
@@ -127,6 +142,7 @@ const description =
             <li>
               <a class="install-name" href={`/docs/${port.id}/`}>
                 {port.name}
+                <span class="visually-hidden"> docs</span>
               </a>
               <div class="install-cmd">
                 <code translate="no">{port.install}</code>
@@ -142,6 +158,40 @@ const description =
           ))
         }
       </ul>
+    </div>
+  </section>
+
+  <section class="section speed" id="performance" aria-labelledby="speed-title">
+    <div class="wrap speed-grid">
+      <div class="section-head">
+        <h2 id="speed-title">Faster than every other library we measured</h2>
+        <p>
+          BS to AD, time per call, against the fastest other Bikram Sambat library in each language. Each port timed{" "}
+          {competitorCount} libraries in all on the same machine and the same 64 dates, and none of them agrees with
+          the calendar data on all 64.
+        </p>
+        <a class="text-link" href="/docs/project/performance/">Every operation, and how it was measured</a>
+      </div>
+      <ol class="race">
+        {
+          race.map((row) => (
+            <li>
+              <span class="race-head">
+                <span class="race-lang">{row.name}</span>
+                <span class="race-times">{row.times}× faster</span>
+              </span>
+              <span class="race-bar ours" style={`--w: ${row.width}%`} aria-hidden="true" />
+              <span class="race-label">
+                NepDate <strong>{row.ours}</strong>
+              </span>
+              <span class="race-bar theirs" style="--w: 100%" aria-hidden="true" />
+              <span class="race-label">
+                <code>{row.rival}</code> {row.theirs}
+              </span>
+            </li>
+          ))
+        }
+      </ol>
     </div>
   </section>
 
@@ -252,7 +302,7 @@ const description =
         </p>
         <div class="actions">
           <a class="button primary" href={MITIBAR_RELEASE}>Download {MITIBAR_VERSION}</a>
-          <a class="button" href="/docs/apps/mitibar/">Read more</a>
+          <a class="button" href="/docs/apps/mitibar/">MitiBar docs</a>
         </div>
         <p class="note">Windows, macOS and Linux. The beta is not code-signed; the release notes say how to open and verify it.</p>
         <h3>On your phone</h3>

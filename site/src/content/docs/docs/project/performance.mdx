@@ -1,0 +1,105 @@
+---
+title: Performance
+description: How fast each port is, measured the same way in every language, against every other Bikram Sambat library we could find.
+---
+
+import { BENCHMARK_SPEC, OPERATIONS, benchmarks, competitorCount, csharp, formatNs, nearest } from "../../../../data/benchmarks";
+
+Every port is benchmarked on the same eight operations and the same 64 dates, defined once in the
+hub's [`spec/BENCHMARK.md`](https://github.com/sanamhub/nepdate/blob/main/spec/BENCHMARK.md). Each
+port also measures every other Bikram Sambat library it could find in its language, on the same
+machine and the same dates.
+
+<p>
+  In all seven languages, every port is faster than all {competitorCount} other libraries on both
+  conversions. None of those libraries gives the same answer as the hub's data on all 64 dates;
+  each report lists where they differ.
+</p>
+
+## Against other libraries
+
+BS to AD (B1), time per call. "Next fastest" is the fastest other library in that language.
+
+<table class="bench">
+  <thead>
+    <tr>
+      <th scope="col">Language</th>
+      <th scope="col" style="text-align: right">NepDate</th>
+      <th scope="col">Next fastest</th>
+      <th scope="col" style="text-align: right">Its time</th>
+      <th scope="col" style="text-align: right">Measured</th>
+    </tr>
+  </thead>
+  <tbody>
+    {benchmarks.map((port) => {
+      const next = nearest(port);
+      return (
+        <tr>
+          <th scope="row">
+            <a href={port.source}>
+              {port.name}
+              <span class="sr-only"> benchmark report</span>
+            </a>
+          </th>
+          <td style="text-align: right; white-space: nowrap">{formatNs(port.ops[0])}</td>
+          <td><code>{next.name}</code></td>
+          <td style="text-align: right; white-space: nowrap">{formatNs(next.b1)}</td>
+          <td style="text-align: right">{port.competitors.length}</td>
+        </tr>
+      );
+    })}
+  </tbody>
+</table>
+
+"Measured" counts the other libraries timed in that language. Each language's report, linked from its
+name, has AD to BS (B2) too, every library's row, which
+dates each one disagrees on, and why.
+
+## Every operation
+
+Time per call for B1 to B8. Lower is better. B8 builds a whole month grid with tithi and holidays,
+29 to 32 days.
+
+<ul>
+  {OPERATIONS.map((op) => (
+    <li>
+      <strong>{op.id}</strong> {op.name}
+    </li>
+  ))}
+</ul>
+
+<table class="bench">
+  <thead>
+    <tr>
+      <th scope="col">Language</th>
+      {OPERATIONS.map((op) => <th scope="col" style="text-align: right"><abbr title={op.name}>{op.id}</abbr></th>)}
+    </tr>
+  </thead>
+  <tbody>
+    {[...benchmarks, { name: "C# NepDate", ops: csharp.ops }].map((row) => (
+      <tr>
+        <th scope="row" style="white-space: nowrap">{row.name}</th>
+        {row.ops.map((ns) => <td style="text-align: right; white-space: nowrap">{formatNs(ns)}</td>)}
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+C# NepDate 2.0.7 on .NET 10 is the reference ([its report](https://github.com/sanamhub/nepdate/blob/main/docs/benchmarks/dotnet.md)).
+The conversions, arithmetic and patro lookups allocate nothing in Rust, C++, Go and Swift.
+
+## Reading the numbers
+
+- **Compare within a row of the first table, not across languages.** Each language was measured on
+  its own runtime, and Swift on GitHub's macOS runner (Apple M1), not the laptop the others used
+  (Intel Core i5-12500H).
+- **Some runs were not on a quiet machine.** Each report records the CPU load during its run; the
+  stable release repeats them on an idle machine, pinned to one core, as the spec asks.
+- **Speed is not the reason to pick a date library; correct dates are.** Every port is checked
+  against the same 20,360 golden rows and 7,176 month boundaries first
+  ([Same answer everywhere](/docs/project/conformance/)), and the benchmarks run only after that.
+
+<p>
+  The method, the 64 dates and the rules for timing are in{" "}
+  <a href={BENCHMARK_SPEC}><code>spec/BENCHMARK.md</code></a>.
+</p>
