@@ -4,22 +4,26 @@ import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import starlightLinksValidator from "starlight-links-validator";
 import starlightLlmsTxt from "starlight-llms-txt";
+import { fonts } from "./fonts.mjs";
 import { VERSION } from "./src/data/ports";
 
 export default defineConfig({
   site: "https://nepdate.com",
   trailingSlash: "ignore",
-  build: { format: "directory" },
+  // Inline the CSS: one round trip less before first paint, at a few KB of HTML per page.
+  build: { format: "directory", inlineStylesheets: "always" },
+  fonts,
   integrations: [
     starlight({
       title: "NepDate",
       description:
-        "Bikram Sambat (Nepali calendar) libraries for Rust, Go, TypeScript, Python, Swift, Kotlin and C++, and the MitiBar desktop calendar.",
+        "Bikram Sambat (Nepali calendar) libraries for Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C#, and the MitiBar desktop calendar.",
       logo: { src: "./src/assets/nepdate.svg", alt: "NepDate" },
       favicon: "/favicon.svg",
+      components: { Head: "./src/components/Head.astro" },
       social: [{ icon: "github", label: "GitHub", href: "https://github.com/sanamhub/nepdate" }],
       editLink: { baseUrl: "https://github.com/sanamhub/nepdate/edit/main/site/" },
-      customCss: ["./src/styles/fonts.css", "./src/styles/tokens.css", "./src/styles/starlight.css"],
+      customCss: ["./src/styles/tokens.css", "./src/styles/starlight.css"],
       head: [
         { tag: "meta", attrs: { name: "theme-color", content: "#FDFBF8", media: "(prefers-color-scheme: light)" } },
         { tag: "meta", attrs: { name: "theme-color", content: "#16120E", media: "(prefers-color-scheme: dark)" } },
@@ -42,12 +46,13 @@ export default defineConfig({
           label: "Languages",
           items: [
             { label: "Rust", link: "/docs/rust/" },
-            { label: "Go", link: "/docs/go/" },
+            { label: "Go (Golang)", link: "/docs/go/" },
             { label: "TypeScript and JavaScript", link: "/docs/typescript/" },
             { label: "Python", link: "/docs/python/" },
             { label: "Swift", link: "/docs/swift/" },
             { label: "Kotlin and Java", link: "/docs/kotlin/" },
             { label: "C++", link: "/docs/cpp/" },
+            { label: "C# and .NET", link: "/docs/csharp/" },
           ],
         },
         {
@@ -71,6 +76,7 @@ export default defineConfig({
           items: [
             { label: "Calendar data", link: "/docs/project/data/" },
             { label: "Same answer everywhere", link: "/docs/project/conformance/" },
+            { label: "Performance", link: "/docs/project/performance/" },
             { label: "Versions and status", link: "/docs/project/versions/" },
             { label: "Contributing", link: "/docs/project/contributing/" },
           ],
@@ -78,7 +84,7 @@ export default defineConfig({
       ],
       plugins: [
         // The landing page is a custom page the validator can't see into; its anchors are listed here.
-        starlightLinksValidator({ errorOnLocalLinks: true, exclude: ["/", "/#convert", "/#languages", "/#mitibar"] }),
+        starlightLinksValidator({ errorOnLocalLinks: true, exclude: ["/", "/#convert", "/#languages", "/#mitibar", "/#performance"] }),
         starlightLlmsTxt({
           projectName: "NepDate",
           description:

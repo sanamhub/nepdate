@@ -39,6 +39,15 @@ a:hover {
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
+/* A link inside a sentence is underlined, so colour isn't the only thing that marks it. */
+p a:not(.button) {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 0.2em;
+}
+p a:not(.button):hover {
+  text-decoration-color: currentColor;
+}
 
 code {
   font-family: var(--nd-font-mono);
@@ -147,11 +156,16 @@ dd code {
   background: var(--nd-sunken);
   text-decoration: none;
 }
-.site-header nav a[href="/#languages"] {
+.site-header nav a:is([href="/#languages"], [href="/#performance"]) {
   display: none;
 }
 @media (min-width: 36rem) {
   .site-header nav a[href="/#languages"] {
+    display: inline-block;
+  }
+}
+@media (min-width: 48rem) {
+  .site-header nav a[href="/#performance"] {
     display: inline-block;
   }
 }
@@ -606,6 +620,79 @@ dd code {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Speed: one row per language, NepDate's bar drawn to scale against the next fastest library's. */
+
+.speed-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3rem;
+}
+@media (min-width: 60rem) {
+  .speed-grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 5rem;
+  }
+}
+.race {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.race li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 1rem;
+  row-gap: 0.3rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--nd-hairline);
+}
+.race li:last-child {
+  border-bottom: 1px solid var(--nd-hairline);
+}
+.race-head {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.2rem;
+}
+.race-lang {
+  font-weight: 650;
+}
+.race-times {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 40rem) {
+  .race li {
+    grid-template-columns: minmax(0, 1fr) 14rem;
+  }
+}
+.race-bar {
+  grid-column: 1;
+  align-self: center;
+  width: var(--w);
+  min-width: 3px;
+  height: 0.5rem;
+  border-radius: 0.25rem;
+}
+.race-bar.ours {
+  background: var(--nd-ink);
+}
+.race-bar.theirs {
+  background: color-mix(in srgb, var(--nd-ink-muted) 30%, transparent);
+}
+.race-label {
+  color: var(--nd-ink-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.race-label strong {
+  color: var(--nd-ink);
+  font-weight: 600;
 }
 
 /* Proof */

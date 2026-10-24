@@ -1,0 +1,12 @@
+---
+// The MitiBar fonts (nepdate-rust ADR-0010): Noto Sans for Latin, Noto Sans Devanagari for Nepali,
+// JetBrains Mono for code. Self-hosted from the fontsource packages through Astro's font API, which
+// writes metric-matched fallbacks so text doesn't move when the real face arrives. Only the Latin
+// sans face is preloaded: it is the one every page paints first. Each family carries one subset
+// (fonts.mjs); rarer Latin letters use the metric-matched system fallback.
+import { Font } from "astro:assets";
+---
+
+<Font cssVariable="--nd-font-noto-deva" />
+<Font cssVariable="--nd-font-noto" preload />
+<Font cssVariable="--nd-font-jetbrains" />

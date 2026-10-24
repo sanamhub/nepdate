@@ -1,0 +1,64 @@
+---
+title: C# and .NET
+description: NepDate for .NET, the original C# library the other ports are checked against.
+---
+
+import { Code } from "@astrojs/starlight/components";
+import { CSHARP_VERSION } from "../../../data/ports";
+
+[NepDate](https://github.com/RajuPrasai/NepDate) is the C# library the family started from, by Raju
+Prasai and contributors. The calendar data and the algorithm every port uses come from it, and the
+ports' test vectors were recorded from its NuGet package. It targets .NET Standard 2.0 and .NET 8,
+with no dependencies.
+
+It is maintained in its own repository with its own version and full documentation at
+[nepdate.rajuprasai.com.np](https://nepdate.rajuprasai.com.np/). This page covers the basics.
+
+## Install
+
+<Code lang="sh" code={`dotnet add package NepDate --version ${CSHARP_VERSION}`} />
+
+## Convert and format
+
+```csharp
+using NepDate;
+
+var date = new NepaliDate(2081, 4, 15);
+Console.WriteLine(date.EnglishDate.ToString("yyyy-MM-dd")); // 2024-07-30
+Console.WriteLine(date.ToLongDateString());                 // Shrawan 15, 2081
+
+var fromAd = new DateTime(2024, 7, 30).ToNepaliDate();      // 2081/04/15
+var today = NepaliDate.Today;
+```
+
+## Parse and do arithmetic
+
+```csharp
+var parsed = NepaliDate.Parse("2081/04/15");                // equals date
+bool ok = NepaliDate.TryParse("2081-13-01", out _);         // false: there is no month 13
+
+date.AddDays(1000);                                         // 2084/01/13
+date.AddMonths(13);                                         // 2082/05/15
+```
+
+## Tithi, holidays and events
+
+Unlike the other ports, C# NepDate keeps the patro in the same package, as properties on the date:
+
+```csharp
+var day = new NepaliDate(2081, 6, 26);
+day.TithiEn;          // "Dashami (K)"
+day.IsPublicHoliday;  // true
+day.EventsEn;         // ["Vijaya Dashami", "Devi Visarjan"]
+```
+
+## How it relates to the ports
+
+- **One package.** The ports split the core and the patro so an app that only converts dates ships
+  no almanac data ([Core and patro](/docs/concepts/core-and-patro/)).
+- **Its own versions.** NepDate follows its own release schedule; the ports' version numbers are
+  unrelated to it.
+- **The reference.** Where a port's behaviour differs from NepDate, every port differs the same way,
+  and the list is written down ([Same answer everywhere](/docs/project/conformance/)).
+- **Data fixes go here first.** A wrong date or holiday is fixed in NepDate, then reaches every port
+  through the hub ([Calendar data](/docs/project/data/)).

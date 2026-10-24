@@ -1,5 +1,0 @@
-/* The MitiBar fonts (nepdate-rust ADR-0010): Noto Sans for Latin, Noto Sans Devanagari for
-   Nepali, so a date reads the same on the site and in the app. Self-hosted, no font CDN. */
-@import "@fontsource-variable/noto-sans/wght.css";
-@import "@fontsource-variable/noto-sans-devanagari/wght.css";
-@import "@fontsource-variable/jetbrains-mono/wght.css";

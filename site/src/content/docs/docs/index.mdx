@@ -25,17 +25,22 @@ Each language ships two packages with one version, now <code>{VERSION}</code>, a
 
 <CardGrid>
   <LinkCard title="Rust" description="nepdate and nepdate-patro on crates.io" href="/docs/rust/" />
-  <LinkCard title="Go" description="github.com/sanamhub/nepdate-go" href="/docs/go/" />
+  <LinkCard title="Go (Golang)" description="github.com/sanamhub/nepdate-go" href="/docs/go/" />
   <LinkCard title="TypeScript and JavaScript" description="nepdate-core and nepdate-patro on npm" href="/docs/typescript/" />
   <LinkCard title="Python" description="nepdate-core and nepdate-patro on PyPI" href="/docs/python/" />
   <LinkCard title="Swift" description="NepDate and NepDatePatro with SwiftPM" href="/docs/swift/" />
   <LinkCard title="Kotlin and Java" description="io.github.sanamhub on Maven Central" href="/docs/kotlin/" />
   <LinkCard title="C++" description="Header-only core, CMake FetchContent" href="/docs/cpp/" />
+  <LinkCard title="C# and .NET" description="NepDate on NuGet, the original library" href="/docs/csharp/" />
 </CardGrid>
 
 The C# original, [NepDate](https://github.com/RajuPrasai/NepDate) by Raju Prasai, is where the
-calendar data and the algorithm come from. The ports match it, and where they differ on purpose,
-they all differ the same way ([Same answer everywhere](/docs/project/conformance/)).
+calendar data and the algorithm come from. It ships as one package with its own versions. The ports
+match it, and where they differ on purpose, they all differ the same way
+([Same answer everywhere](/docs/project/conformance/)).
+
+Every port is also faster than every other Bikram Sambat library we could measure in its language
+([Performance](/docs/project/performance/)).
 
 ## The apps
 
