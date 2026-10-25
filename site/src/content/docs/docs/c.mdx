@@ -1,0 +1,21 @@
+---
+title: C
+description: NepDate for C11, a Bikram Sambat library with no allocation and no dependencies. In development.
+---
+
+A C11 library for Bikram Sambat dates: conversion to and from the Gregorian calendar, arithmetic,
+formatting and parsing, and the patro in its own library. It allocates nothing, keeps no global
+state and needs nothing but a C compiler, so it also builds into Zig projects and into extensions
+for languages that call C.
+
+:::note[Not released yet]
+The build, the checks and the CI on Windows, Linux, macOS, 32-bit and big-endian machines are in
+place; the date code is being written. Until the first release, use one of the
+[released languages](/docs/quickstart/).
+:::
+
+The target is the speed of the [Rust library](/docs/rust/), measured on the same machine in the
+same session, with no undefined behaviour for any input. Like every port, it runs the shared test
+data from the hub before it ships.
+
+Follow the work at [sanamhub/nepdate-c](https://github.com/sanamhub/nepdate-c).
