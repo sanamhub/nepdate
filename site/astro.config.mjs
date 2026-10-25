@@ -56,6 +56,10 @@ export default defineConfig({
           ],
         },
         {
+          label: "Components",
+          items: [{ label: "Date picker", link: "/docs/datepicker/" }],
+        },
+        {
           label: "Concepts",
           items: [
             { label: "The Bikram Sambat calendar", link: "/docs/concepts/calendar/" },

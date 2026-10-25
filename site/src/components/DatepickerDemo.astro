@@ -1,0 +1,73 @@
+---
+// A live <nepdate-input> and <nepdate-calendar> for the date picker page, styled with the
+// package's theme.css mapped onto Starlight's colours.
+import "nepdate-datepicker/theme.css";
+---
+
+<div class="picker-demo not-content">
+  <form data-picker-demo>
+    <label for="demo-dob">Date of birth (BS)</label>
+    <nepdate-input id="demo-dob" name="dob" value="2081-04-15" max="2082-12-30" required></nepdate-input>
+    <p>Submits <output data-picker-value>dob=2081-04-15</output></p>
+  </form>
+  <nepdate-calendar value="2081-04-15" show-gregorian aria-label="Shrawan 2081"></nepdate-calendar>
+</div>
+
+<style>
+  .picker-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2.5rem;
+    align-items: flex-start;
+    margin-block: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.75rem;
+  }
+  .picker-demo form {
+    display: grid;
+    gap: 0.5rem;
+    min-width: min(100%, 16rem);
+  }
+  .picker-demo label {
+    font-weight: 600;
+  }
+  .picker-demo p {
+    margin: 0;
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+  .picker-demo nepdate-input,
+  .picker-demo nepdate-calendar {
+    --nepdate-text: var(--sl-color-white);
+    --nepdate-muted: var(--sl-color-gray-3);
+    --nepdate-surface: var(--sl-color-black);
+    --nepdate-hover: var(--sl-color-gray-6);
+    --nepdate-border: var(--sl-color-gray-5);
+    --nepdate-accent: var(--sl-color-accent);
+    --nepdate-on-accent: var(--sl-color-black);
+  }
+  .picker-demo nepdate-input {
+    display: block;
+    min-height: 2.75rem;
+  }
+  .picker-demo nepdate-calendar {
+    display: block;
+    min-height: 19rem;
+  }
+</style>
+
+<script>
+  import "nepdate-datepicker/define";
+  import type { NepDateInputElement } from "nepdate-datepicker";
+
+  const form = document.querySelector<HTMLFormElement>("[data-picker-demo]");
+  const input = form?.querySelector<NepDateInputElement>("nepdate-input");
+  const output = form?.querySelector<HTMLOutputElement>("[data-picker-value]");
+  if (form && input && output) {
+    form.addEventListener("submit", (event) => event.preventDefault());
+    input.addEventListener("change", () => {
+      output.value = `dob=${String(new FormData(form).get("dob") ?? "")}`;
+    });
+  }
+</script>

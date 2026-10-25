@@ -200,23 +200,20 @@ const description =
       <div class="section-head">
         <h2 id="convert-title">Convert a date</h2>
         <p>
-          This runs <a href="/docs/typescript/"><code>nepdate-core</code></a> in your browser. Type a BS date in
-          numbers or with the month name, or pick an AD date.
+          This runs <a href="/docs/typescript/"><code>nepdate-core</code></a> in your browser, with the
+          <a href="/docs/datepicker/">date picker</a> for the BS field. Type a BS date in numbers or with the month
+          name, choose it from the calendar, or pick an AD date.
         </p>
       </div>
       <form class="converter" data-converter novalidate>
         <div class="field">
           <label for="bs-input">Bikram Sambat</label>
-          <input
+          <nepdate-input
             id="bs-input"
             name="bs"
-            type="text"
-            inputmode="text"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="2081/04/15 or 15 Shrawan 2081…"
-            value={today.toString()}
-          />
+            placeholder="2081/04/15 or 15 Shrawan 2081"
+            value={today.toJSON()}
+            show-gregorian></nepdate-input>
           <p class="result" aria-live="polite" data-bs-result></p>
         </div>
         <div class="field">

@@ -1,6 +1,8 @@
 // The landing page's behaviour: today's date, the language tabs, the copy buttons and the
 // converter. Everything works from the build-time HTML; this only refreshes and adds to it.
 import { NepaliDate, NepDateError, monthName, toNepaliDigits } from "nepdate-core";
+import "nepdate-datepicker/define";
+import type { NepDateInputElement } from "nepdate-datepicker";
 
 const adLong = new Intl.DateTimeFormat("en-GB", {
   weekday: "long",
@@ -84,7 +86,7 @@ function reason(error: unknown): string {
 }
 
 function converter(form: HTMLFormElement) {
-  const bs = form.querySelector<HTMLInputElement>("#bs-input");
+  const bs = form.querySelector<NepDateInputElement>("#bs-input");
   const ad = form.querySelector<HTMLInputElement>("#ad-input");
   const bsOut = form.querySelector<HTMLElement>("[data-bs-result]");
   const adOut = form.querySelector<HTMLElement>("[data-ad-result]");
@@ -105,15 +107,27 @@ function converter(form: HTMLFormElement) {
     }
   };
 
+  const showBoth = (date: NepaliDate) => {
+    render(bsOut, [`AD ${adOf(date)}`, date.long({ weekday: true, lang: "ne" })]);
+    render(adOut, [`BS ${date.long({ weekday: true, pad: false })}`, date.long({ weekday: true, lang: "ne" })]);
+  };
+
+  // The picker parses what the visitor types and fires change when the date is committed (Enter,
+  // leaving the field or a day chosen in the calendar). Text it can't read leaves no date and
+  // sets validity.badInput.
   const fromBs = () => {
-    const text = bs.value.trim();
-    if (text === "") return render(bsOut, ["Type a BS date."], true);
-    try {
-      const date = NepaliDate.parseLenient(text);
+    const date = bs.date;
+    if (date) {
       const g = date.toGregorian();
-      render(bsOut, [`AD ${adOf(date)}`, date.long({ weekday: true, lang: "ne" })]);
       ad.value = `${g.year}-${String(g.month).padStart(2, "0")}-${String(g.day).padStart(2, "0")}`;
-      render(adOut, [`BS ${date.long({ weekday: true, pad: false })}`, date.long({ weekday: true, lang: "ne" })]);
+      return showBoth(date);
+    }
+    if (!bs.validity.badInput) return render(bsOut, ["Type a BS date or choose one."], true);
+    // Parse the typed text again for the reason; the picker only reports that it isn't a date.
+    const typed = bs.shadowRoot?.querySelector<HTMLInputElement>('[part~="input"]')?.value ?? "";
+    try {
+      NepaliDate.parseLenient(typed);
+      render(bsOut, [reason(undefined)], true);
     } catch (error) {
       render(bsOut, [reason(error)], true);
     }
@@ -124,15 +138,14 @@ function converter(form: HTMLFormElement) {
     if (!y || !m || !d) return render(adOut, ["Pick a date."], true);
     try {
       const date = NepaliDate.fromGregorian({ year: y, month: m, day: d });
-      render(adOut, [`BS ${date.long({ weekday: true, pad: false })}`, date.long({ weekday: true, lang: "ne" })]);
-      bs.value = date.toString();
-      render(bsOut, [`AD ${adOf(date)}`, date.long({ weekday: true, lang: "ne" })]);
+      bs.date = date;
+      showBoth(date);
     } catch (error) {
       render(adOut, [reason(error)], true);
     }
   };
 
-  bs.addEventListener("input", fromBs);
+  bs.addEventListener("change", fromBs);
   ad.addEventListener("input", fromAd);
   fromBs();
 }

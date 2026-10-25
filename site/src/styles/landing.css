@@ -859,3 +859,45 @@ button,
 input {
   touch-action: manipulation;
 }
+
+/* The BS field is <nepdate-input> (nepdate-datepicker). Its theme reads these properties, so the
+   picker follows the site's tokens and theme switch. Until the element is defined it keeps the
+   field's height, so nothing shifts when the script loads. */
+.field nepdate-input {
+  --nepdate-text: var(--nd-ink);
+  --nepdate-muted: var(--nd-ink-muted);
+  --nepdate-surface: var(--nd-raised);
+  --nepdate-hover: var(--nd-sunken);
+  --nepdate-border: var(--nd-hairline);
+  --nepdate-accent: var(--nd-slate);
+  --nepdate-on-accent: var(--nd-raised);
+  --nepdate-today: var(--nd-sindoor);
+  --nepdate-radius: 0.55rem;
+  display: block;
+  width: 100%;
+  min-height: 3rem;
+}
+.field nepdate-input::part(field) {
+  min-height: 3rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: 0.55rem;
+  background: var(--nd-raised);
+  transition: border-color 0.15s ease;
+}
+.field nepdate-input::part(field):hover {
+  border-color: var(--nd-ink-muted);
+}
+.field nepdate-input::part(input) {
+  padding: 0 0.9rem;
+  border: 0;
+  background: none;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.field nepdate-input::part(button) {
+  width: 3rem;
+  border: 0;
+  border-left: 1px solid var(--nd-hairline);
+  background: none;
+  color: var(--nd-ink-muted);
+}
