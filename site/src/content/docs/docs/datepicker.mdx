@@ -1,0 +1,155 @@
+---
+title: Date picker
+description: A Bikram Sambat date picker for any web page, as web components that work in plain HTML, React, Vue, Blazor and ASP.NET Core.
+---
+
+import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
+import DatepickerDemo from "../../../components/DatepickerDemo.astro";
+import { VERSION } from "../../../data/ports";
+
+[`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker) is a BS date picker for the
+web, built on [`nepdate-core`](/docs/typescript/). It is two custom elements, so it works without a
+framework and inside any of them:
+
+- `<nepdate-input>`: a text field with a calendar in a popover. It takes part in a `<form>` like
+  `<input type="date">`: it submits, resets, disables and reports validity.
+- `<nepdate-calendar>`: one BS month as a grid of days, chosen with a click or the keyboard.
+
+Unstyled apart from layout. Style any piece with `::part()`, or load the ready-made `theme.css`.
+
+<DatepickerDemo />
+
+Type a date in English or Nepali digits, or with the month name (`15 Shrawan 2081`), or open the
+calendar. The form submits the BS date as `YYYY-MM-DD`.
+
+:::caution[Pre-release]
+Released with the other npm packages as a pre-release on the `beta` dist-tag. The API may still
+change before 0.1.0.
+:::
+
+## Add it to a page
+
+Without a build step, load the standalone file. It holds the elements and the core and registers
+both elements, so the page needs nothing else:
+
+<Code
+  lang="html"
+  code={`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nepdate-datepicker@${VERSION}/dist/theme.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/nepdate-datepicker@${VERSION}/dist/nepdate-datepicker.js"></script>
+
+<form>
+  <label for="dob">Date of birth (BS)</label>
+  <nepdate-input id="dob" name="dob" required></nepdate-input>
+  <button>Save</button>
+</form>`}
+/>
+
+To host it yourself, copy `dist/nepdate-datepicker.js` and `dist/theme.css` from the package, for
+example into an ASP.NET Core `wwwroot/lib/`, and point the two tags at them. The file is about
+10.5 KB gzip.
+
+With a bundler (Vite, webpack, esbuild):
+
+<Tabs syncKey="pkg">
+  <TabItem label="npm">
+    <Code lang="sh" code="npm install nepdate-core@beta nepdate-datepicker@beta" />
+  </TabItem>
+  <TabItem label="pnpm">
+    <Code lang="sh" code="pnpm add nepdate-core@beta nepdate-datepicker@beta" />
+  </TabItem>
+  <TabItem label="yarn">
+    <Code lang="sh" code="yarn add nepdate-core@beta nepdate-datepicker@beta" />
+  </TabItem>
+  <TabItem label="bun">
+    <Code lang="sh" code="bun add nepdate-core@beta nepdate-datepicker@beta" />
+  </TabItem>
+</Tabs>
+
+```js
+import "nepdate-datepicker/define";
+import "nepdate-datepicker/theme.css";
+```
+
+That adds about 5.5 KB gzip on top of the core. Use one way per page: the standalone file and
+`nepdate-datepicker/define` register the same element names.
+
+## Frameworks
+
+Render the element, pass the BS date as `value`, and read `event.target.value` on `change`. Each of
+these was run in Chromium, Firefox and WebKit.
+
+<Tabs>
+  <TabItem label="React 19">
+    ```jsx
+    <nepdate-input value={date} onChange={(e) => setDate(e.target.value)} />
+    ```
+  </TabItem>
+  <TabItem label="Vue">
+    ```vue
+    <nepdate-input :value="date" @change="date = $event.target.value" />
+    ```
+  </TabItem>
+  <TabItem label="Blazor">
+    ```razor
+    <nepdate-input @bind-value="date" @bind-value:event="onchange" />
+    ```
+  </TabItem>
+  <TabItem label="ASP.NET Core MVC">
+    ```razor
+    <nepdate-input name="@Html.NameFor(m => m.Dob)" value="@Model.Dob" required></nepdate-input>
+    ```
+
+    The form posts the BS date as a string; parse it on the server, for example with
+    [NepDate for .NET](/docs/csharp/). The `asp-for` tag helper works only on built-in elements.
+  </TabItem>
+</Tabs>
+
+With server rendering, import `nepdate-datepicker/define` on the client only; the main entry loads
+safely on the server.
+
+## Attributes
+
+| Attribute | Elements | Meaning |
+|---|---|---|
+| `value` | both | The date, `YYYY-MM-DD` in BS. A form reset returns to it, and a framework can change it at any time. |
+| `min`, `max` | both | Earliest and latest date that can be chosen. |
+| `lang` | both | `en` (default) or `ne` for Nepali names and digits. |
+| `first-day-of-week` | both | 0 = Sunday (default) to 6 = Saturday. |
+| `show-gregorian` | both | Shows the AD day under each BS day. |
+| `name`, `required`, `disabled`, `placeholder` | `nepdate-input` | As on a native input. |
+
+As properties: `value` (string), `date` (`NepaliDate` or `null`), `isDateDisallowed` (a function
+that disables extra days, such as Saturdays) and `dayParts` (a function that adds part names to a
+day, for example to mark public holidays from `nepdate-patro`). Both elements fire `change`.
+
+## Styling
+
+Every piece is a part: `header`, `previous`, `next`, `heading`, `month-select`, `year-select`,
+`grid`, `weekday`, `day` (plus `selected`, `today`, `disabled` and any `dayParts` name), `gregorian`,
+and on the input `field`, `input`, `button`, `popover` and `calendar`. `nepdate-input` forwards the
+calendar's parts.
+
+```css
+nepdate-input::part(selected) {
+  background: rebeccapurple;
+  color: white;
+}
+```
+
+`theme.css` reads `--nepdate-accent`, `--nepdate-surface`, `--nepdate-text`, `--nepdate-radius` and
+a few more, and uses `light-dark()`, so it follows the page's `color-scheme`.
+
+## Keyboard and browsers
+
+Arrow keys move a day or a week, Home and End go to the ends of the week, Page Up and Page Down move
+a month (with Shift, a year), and Enter or Space chooses. In the input, Alt+Down Arrow opens the
+calendar and Escape closes it. The pattern is the WAI-ARIA date picker dialog.
+
+Current Chrome, Edge, Firefox and Safari. The elements use custom elements, shadow DOM,
+form-associated elements and the Popover API.
+
+## Build your own
+
+The month grid and the keyboard moves are exported without the DOM, for a picker in your own
+components: `monthGrid`, `moveFocus`, `isSelectable` and `weekdayOrder`. See the
+[package README](https://github.com/sanamhub/nepdate-typescript/tree/main/packages/nepdate-picker#build-your-own).

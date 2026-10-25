@@ -38,6 +38,10 @@ version of the ports is `0.1.0-beta.1`; the API can still change before 0.1.0.
 | Kotlin, Java, Android | [`io.github.sanamhub:nepdate`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [`io.github.sanamhub:nepdate-patro`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-patro) | [![Maven Central](https://img.shields.io/maven-central/v/io.github.sanamhub/nepdate?logo=apachemaven&label=)](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) |
 | C++20 | `nepdate::nepdate` | `nepdate::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-cpp?include_prereleases&sort=semver&logo=cplusplus&label=)](https://github.com/sanamhub/nepdate-cpp/releases) | [nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) |
 
+For the web there is also a BS date picker, [`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker):
+web components built on the TypeScript core that work in plain HTML and any framework
+([docs](https://nepdate.com/docs/datepicker/)).
+
 The core is `nepdate-core` on PyPI and npm: on PyPI `nepdate` belongs to an unrelated package, and
 npm refuses it as too close to the existing `nep-date`. In Python you still `import nepdate`. Swift is
 listed on the [Swift Package Index](https://swiftpackageindex.com/sanamhub/nepdate-swift) and added
