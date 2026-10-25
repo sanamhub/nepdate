@@ -52,6 +52,7 @@ export default defineConfig({
             { label: "Swift", link: "/docs/swift/" },
             { label: "Kotlin and Java", link: "/docs/kotlin/" },
             { label: "C++", link: "/docs/cpp/" },
+            { label: "C (in development)", link: "/docs/c/" },
             { label: "C# and .NET", link: "/docs/csharp/" },
           ],
         },

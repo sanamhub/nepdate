@@ -193,6 +193,7 @@ def stroke_outline(points, h):
 
 LANGS = {
     "nepdate": None,
+    "nepdate-c": ("C", "#283593", "#FFFFFF"),
     "nepdate-cpp": ("C++", "#00599C", "#FFFFFF"),
     "nepdate-rust": ("Rust", "#B7410E", "#FFFFFF"),
     "nepdate-go": ("Go", "#00ADD8", "#FFFFFF"),

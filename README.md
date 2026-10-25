@@ -37,6 +37,7 @@ version of the ports is `0.1.0-beta.1`; the API can still change before 0.1.0.
 | Swift | [`NepDate`](https://swiftpackageindex.com/sanamhub/nepdate-swift) | [`NepDatePatro`](https://swiftpackageindex.com/sanamhub/nepdate-swift) | [![SwiftPM](https://img.shields.io/github/v/tag/sanamhub/nepdate-swift?include_prereleases&sort=semver&logo=swift&label=)](https://github.com/sanamhub/nepdate-swift/releases) | [nepdate-swift](https://github.com/sanamhub/nepdate-swift) |
 | Kotlin, Java, Android | [`io.github.sanamhub:nepdate`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [`io.github.sanamhub:nepdate-patro`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-patro) | [![Maven Central](https://img.shields.io/maven-central/v/io.github.sanamhub/nepdate?logo=apachemaven&label=)](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) |
 | C++20 | `nepdate::nepdate` | `nepdate::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-cpp?include_prereleases&sort=semver&logo=cplusplus&label=)](https://github.com/sanamhub/nepdate-cpp/releases) | [nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) |
+| C11 | `nepdate-c::nepdate` | `nepdate-c::patro` | in development | [nepdate-c](https://github.com/sanamhub/nepdate-c) |
 
 For the web there is also a BS date picker, [`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker):
 web components built on the TypeScript core that work in plain HTML and any framework
