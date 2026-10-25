@@ -43,9 +43,9 @@ wrangler.jsonc              the Worker that serves dist/
   says a port is not faster than a library it claims to beat.
 - Code samples are copied from the port's README, which its CI runs, or built only from names in its
   `docs/API.md`. Run any new cross-language snippet before it goes on the site.
-- UI changes follow the `frontend-design` skill and are checked with the
-  [`web-interface-guidelines`](../.claude/skills/web-interface-guidelines/SKILL.md) skill in this
-  repository. Sindoor red is for today and holidays only.
+- UI changes are checked against Vercel's
+  [Web Interface Guidelines](https://github.com/vercel-labs/web-interface-guidelines). Sindoor red
+  is for today and holidays only.
 - No analytics script and no cookies (ADR-0005).
 
 ## Deploy
