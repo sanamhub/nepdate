@@ -39,8 +39,8 @@ language, how it deploys, and how the docs stay correct as the ports change.
    - API reference stays where each language publishes it (docs.rs, pkg.go.dev, each `docs/API.md`);
      the site links to it rather than copying it.
 7. **Look and feel from MitiBar**: its colour tokens and Noto fonts, with sindoor kept for "today"
-   and holidays as in the app. UI work follows the `frontend-design` skill (org rule) and is
-   checked against Vercel's Web Interface Guidelines, vendored as a skill in `.claude/skills/`.
+   and holidays as in the app. UI work is checked against Vercel's
+   [Web Interface Guidelines](https://github.com/vercel-labs/web-interface-guidelines).
 8. **No tracking.** No analytics script or cookies at launch. Cloudflare's own request metrics are
    enough to start; anything more needs its own decision.
 
