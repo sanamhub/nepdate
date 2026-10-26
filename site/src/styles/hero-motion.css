@@ -1,0 +1,77 @@
+/* The hero's one orchestrated moment, inlined with the page so it starts with the first paint. The
+   BS date is in the HTML from the start; the AD date is an aria-hidden overlay that lifts away. */
+
+/* The sequence, about 1.1 seconds, once.
+   0.15s  the AD date ("26 October 2026") lifts away
+   0.32s  the BS month rises into place, then the day (in ink, without its disc) and the year,
+          0.1s apart, settled by about 0.92s; in the code below, the sample's result
+          ("AD 2024-07-30") resolves with the day
+   0.78s  the sindoor disc stamps the day and the numeral turns to the disc's text colour
+   Reduced motion, or no animation at all: the BS date with its disc, as in the HTML. */
+
+@keyframes ad-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-0.35em);
+  }
+}
+@keyframes bs-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes day-ink {
+  from {
+    color: var(--nd-ink);
+  }
+  to {
+    color: var(--nd-on-sindoor);
+  }
+}
+@keyframes stamp {
+  from {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .today-ad {
+    animation: ad-out 0.32s cubic-bezier(0.4, 0, 1, 1) 0.15s both;
+  }
+  .part,
+  .resolve {
+    animation: bs-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) var(--at) both;
+  }
+  .part-month {
+    --at: 0.32s;
+  }
+  .part-day,
+  .resolve {
+    --at: 0.42s;
+  }
+  .part-year {
+    --at: 0.52s;
+  }
+  .part.today-day {
+    animation:
+      bs-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) var(--at) both,
+      day-ink 0.2s ease-out 0.78s both;
+  }
+  .today-day::before {
+    animation: stamp 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) 0.78s both;
+  }
+}

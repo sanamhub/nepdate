@@ -1,14 +1,14 @@
 ---
-import { Image } from "astro:assets";
 import { Code } from "astro:components";
 import { NepaliDate, toNepaliDigits, monthName } from "nepdate-core";
 import { info } from "nepdate-patro";
-import popupDarkEn from "../assets/mitibar/popup-dark-en.png";
-import popupLightEn from "../assets/mitibar/popup-light-en.png";
-import barDark from "../assets/mitibar/bar-dark.png";
-import barLight from "../assets/mitibar/bar-light.png";
 import Landing from "../layouts/Landing.astro";
-import { benchmarks, competitorCount, formatNs, nearest } from "../data/benchmarks";
+import "../styles/hero-motion.css";
+// Everything below the hero is styled by this sheet, linked in the body (see landing-sections.css).
+import sectionsCss from "../styles/landing-sections.css?url";
+import MitiBarArt from "../components/landing/MitiBarArt.astro";
+import MonthLengths from "../components/landing/MonthLengths.astro";
+import { benchmarks, competitorCount, csharp, formatNs, nearest } from "../data/benchmarks";
 import { DATA_ERROR_FORM, HUB, MITIBAR_RELEASE, MITIBAR_VERSION, VERSION, ports, repoUrl } from "../data/ports";
 
 // Rendered at build time so the page reads right without JavaScript; the script in
@@ -18,6 +18,10 @@ const todayAd = today.toGregorian();
 const adLong = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(
   new Date(Date.UTC(todayAd.year, todayAd.month - 1, todayAd.day)),
 );
+// The AD date the hero's opening sequence starts from, before it resolves into the BS date.
+const adPlain = `${todayAd.day} ${new Intl.DateTimeFormat("en-GB", { month: "long", timeZone: "UTC" }).format(
+  new Date(Date.UTC(todayAd.year, todayAd.month - 1, todayAd.day)),
+)} ${todayAd.year}`;
 
 // The patro strip: the first Sunday-to-Saturday week from today that has a public holiday, read
 // from nepdate-patro at build time and labelled with its dates.
@@ -50,6 +54,9 @@ const weekLabel =
     ? `${monthName(weekFirst.month)} ${weekFirst.day} to ${weekLast.day}, ${weekLast.year}`
     : `${weekFirst.long({ year: false, pad: false })} to ${weekLast.long({ pad: false })}`;
 
+// The hero's result line: each port's own BS to AD time, from the same benchmark reports.
+const callTime = (id: string) => formatNs(benchmarks.find((b) => b.id === id)?.ops[0] ?? csharp.ops[0]);
+
 // The speed section: each port's BS to AD time against the fastest other library in its language.
 const race = benchmarks.map((port) => {
   const next = nearest(port);
@@ -71,30 +78,19 @@ const description =
 <Landing title={title} description={description}>
   <section class="hero">
     <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <p class="today-label">Today in Nepal</p>
-        <p class="today" lang="ne" data-today>
-          <span class="today-month" data-today-month>{monthName(today.month, "ne")}</span>
-          <span class="today-day" data-today-day>{toNepaliDigits(today.day)}</span>
-          <span class="today-year" data-today-year>{toNepaliDigits(today.year)}</span>
-        </p>
-        <p class="today-en" data-today-en>
-          {adLong} is {today.long({ weekday: false, pad: false })}.
-        </p>
-
-        <h1>Nepali dates in nanoseconds, the same in every language.</h1>
-        <p class="lede">
-          Bikram Sambat for Rust, Go, TypeScript, Python, Swift, Kotlin and C++, plus the C# original. Each port is
-          faster than every other BS library we measured in its language, and all of them give the same day for any
-          date from BS 1901 to 2199.
-        </p>
-        <div class="actions">
-          <a class="button primary" href="/docs/quickstart/">Get started</a>
-          <a class="button" href="#mitibar">Get MitiBar for your desktop</a>
+      <div class="hero-object" data-tabs>
+        <div class="object-date">
+          <p class="today-label">Today in Nepal</p>
+          <p class="today" data-today>
+            <span class="today-ad" aria-hidden="true" data-today-ad>{adPlain}</span>
+            <span class="part part-month" lang="ne" data-today-month>{monthName(today.month, "ne")}</span>
+            <span class="part part-day today-day" lang="ne" data-today-day>{toNepaliDigits(today.day)}</span>
+            <span class="part part-year" lang="ne" data-today-year>{toNepaliDigits(today.year)}</span>
+          </p>
+          <p class="today-en" data-today-en>
+            {adLong} is {today.long({ weekday: false, pad: false })}.
+          </p>
         </div>
-      </div>
-
-      <div class="code-card" data-tabs>
         <div class="tabs" role="tablist" aria-label="Language">
           {
             ports.map((port, i) => (
@@ -115,17 +111,33 @@ const description =
           ports.map((port, i) => (
             <div role="tabpanel" id={`panel-${port.id}`} aria-labelledby={`tab-${port.id}`} hidden={i !== 0} tabindex="0">
               <Code code={port.sample} lang={port.lang as any} themes={{ light: "github-light-default", dark: "github-dark-default" }} />
+              <p class="code-foot">
+                <span>
+                  BS 2081-04-15 is <span class="resolve">AD 2024-07-30</span>
+                </span>
+                <span>{callTime(port.id)} per call in {port.name}</span>
+              </p>
             </div>
           ))
         }
-        <p class="code-foot">
-          <span>BS 2081-04-15 is AD 2024-07-30</span>
-          <span>in every port</span>
+      </div>
+
+      <div class="hero-copy">
+        <h1>Nepali dates in nanoseconds, the same in every language.</h1>
+        <p class="lede">
+          Bikram Sambat for Rust, Go, TypeScript, Python, Swift, Kotlin and C++, plus the C# original. Each port is
+          faster than every other BS library we measured in its language, and all of them give the same day for any
+          date from BS 1901 to 2199.
         </p>
+        <div class="actions">
+          <a class="button primary" href="/docs/quickstart/">Get started</a>
+          <a class="button" href="#mitibar">Get MitiBar for your desktop</a>
+        </div>
       </div>
     </div>
   </section>
 
+  <link rel="stylesheet" href={sectionsCss} />
   <section class="section" id="languages" aria-labelledby="languages-title">
     <div class="wrap">
       <div class="section-head">
@@ -136,14 +148,27 @@ const description =
           and no almanac data ships with your app. C# NepDate is one package with its own versions.
         </p>
       </div>
-      <ul class="install-list">
-        {
-          ports.map((port) => (
-            <li>
-              <a class="install-name" href={`/docs/${port.id}/`}>
+      <div class="panel install" data-tabs>
+        <div class="tabs" role="tablist" aria-label="Install for">
+          {
+            ports.map((port, i) => (
+              <button
+                type="button"
+                role="tab"
+                id={`install-tab-${port.id}`}
+                aria-controls={`install-${port.id}`}
+                aria-selected={i === 0 ? "true" : "false"}
+                tabindex={i === 0 ? 0 : -1}
+              >
                 {port.name}
-                <span class="visually-hidden"> docs</span>
-              </a>
+              </button>
+            ))
+          }
+        </div>
+        {
+          ports.map((port, i) => (
+            <div class="install-row" role="tabpanel" id={`install-${port.id}`} aria-labelledby={`install-tab-${port.id}`} hidden={i !== 0}>
+              <span class="install-name" aria-hidden="true">{port.name}</span>
               <div class="install-cmd">
                 <code translate="no">{port.install}</code>
                 <button type="button" class="copy" data-copy={port.install} aria-label={`Copy the ${port.name} install line`}>
@@ -151,19 +176,22 @@ const description =
                 </button>
               </div>
               <div class="install-links">
+                <a href={`/docs/${port.id}/`}>
+                  Docs<span class="visually-hidden"> for {port.name}</span>
+                </a>
                 <a href={port.registry.href}>{port.registry.label}</a>
                 <a href={repoUrl(port)}>Source</a>
               </div>
-            </li>
+            </div>
           ))
         }
-      </ul>
+      </div>
     </div>
   </section>
 
-  <section class="section speed" id="performance" aria-labelledby="speed-title">
+  <section class="section band speed" id="performance" aria-labelledby="speed-title">
     <div class="wrap speed-grid">
-      <div class="section-head">
+      <div class="section-head sticky-head">
         <h2 id="speed-title">Faster than every other library we measured</h2>
         <p>
           BS to AD, time per call, against the fastest other Bikram Sambat library in each language. Each port timed{" "}
@@ -172,7 +200,7 @@ const description =
         </p>
         <a class="text-link" href="/docs/project/performance/">Every operation, and how it was measured</a>
       </div>
-      <ol class="race">
+      <ol class="panel race">
         {
           race.map((row) => (
             <li>
@@ -182,11 +210,11 @@ const description =
               </span>
               <span class="race-bar ours" style={`--w: ${row.width}%`} aria-hidden="true" />
               <span class="race-label">
-                NepDate <strong>{row.ours}</strong>
+                <span class="who">NepDate</span> <strong class="time">{row.ours}</strong>
               </span>
               <span class="race-bar theirs" style="--w: 100%" aria-hidden="true" />
               <span class="race-label">
-                <code>{row.rival}</code> {row.theirs}
+                <code class="who">{row.rival}</code> <span class="time">{row.theirs}</span>
               </span>
             </li>
           ))
@@ -200,12 +228,12 @@ const description =
       <div class="section-head">
         <h2 id="convert-title">Convert a date</h2>
         <p>
-          This runs <a href="/docs/typescript/"><code>nepdate-core</code></a> in your browser, with the
+          This runs <a href="/docs/typescript/"><code>nepdate-core</code></a> in your browser, with the{" "}
           <a href="/docs/datepicker/">date picker</a> for the BS field. Type a BS date in numbers or with the month
           name, choose it from the calendar, or pick an AD date.
         </p>
       </div>
-      <form class="converter" data-converter novalidate>
+      <form class="panel converter" data-converter novalidate>
         <div class="field">
           <label for="bs-input">Bikram Sambat</label>
           <nepdate-input
@@ -216,6 +244,9 @@ const description =
             show-gregorian></nepdate-input>
           <p class="result" aria-live="polite" data-bs-result></p>
         </div>
+        <svg class="art convert-art" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+          <path class="art-line" d="M8 15h22M24 9l6 6-6 6M32 25H10M16 19l-6 6 6 6"></path>
+        </svg>
         <div class="field">
           <label for="ad-input">Gregorian (AD)</label>
           <input
@@ -241,7 +272,7 @@ const description =
           every language. Below, {weekLabel}, read from it when this page was built.
         </p>
       </div>
-      <ol class="week" aria-label={`Week of ${weekLabel}`}>
+      <ol class="panel week" aria-label={`Week of ${weekLabel}`}>
         {
           week.map((d) => (
             <li class:list={[{ holiday: d.holiday }]}>
@@ -262,35 +293,40 @@ const description =
     </div>
   </section>
 
-  <section class="section proof" aria-labelledby="proof-title">
+  <section class="section band proof" aria-labelledby="proof-title">
     <div class="wrap proof-grid">
-      <div class="section-head">
-        <h2 id="proof-title">Checked, not assumed</h2>
-        <p>
-          The calendar data and the behaviour live once, in the <a href={HUB}>hub repository</a>. Each port copies them
-          and generates its tables at build time; a check fails when a copy drifts. Then every port runs the same files.
-        </p>
-        <a class="text-link" href="/docs/project/conformance/">How the ports are kept in step</a>
+      <div>
+        <div class="section-head">
+          <h2 id="proof-title">Checked, not assumed</h2>
+          <p>
+            The calendar data and the behaviour live once, in the <a href={HUB}>hub repository</a>. Each port copies
+            them and generates its tables at build time; a check fails when a copy drifts. Then every port runs the
+            same files.
+          </p>
+          <a class="text-link" href="/docs/project/conformance/">How the ports are kept in step</a>
+        </div>
+        <dl class="facts">
+          <div>
+            <dt><span class="num">7,176</span> month boundaries</dt>
+            <dd>The first and last day of every BS month from 1901 to 2199.</dd>
+          </div>
+          <div>
+            <dt><span class="num">20,360</span> golden rows</dt>
+            <dd>Dates, added days and added months, recorded from C# NepDate 2.0.7.</dd>
+          </div>
+          <div>
+            <dt><span class="num">0</span> port-only differences</dt>
+            <dd>Where a port differs from C#, every port differs the same way, and it is written down.</dd>
+          </div>
+        </dl>
       </div>
-      <dl class="facts">
-        <div>
-          <dt><span class="num">7,176</span> month boundaries</dt>
-          <dd>The first and last day of every BS month from 1901 to 2199.</dd>
-        </div>
-        <div>
-          <dt><span class="num">20,360</span> golden rows</dt>
-          <dd>Dates, added days and added months, recorded from C# NepDate 2.0.7.</dd>
-        </div>
-        <div>
-          <dt><span class="num">0</span> port-only differences</dt>
-          <dd>Where a port differs from C#, every port differs the same way, and it is written down.</dd>
-        </div>
-      </dl>
+      <MonthLengths today={today} />
     </div>
   </section>
 
   <section class="section apps" id="mitibar" aria-labelledby="apps-title">
     <div class="wrap apps-grid">
+      <MitiBarArt today={today} />
       <div class="section-head">
         <h2 id="apps-title">MitiBar</h2>
         <p>
@@ -308,16 +344,6 @@ const description =
           <a href="/docs/apps/mobile/">Follow along</a>.
         </p>
       </div>
-      <figure class="shots">
-        <div class="shot-popup">
-          <Image class="on-light" src={popupLightEn} alt="MitiBar's month view for Kartik 2083, with tithi under each day and today marked" widths={[360, 720]} sizes="360px" />
-          <Image class="on-dark" src={popupDarkEn} alt="" widths={[360, 720]} sizes="360px" />
-        </div>
-        <div class="shot-bar">
-          <Image class="on-light" src={barLight} alt="The MitiBar floating bar showing the weekday, time and BS date" widths={[236, 472]} sizes="236px" />
-          <Image class="on-dark" src={barDark} alt="" widths={[236, 472]} sizes="236px" />
-        </div>
-      </figure>
     </div>
   </section>
 

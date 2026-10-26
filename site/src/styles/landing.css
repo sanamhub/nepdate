@@ -1,5 +1,6 @@
-/* The landing page. Tokens come from tokens.css. One bold element, the date at the top in
-   Devanagari with today's sindoor disc from MitiBar; everything else stays quiet. */
+/* The landing page's shell and hero, inlined with the HTML so the first paint needs nothing else.
+   Tokens come from tokens.css, the hero's sequence from hero-motion.css, and everything below the
+   hero from landing-sections.css, which index.astro links in the body. */
 
 *,
 *::before,
@@ -18,7 +19,7 @@ body {
   background: var(--nd-surface);
   color: var(--nd-ink);
   font-family: var(--nd-font-sans);
-  font-size: 1rem;
+  font-size: var(--nd-step-0);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -57,14 +58,14 @@ p code,
 dd code {
   background: var(--nd-sunken);
   border: 1px solid var(--nd-hairline);
-  border-radius: 0.3rem;
+  border-radius: var(--nd-radius-s);
   padding: 0.05em 0.35em;
 }
 
 :focus-visible {
   outline: 2px solid var(--nd-slate);
   outline-offset: 2px;
-  border-radius: 0.25rem;
+  border-radius: var(--nd-radius-s);
 }
 
 [lang="ne"] {
@@ -73,14 +74,9 @@ dd code {
 
 .wrap {
   width: 100%;
-  max-width: 72rem;
+  max-width: var(--nd-wrap);
   margin-inline: auto;
-  padding-inline: 1rem;
-}
-@media (min-width: 40rem) {
-  .wrap {
-    padding-inline: 1.5rem;
-  }
+  padding-inline: var(--nd-gutter);
 }
 
 .skip {
@@ -91,7 +87,7 @@ dd code {
   background: var(--nd-ink);
   color: var(--nd-surface);
   padding: 0.5rem 0.9rem;
-  border-radius: 0.4rem;
+  border-radius: var(--nd-radius-m);
 }
 .skip:focus {
   top: 0.75rem;
@@ -147,7 +143,7 @@ dd code {
   font-size: 0.925rem;
   font-weight: 500;
   padding: 0.45rem 0.6rem;
-  border-radius: 0.45rem;
+  border-radius: var(--nd-radius-m);
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 .site-header nav a:hover,
@@ -198,7 +194,7 @@ dd code {
   align-items: center;
   min-height: 2.75rem;
   padding: 0 1.1rem;
-  border-radius: 0.55rem;
+  border-radius: var(--nd-radius-m);
   border: 1px solid var(--nd-hairline);
   background: var(--nd-raised);
   color: var(--nd-ink);
@@ -219,25 +215,33 @@ dd code {
   opacity: 0.86;
 }
 
-/* Hero */
+/* Panels: the one container for code, data and the converter. A hairline box at the large
+   radius; no shadow, so the drawing and the data inside carry the weight. */
+
+.panel {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
+}
+
+/* Hero: one object holds today's conversion and the code that does it, and the headline sits
+   beside it. The object is the page's one bold element: the date in Devanagari with the sindoor
+   disc on top, the language tabs and a sample below, and a result line per language. */
 
 .hero {
-  padding-block: 3.5rem 4.5rem;
-}
-@media (min-width: 60rem) {
-  .hero {
-    padding-block: 5.5rem 6rem;
-  }
+  padding-block: clamp(2rem, 6vw, 5.5rem) clamp(4rem, 8vw, 7rem);
 }
 .hero-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 3.5rem;
+  gap: 2.75rem;
   align-items: center;
 }
 @media (min-width: 60rem) {
   .hero-grid {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
     gap: 4rem;
   }
 }
@@ -245,45 +249,83 @@ dd code {
   min-width: 0;
 }
 
+.hero-object {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
+  box-shadow: var(--nd-shadow);
+}
+.object-date {
+  padding: clamp(1.25rem, 4vw, 2.25rem) clamp(1.25rem, 4vw, 2.25rem) clamp(1.25rem, 3vw, 1.75rem);
+}
+
 .today-label {
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.35rem;
   color: var(--nd-ink-muted);
   font-weight: 500;
 }
+/* Today's date: the BS month, day and year in the flow, and the AD date they come from laid over
+   them; hero-motion.css plays the change once. */
 .today {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.18em 0.28em;
+  gap: 0.1em 0.28em;
   margin: 0;
-  font-family: var(--nd-font-deva);
-  font-size: clamp(2.6rem, 11vw, 4.4rem);
+  font-size: var(--nd-step-display);
   font-weight: 650;
-  line-height: 1.15;
+  line-height: 1.2;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
+.part {
+  display: inline-block;
+}
+/* Out of the flow, so the AD date never sets the layout; only the BS date does. Set a little
+   smaller, since the Latin date is wider than the Devanagari one and must start whole. */
+.today-ad {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  font-family: var(--nd-font-noto);
+  font-size: 0.8em;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  opacity: 0;
+}
 .today-day {
+  position: relative;
+  isolation: isolate;
   display: inline-grid;
   place-items: center;
   min-width: 1.32em;
   height: 1.32em;
   padding-inline: 0.12em;
-  border-radius: 999px;
-  background: var(--nd-sindoor);
   color: var(--nd-on-sindoor);
   line-height: 1;
 }
+.today-day::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-sindoor);
+}
 .today-en {
-  margin: 0.9rem 0 0;
+  margin: 0.6rem 0 0;
   color: var(--nd-ink-muted);
   font-size: 1.02rem;
 }
 
 .hero h1 {
-  margin: 2.75rem 0 0;
-  max-width: 17ch;
-  font-size: clamp(2rem, 4.4vw, 2.85rem);
+  margin: 0;
+  max-width: 14ch;
+  font-size: var(--nd-step-3);
   line-height: 1.1;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -293,21 +335,13 @@ dd code {
   margin: 1.1rem 0 0;
   max-width: 34rem;
   color: var(--nd-ink-muted);
-  font-size: 1.1rem;
+  font-size: var(--nd-step-1);
   line-height: 1.6;
   text-wrap: pretty;
 }
 
-/* Code card */
+/* Tabs, shared by the hero object and the install panel. */
 
-.code-card {
-  min-width: 0;
-  background: var(--nd-raised);
-  border: 1px solid var(--nd-hairline);
-  border-radius: 0.9rem;
-  box-shadow: var(--nd-shadow);
-  overflow: hidden;
-}
 .tabs {
   display: flex;
   overflow-x: auto;
@@ -338,12 +372,20 @@ dd code {
   color: var(--nd-ink);
   border-bottom-color: var(--nd-ink);
 }
-.code-card [role="tabpanel"] {
-  min-height: 12.5rem;
+
+/* The code under the date sits on the sunken surface, so the object reads as the date above and
+   the code that produces a date below. */
+.hero-object .tabs {
+  border-top: 1px solid var(--nd-hairline);
+  background: var(--nd-sunken);
 }
-.code-card pre.astro-code {
+.hero-object [role="tabpanel"] {
+  background: var(--nd-sunken);
+}
+.hero-object pre.astro-code {
+  min-height: 10.25rem;
   margin: 0;
-  padding: 1.2rem 1.25rem;
+  padding: 1.1rem clamp(1.25rem, 4vw, 2.25rem);
   font-family: var(--nd-font-mono);
   font-size: 0.82rem;
   line-height: 1.7;
@@ -361,486 +403,22 @@ dd code {
   justify-content: space-between;
   gap: 0.25rem 1rem;
   margin: 0;
-  padding: 0.75rem 1.25rem;
+  padding: 0.8rem clamp(1.25rem, 4vw, 2.25rem);
   border-top: 1px solid var(--nd-hairline);
-  background: var(--nd-sunken);
-  color: var(--nd-ink-muted);
-  font-size: 0.8rem;
-}
-.code-foot span:first-child {
-  color: var(--nd-ink);
-  font-weight: 500;
-}
-
-/* Sections */
-
-.section {
-  padding-block: 4.5rem;
-  border-top: 1px solid var(--nd-hairline);
-}
-@media (min-width: 60rem) {
-  .section {
-    padding-block: 6rem;
-  }
-}
-.section-head h2,
-.closing h2 {
-  margin: 0;
-  font-size: clamp(1.6rem, 3vw, 2.1rem);
-  line-height: 1.15;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  text-wrap: balance;
-}
-.section-head p {
-  margin: 1rem 0 0;
-  max-width: 40rem;
-  color: var(--nd-ink-muted);
-  font-size: 1.05rem;
-  text-wrap: pretty;
-}
-.section-head h3 {
-  margin: 2.5rem 0 0;
-  font-size: 1.05rem;
-  font-weight: 650;
-}
-.note {
-  margin: 1rem 0 0;
-  color: var(--nd-ink-muted);
-  font-size: 0.875rem;
-}
-.text-link {
-  display: inline-block;
-  margin-top: 1.25rem;
-  font-weight: 600;
-}
-
-/* Install list */
-
-.install-list {
-  list-style: none;
-  margin: 2.5rem 0 0;
-  padding: 0;
-  border-top: 1px solid var(--nd-hairline);
-}
-.install-list li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.6rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--nd-hairline);
-}
-@media (min-width: 48rem) {
-  .install-list li {
-    grid-template-columns: 9.5rem minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 1.5rem;
-  }
-}
-.install-name {
-  color: var(--nd-ink);
-  font-weight: 650;
-}
-.install-cmd {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  background: var(--nd-sunken);
-  border: 1px solid var(--nd-hairline);
-  border-radius: 0.5rem;
-}
-.install-cmd code {
-  flex: 1;
-  min-width: 0;
-  padding: 0.55rem 0.8rem;
-  overflow-x: auto;
-  white-space: nowrap;
-  font-size: 0.8rem;
-  scrollbar-width: thin;
-}
-.copy {
-  flex: none;
-  align-self: stretch;
-  border: 0;
-  border-left: 1px solid var(--nd-hairline);
-  background: none;
-  color: var(--nd-ink-muted);
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0 0.85rem;
-  cursor: pointer;
-  border-radius: 0 0.5rem 0.5rem 0;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-.copy:hover {
-  color: var(--nd-ink);
   background: var(--nd-raised);
-}
-.install-links {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.875rem;
-  white-space: nowrap;
-}
-
-/* Converter */
-
-.convert-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2.5rem;
-}
-@media (min-width: 60rem) {
-  .convert-grid {
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: 4rem;
-  }
-}
-.converter {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1.5rem;
-}
-@media (min-width: 40rem) {
-  .converter {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-}
-.field label {
-  display: block;
-  font-weight: 600;
-  font-size: 0.925rem;
-  margin-bottom: 0.5rem;
-}
-.field input {
-  width: 100%;
-  min-height: 3rem;
-  padding: 0 0.9rem;
-  border: 1px solid var(--nd-hairline);
-  border-radius: 0.55rem;
-  background: var(--nd-raised);
-  color: var(--nd-ink);
-  font: inherit;
-  font-size: 1rem;
-  font-variant-numeric: tabular-nums;
-  transition: border-color 0.15s ease;
-}
-.field input:hover {
-  border-color: var(--nd-ink-muted);
-}
-.field input::placeholder {
   color: var(--nd-ink-muted);
-}
-.result {
-  min-height: 3.4rem;
-  margin: 0.75rem 0 0;
-}
-.result strong {
-  display: block;
-  font-weight: 600;
-}
-.result span {
-  display: block;
-  color: var(--nd-ink-muted);
-}
-.result.error {
-  padding-left: 0.75rem;
-  border-left: 3px solid var(--nd-marigold);
-}
-.result.error strong {
-  font-weight: 500;
-}
-
-/* Patro week */
-
-.week {
-  list-style: none;
-  margin: 2.5rem 0 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(7, minmax(7.25rem, 1fr));
-  overflow-x: auto;
-  border: 1px solid var(--nd-hairline);
-  border-radius: 0.9rem;
-  background: var(--nd-raised);
-  scrollbar-width: thin;
-}
-.week li {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.9rem 0.85rem 1rem;
-  min-height: 10rem;
-}
-.week li + li {
-  border-left: 1px solid var(--nd-hairline);
-}
-.week-day {
-  color: var(--nd-ink-muted);
-  font-size: 0.78rem;
-  font-weight: 500;
-}
-.week-num {
-  position: relative;
-  align-self: flex-start;
-  margin-top: 0.35rem;
-  font-size: 2rem;
-  font-weight: 600;
-  line-height: 1.1;
-}
-.week-num .dot {
-  position: absolute;
-  top: 0.15rem;
-  right: -0.55rem;
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 50%;
-  background: var(--nd-marigold);
-}
-.holiday .week-num {
-  color: var(--nd-sindoor);
-}
-.week-ad {
-  color: var(--nd-ink-muted);
-  font-size: 0.8rem;
-  font-variant-numeric: tabular-nums;
-}
-.week-tithi {
-  margin-top: 0.5rem;
   font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+.code-foot > span:first-child {
+  color: var(--nd-ink);
   font-weight: 500;
 }
-.week-event {
-  color: var(--nd-ink-muted);
-  font-size: 0.76rem;
-  line-height: 1.35;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Speed: one row per language, NepDate's bar drawn to scale against the next fastest library's. */
-
-.speed-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 3rem;
-}
-@media (min-width: 60rem) {
-  .speed-grid {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 5rem;
-  }
-}
-.race {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.race li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  column-gap: 1rem;
-  row-gap: 0.3rem;
-  padding: 1rem 0;
-  border-top: 1px solid var(--nd-hairline);
-}
-.race li:last-child {
-  border-bottom: 1px solid var(--nd-hairline);
-}
-.race-head {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.2rem;
-}
-.race-lang {
+.resolve {
+  display: inline-block;
   font-weight: 650;
 }
-.race-times {
-  font-weight: 650;
-  font-variant-numeric: tabular-nums;
-}
-@media (min-width: 40rem) {
-  .race li {
-    grid-template-columns: minmax(0, 1fr) 14rem;
-  }
-}
-.race-bar {
-  grid-column: 1;
-  align-self: center;
-  width: var(--w);
-  min-width: 3px;
-  height: 0.5rem;
-  border-radius: 0.25rem;
-}
-.race-bar.ours {
-  background: var(--nd-ink);
-}
-.race-bar.theirs {
-  background: color-mix(in srgb, var(--nd-ink-muted) 30%, transparent);
-}
-.race-label {
-  color: var(--nd-ink-muted);
-  font-size: 0.85rem;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.race-label strong {
-  color: var(--nd-ink);
-  font-weight: 600;
-}
 
-/* Proof */
-
-.proof-grid,
-.apps-grid,
-.closing-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 3rem;
-}
-@media (min-width: 60rem) {
-  .proof-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 5rem;
-  }
-  .apps-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 5rem;
-    align-items: center;
-  }
-  .closing-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 5rem;
-  }
-}
-.facts {
-  margin: 0;
-}
-.facts div {
-  padding: 1.25rem 0;
-  border-top: 1px solid var(--nd-hairline);
-}
-.facts div:last-child {
-  border-bottom: 1px solid var(--nd-hairline);
-}
-.facts dt {
-  font-weight: 600;
-}
-.facts .num {
-  display: block;
-  font-size: 2.1rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  font-variant-numeric: tabular-nums;
-}
-.facts dd {
-  margin: 0.25rem 0 0;
-  color: var(--nd-ink-muted);
-}
-
-/* Apps */
-
-.shots {
-  position: relative;
-  max-width: 100%;
-  margin: 0;
-  justify-self: center;
-  padding-bottom: 2.5rem;
-}
-.shot-popup img {
-  width: 360px;
-  border-radius: 0.75rem;
-  border: 1px solid var(--nd-hairline);
-  box-shadow: var(--nd-shadow);
-}
-.shot-bar {
-  position: absolute;
-  left: -2.5rem;
-  bottom: 0;
-}
-.shot-bar img {
-  width: 236px;
-  border-radius: 0.6rem;
-  box-shadow: var(--nd-shadow);
-}
-@media (max-width: 30rem) {
-  .shot-bar {
-    left: 0.5rem;
-  }
-}
-:root[data-theme="light"] .on-dark,
-:root[data-theme="dark"] .on-light {
-  display: none;
-}
-
-/* Closing */
-
-.closing p {
-  margin: 1rem 0 0;
-  color: var(--nd-ink-muted);
-  max-width: 34rem;
-}
-
-/* Footer */
-
-.site-footer {
-  border-top: 1px solid var(--nd-hairline);
-  padding-block: 3.5rem 2rem;
-  font-size: 0.9rem;
-}
-.footer-grid {
-  display: grid;
-  gap: 2.5rem;
-  grid-template-columns: 1fr 1fr;
-}
-@media (min-width: 48rem) {
-  .footer-grid {
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-  }
-}
-.footer-brand {
-  grid-column: 1 / -1;
-}
-@media (min-width: 48rem) {
-  .footer-brand {
-    grid-column: auto;
-  }
-}
-.footer-brand p {
-  margin: 1rem 0 0;
-  max-width: 24rem;
-  color: var(--nd-ink-muted);
-}
-.site-footer h2 {
-  margin: 0 0 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 650;
-}
-.site-footer ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.5rem;
-}
-.site-footer ul a {
-  color: var(--nd-ink-muted);
-}
-.site-footer ul a:hover {
-  color: var(--nd-ink);
-}
-.footer-base {
-  margin-top: 3rem;
-  color: var(--nd-ink-muted);
-  font-size: 0.8rem;
-}
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -858,46 +436,4 @@ a,
 button,
 input {
   touch-action: manipulation;
-}
-
-/* The BS field is <nepdate-input> (nepdate-datepicker). Its theme reads these properties, so the
-   picker follows the site's tokens and theme switch. Until the element is defined it keeps the
-   field's height, so nothing shifts when the script loads. */
-.field nepdate-input {
-  --nepdate-text: var(--nd-ink);
-  --nepdate-muted: var(--nd-ink-muted);
-  --nepdate-surface: var(--nd-raised);
-  --nepdate-hover: var(--nd-sunken);
-  --nepdate-border: var(--nd-hairline);
-  --nepdate-accent: var(--nd-slate);
-  --nepdate-on-accent: var(--nd-raised);
-  --nepdate-today: var(--nd-sindoor);
-  --nepdate-radius: 0.55rem;
-  display: block;
-  width: 100%;
-  min-height: 3rem;
-}
-.field nepdate-input::part(field) {
-  min-height: 3rem;
-  border: 1px solid var(--nd-hairline);
-  border-radius: 0.55rem;
-  background: var(--nd-raised);
-  transition: border-color 0.15s ease;
-}
-.field nepdate-input::part(field):hover {
-  border-color: var(--nd-ink-muted);
-}
-.field nepdate-input::part(input) {
-  padding: 0 0.9rem;
-  border: 0;
-  background: none;
-  font-size: 1rem;
-  font-variant-numeric: tabular-nums;
-}
-.field nepdate-input::part(button) {
-  width: 3rem;
-  border: 0;
-  border-left: 1px solid var(--nd-hairline);
-  background: none;
-  color: var(--nd-ink-muted);
 }

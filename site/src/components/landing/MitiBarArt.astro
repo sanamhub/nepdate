@@ -1,0 +1,67 @@
+---
+// MitiBar drawn on a desktop: the month popup open above the tray, today's day on the tray icon,
+// and the floating bar. The month is the real one, read from nepdate-core and nepdate-patro when
+// the page is built, with public holidays and today in sindoor and Saturdays in slate as in the
+// app. The drawing is aria-hidden; the caption says what it shows.
+import { NepaliDate, monthName, toNepaliDigits, weekdayName, weekdayShortName } from "nepdate-core";
+import { info } from "nepdate-patro";
+
+interface Props {
+  today: NepaliDate;
+}
+const { today } = Astro.props;
+
+const first = NepaliDate.of(today.year, today.month, 1);
+const days: NepaliDate[] = [];
+for (let d = first; d.month === today.month; d = d.addDays(1)) days.push(d);
+// Short class names keep the month small in the page's HTML: t today, h public holiday, s Saturday.
+const cells = days.map((d) => ({
+  num: toNepaliDigits(d.day),
+  cls: [d.day === today.day && "t", info(d).isPublicHoliday && "h", d.weekday === 6 && "s"].filter(Boolean).join(" ") || undefined,
+}));
+const heads = Array.from({ length: 7 }, (_, i) => weekdayShortName(i, "ne"));
+
+// The popup's last line, as in the app: the next public holiday from today, if one is in the data.
+let next: { name: string; date: string } | null = null;
+for (let d = today, n = 0; n < 120 && !next; d = d.addDays(1), n++) {
+  const day = info(d);
+  if (day.isPublicHoliday && day.events[0]) {
+    next = { name: day.events[0].np, date: d.long({ lang: "ne", year: false, pad: false }) };
+  }
+}
+---
+
+<figure class="mitibar-art">
+  <div class="desk" aria-hidden="true">
+    <div class="popup" lang="ne">
+      <p class="popup-title">{`${monthName(today.month, "ne")} ${toNepaliDigits(today.year)}`}</p>
+      <ol class="popup-grid">
+        {heads.map((h, i) => <li class={i === 6 ? "w s" : "w"}>{h}</li>)}
+        {cells.map((c, i) => <li class={c.cls} style={i === 0 ? `grid-column-start:${first.weekday + 1}` : undefined}>{c.num}</li>)}
+      </ol>
+      {
+        next && (
+          <p class="popup-next">
+            अर्को बिदा: {next.name}, {next.date}
+          </p>
+        )
+      }
+    </div>
+    <div class="floatbar" lang="ne">
+      <span>{weekdayName(today.weekday, "ne")}</span>
+      <strong>{today.long({ lang: "ne", pad: false })}</strong>
+    </div>
+    <div class="taskbar">
+      <span class="task-app"></span>
+      <span class="task-app"></span>
+      <span class="task-app"></span>
+      <span class="tray">
+        <span class="tray-icon" lang="ne">{toNepaliDigits(today.day)}</span>
+      </span>
+    </div>
+  </div>
+  <figcaption class="art-caption">
+    A drawing of MitiBar on a desktop. The tray icon shows today's day, the month opens above it with
+    holidays in red, and the floating bar keeps the weekday and date in view.
+  </figcaption>
+</figure>
