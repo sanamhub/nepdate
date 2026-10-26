@@ -4,7 +4,8 @@
 /* The sequence, about 1.1 seconds, once.
    0.15s  the AD date ("26 October 2026") lifts away
    0.32s  the BS month rises into place, then the day (in ink, without its disc) and the year,
-          0.1s apart, settled by about 0.92s
+          0.1s apart, settled by about 0.92s; in the code below, the sample's result
+          ("AD 2024-07-30") resolves with the day
    0.78s  the sindoor disc stamps the day and the numeral turns to the disc's text colour
    Reduced motion, or no animation at all: the BS date with its disc, as in the HTML. */
 
@@ -51,13 +52,15 @@
   .today-ad {
     animation: ad-out 0.32s cubic-bezier(0.4, 0, 1, 1) 0.15s both;
   }
-  .part {
+  .part,
+  .resolve {
     animation: bs-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) var(--at) both;
   }
   .part-month {
     --at: 0.32s;
   }
-  .part-day {
+  .part-day,
+  .resolve {
     --at: 0.42s;
   }
   .part-year {

@@ -1,0 +1,836 @@
+/* Everything below the hero: the sections, their drawings, the footer and the picker's theme
+   hooks. This sheet is not inlined: index.astro links it in the body just before the first section,
+   so the hero paints without waiting for it and the content after the link never shows unstyled.
+   Keeping it out of the HTML keeps the page inside the first network round trip.
+
+   Two parts move, and only where it says something, both scroll-driven:
+   1. The speed rows: both bars run at the same pace as the section scrolls in, so NepDate's stops
+      almost at once and the other library's keeps going.
+   2. The month-length table: each row's ticks draw in as the table scrolls into view.
+   Without scroll-driven animation, or with reduced motion asked for, both show their final frame. */
+
+/* Sections. Every section has the same vertical rhythm; two of them sit on a sunken band so the
+   page reads in movements rather than one long stack. */
+
+.section {
+  padding-block: var(--nd-section);
+}
+.band {
+  background: var(--nd-sunken);
+  border-block: 1px solid var(--nd-hairline);
+}
+.band .panel {
+  background: var(--nd-surface);
+}
+.section-head {
+  min-width: 0;
+  margin-bottom: 2.5rem;
+}
+.section-head h2,
+.closing h2 {
+  margin: 0;
+  font-size: var(--nd-step-2);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.section-head p {
+  margin: 1rem 0 0;
+  max-width: 40rem;
+  color: var(--nd-ink-muted);
+  font-size: 1.05rem;
+  text-wrap: pretty;
+}
+.section-head h3 {
+  margin: 2.5rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+.note {
+  margin: 1rem 0 0;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+}
+.text-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+  font-weight: 600;
+}
+
+/* Install: one panel. On narrow screens it is a language selector with the hero's tab pattern
+   (scripts/landing.ts), one install line at a time; from 48rem the tabs give way and every
+   language is a row, so the lines can be compared. Every line is in the HTML either way. */
+
+.install [role="tabpanel"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 1.1rem 1.25rem 1.25rem;
+}
+.install [role="tabpanel"][hidden] {
+  display: none;
+}
+.install-name {
+  display: none;
+  color: var(--nd-ink);
+  font-weight: 650;
+}
+@media (min-width: 48rem) {
+  .install {
+    padding: 0.25rem 1.25rem;
+  }
+  .install .tabs {
+    display: none;
+  }
+  .install [role="tabpanel"],
+  .install [role="tabpanel"][hidden] {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.9rem 0;
+  }
+  .install [role="tabpanel"] + [role="tabpanel"] {
+    border-top: 1px solid var(--nd-hairline);
+  }
+  .install-name {
+    display: block;
+  }
+}
+.install-cmd {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  background: var(--nd-sunken);
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+}
+.install-cmd code {
+  flex: 1;
+  min-width: 0;
+  padding: 0.6rem 0.8rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  scrollbar-width: thin;
+}
+.copy {
+  flex: none;
+  align-self: stretch;
+  min-height: 2.75rem;
+  border: 0;
+  border-left: 1px solid var(--nd-hairline);
+  background: none;
+  color: var(--nd-ink-muted);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0 0.85rem;
+  cursor: pointer;
+  border-radius: 0 var(--nd-radius-m) var(--nd-radius-m) 0;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.copy:hover {
+  color: var(--nd-ink);
+  background: var(--nd-raised);
+}
+.install-links {
+  display: flex;
+  gap: 1rem;
+  font-size: var(--nd-step--1);
+  white-space: nowrap;
+}
+
+/* Converter */
+
+.convert-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
+}
+@media (min-width: 60rem) {
+  .convert-grid {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 4rem;
+    align-items: start;
+  }
+}
+.converter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+@media (min-width: 40rem) {
+  .converter {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 1rem;
+  }
+}
+.field label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.925rem;
+  margin-bottom: 0.5rem;
+}
+.field input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  background: var(--nd-raised);
+  color: var(--nd-ink);
+  font: inherit;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s ease;
+}
+.field input:hover {
+  border-color: var(--nd-ink-muted);
+}
+.field input::placeholder {
+  color: var(--nd-ink-muted);
+}
+.result {
+  min-height: 3.4rem;
+  margin: 0.75rem 0 0;
+}
+.result strong {
+  display: block;
+  font-weight: 600;
+}
+.result span {
+  display: block;
+  color: var(--nd-ink-muted);
+}
+.result.error {
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--nd-marigold);
+}
+.result.error strong {
+  font-weight: 500;
+}
+
+/* Patro week */
+
+.week {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(7.25rem, 1fr));
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.week li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.9rem 0.85rem 1rem;
+  min-height: 10rem;
+}
+.week li + li {
+  border-left: 1px solid var(--nd-hairline);
+}
+.week-day {
+  color: var(--nd-ink-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.week-num {
+  position: relative;
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.week-num .dot {
+  position: absolute;
+  top: 0.15rem;
+  right: -0.55rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--nd-marigold);
+}
+.holiday .week-num {
+  color: var(--nd-sindoor);
+}
+.week-ad {
+  color: var(--nd-ink-muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+.week-tithi {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.week-event {
+  color: var(--nd-ink-muted);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Speed: one row per language, NepDate's bar drawn to scale against the next fastest library's.
+   Each bar has its label beside it at every width: who, then the time, and the time never
+   truncates; only a long library name does. On wide screens the heading stays in view while the
+   rows scroll past it. */
+
+.speed-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 60rem) {
+  .speed-grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 4rem;
+    align-items: start;
+  }
+  .sticky-head {
+    position: sticky;
+    top: 6rem;
+  }
+}
+.race {
+  list-style: none;
+  padding: 0.25rem clamp(1rem, 3vw, 1.75rem);
+}
+.race li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 11.5rem);
+  column-gap: 0.85rem;
+  row-gap: 0.35rem;
+  padding: 0.95rem 0;
+}
+@media (min-width: 40rem) {
+  .race li {
+    grid-template-columns: minmax(0, 1fr) 14rem;
+  }
+}
+.race li + li {
+  border-top: 1px solid var(--nd-hairline);
+}
+.race-head {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.race-lang {
+  font-weight: 650;
+}
+.race-times {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.race-bar {
+  grid-column: 1;
+  align-self: center;
+  width: var(--w);
+  min-width: 3px;
+  height: 0.5rem;
+  border-radius: var(--nd-radius-pill);
+}
+.race-bar.ours {
+  background: var(--nd-ink);
+}
+.race-bar.theirs {
+  background: color-mix(in srgb, var(--nd-ink-muted) 30%, transparent);
+}
+.race-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+  color: var(--nd-ink-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.race-label .who {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.race-label .time {
+  flex: none;
+}
+.race-label strong {
+  color: var(--nd-ink);
+  font-weight: 650;
+}
+
+/* Proof: the text and the three facts beside the month-length table. */
+
+.proof-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
+}
+@media (min-width: 60rem) {
+  .proof-grid {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 4rem;
+    align-items: start;
+  }
+}
+.facts {
+  margin: 0;
+  border-top: 1px solid var(--nd-hairline);
+}
+.facts div {
+  padding: 1.1rem 0;
+}
+.facts div + div {
+  border-top: 1px solid var(--nd-hairline);
+}
+.facts dt {
+  font-weight: 600;
+}
+.facts .num {
+  display: block;
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.facts dd {
+  margin: 0.25rem 0 0;
+  color: var(--nd-ink-muted);
+}
+
+/* The month-length table: real data, set like a ledger. Each cell carries a small tick, the
+   current month a sindoor ring. */
+.months-panel {
+  padding: clamp(0.75rem, 2.5vw, 1.5rem);
+  overflow-x: auto;
+}
+.months {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.months caption {
+  caption-side: bottom;
+  padding: 1rem 0.25rem 0;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+  text-align: left;
+}
+.months th {
+  padding: 0 0 0.6rem;
+  color: var(--nd-ink-muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+.months tbody th {
+  padding: 0 0.6rem 0 0;
+  text-align: left;
+}
+.months td {
+  position: relative;
+  height: 2.6rem;
+  padding: 0;
+  border: 1px solid var(--nd-hairline);
+  font-size: 1rem;
+  font-weight: 600;
+}
+/* Thirteen columns fit a 320px panel: smaller figures, and no ticks, which would crowd them. */
+@media (max-width: 40rem) {
+  .months-panel {
+    padding: 0.75rem 0.6rem;
+  }
+  .months th {
+    font-size: 0.62rem;
+    letter-spacing: -0.02em;
+  }
+  .months tbody th {
+    padding-right: 0.3rem;
+  }
+  .months td {
+    height: 2.15rem;
+    font-size: 0.76rem;
+  }
+  .months td::after {
+    display: none;
+  }
+}
+.months td::after {
+  content: "";
+  position: absolute;
+  top: 0.3rem;
+  right: 0.32rem;
+  width: 0.2rem;
+  height: 0.38rem;
+  border: solid var(--nd-line);
+  border-width: 0 1.5px 1.5px 0;
+  rotate: 45deg;
+}
+.months td.now {
+  color: var(--nd-sindoor);
+  box-shadow: inset 0 0 0 2px var(--nd-sindoor);
+  border-radius: var(--nd-radius-s);
+}
+
+/* Apps and closing */
+
+.apps-grid,
+.closing-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3rem;
+}
+@media (min-width: 60rem) {
+  .apps-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 5rem;
+    align-items: center;
+  }
+  .closing-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+  }
+}
+.closing {
+  border-top: 1px solid var(--nd-hairline);
+}
+.closing p {
+  margin: 1rem 0 0;
+  color: var(--nd-ink-muted);
+  max-width: 34rem;
+}
+
+/* Footer */
+
+.site-footer {
+  border-top: 1px solid var(--nd-hairline);
+  padding-block: 3.5rem 2rem;
+  font-size: 0.9rem;
+}
+.footer-grid {
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: 1fr 1fr;
+}
+@media (min-width: 48rem) {
+  .footer-grid {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
+}
+.footer-brand {
+  grid-column: 1 / -1;
+}
+@media (min-width: 48rem) {
+  .footer-brand {
+    grid-column: auto;
+  }
+}
+.footer-brand p {
+  margin: 1rem 0 0;
+  max-width: 24rem;
+  color: var(--nd-ink-muted);
+}
+.site-footer h2 {
+  margin: 0 0 0.75rem;
+  font-size: var(--nd-step--1);
+  font-weight: 650;
+}
+.site-footer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.site-footer ul a {
+  color: var(--nd-ink-muted);
+}
+.site-footer ul a:hover {
+  color: var(--nd-ink);
+}
+.footer-base {
+  margin-top: 3rem;
+  color: var(--nd-ink-muted);
+  font-size: 0.8rem;
+}
+
+
+/* The BS field is <nepdate-input> (nepdate-datepicker). Its theme reads these properties, so the
+   picker follows the site's tokens and theme switch. Until the element is defined it keeps the
+   field's height, so nothing shifts when the script loads. */
+.field nepdate-input {
+  --nepdate-text: var(--nd-ink);
+  --nepdate-muted: var(--nd-ink-muted);
+  --nepdate-surface: var(--nd-raised);
+  --nepdate-hover: var(--nd-sunken);
+  --nepdate-border: var(--nd-hairline);
+  --nepdate-accent: var(--nd-slate);
+  --nepdate-on-accent: var(--nd-raised);
+  --nepdate-today: var(--nd-sindoor);
+  --nepdate-radius: var(--nd-radius-m);
+  display: block;
+  width: 100%;
+  min-height: 3rem;
+}
+.field nepdate-input::part(field) {
+  min-height: 3rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  background: var(--nd-raised);
+  transition: border-color 0.15s ease;
+}
+.field nepdate-input::part(field):hover {
+  border-color: var(--nd-ink-muted);
+}
+.field nepdate-input::part(input) {
+  padding: 0 0.9rem;
+  border: 0;
+  background: none;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.field nepdate-input::part(button) {
+  width: 3rem;
+  border: 0;
+  border-left: 1px solid var(--nd-hairline);
+  background: none;
+  color: var(--nd-ink-muted);
+}
+
+/* Line work for the small drawings: a 1.25 stroke in --nd-line. */
+
+.art {
+  display: block;
+  height: auto;
+  overflow: visible;
+}
+.art-line {
+  fill: none;
+  stroke: var(--nd-line);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.art-caption {
+  max-width: 60ch;
+  margin-top: 0.9rem;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+}
+.convert-art {
+  width: 2.5rem;
+  justify-self: center;
+  rotate: 90deg;
+}
+@media (min-width: 40rem) {
+  .convert-art {
+    margin-top: 2.15rem;
+    rotate: none;
+  }
+}
+
+/* MitiBar on a desktop */
+
+.mitibar-art {
+  min-width: 0;
+  margin: 0;
+}
+.desk {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) 0;
+  overflow: hidden;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-sunken);
+}
+.popup {
+  width: min(100%, 22rem);
+  padding: 0.9rem 0.8rem 0.7rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  background: var(--nd-raised);
+  box-shadow: var(--nd-shadow);
+}
+.popup-title {
+  margin: 0 0 0.6rem 0.35rem;
+  font-weight: 650;
+  font-size: 0.95rem;
+}
+.popup-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.15rem 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+.popup-grid li {
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: 1.9em;
+  height: 1.9em;
+  border-radius: var(--nd-radius-pill);
+}
+.popup-grid .w {
+  height: auto;
+  padding-bottom: 0.35rem;
+  color: var(--nd-ink-muted);
+  font-size: 0.68rem;
+}
+.popup-grid .s {
+  color: var(--nd-slate);
+}
+.popup-grid .h {
+  color: var(--nd-sindoor);
+}
+.popup-grid .t {
+  background: var(--nd-sindoor);
+  color: var(--nd-on-sindoor);
+  font-weight: 650;
+}
+.popup-next {
+  margin: 0.6rem 0 0;
+  padding: 0.55rem 0.35rem 0;
+  border-top: 1px solid var(--nd-hairline);
+  color: var(--nd-ink-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+.floatbar {
+  display: grid;
+  align-self: flex-start;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  background: var(--nd-raised);
+  box-shadow: var(--nd-shadow);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+.floatbar span {
+  color: var(--nd-ink-muted);
+}
+.floatbar strong {
+  font-weight: 650;
+}
+@media (min-width: 30rem) {
+  .floatbar {
+    position: absolute;
+    top: clamp(1rem, 3vw, 2rem);
+    left: clamp(1rem, 3vw, 2rem);
+  }
+}
+.taskbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: stretch;
+  height: 2.75rem;
+  margin-inline: calc(-1 * clamp(1rem, 3vw, 2rem));
+  padding-inline: 1rem;
+  border-top: 1px solid var(--nd-hairline);
+  background: var(--nd-raised);
+}
+.task-app {
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 1.25px solid var(--nd-line);
+  border-radius: var(--nd-radius-s);
+}
+.tray {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-left: auto;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--nd-hairline);
+}
+.tray-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-sindoor);
+  color: var(--nd-on-sindoor);
+  font-size: 0.85rem;
+  font-weight: 650;
+  line-height: 1;
+}
+
+/* Scroll-driven, where supported. */
+
+@property --run {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 100%;
+}
+@keyframes race-run {
+  from {
+    --run: 0%;
+  }
+  to {
+    --run: 100%;
+  }
+}
+@keyframes tick-in {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .race {
+      view-timeline-name: --race;
+    }
+    .race li {
+      animation: race-run linear both;
+    }
+    .race-bar {
+      width: min(var(--w), var(--run));
+    }
+
+    /* On the panel, not the table: the panel scrolls sideways on narrow screens, which would make
+       it the table's scroller and freeze the timeline. */
+    .months-panel {
+      view-timeline-name: --months;
+    }
+    .months td::after {
+      animation: tick-in linear both;
+    }
+
+    /* The timelines and ranges sit in rules of their own: the build's CSS minifier would otherwise
+       fold animation-timeline into the animation shorthand, which browsers reject. */
+    .race > li {
+      animation-timeline: --race;
+      animation-range: entry 5% cover 35%;
+    }
+    .months tr > td::after {
+      animation-timeline: --months;
+      animation-range: cover calc(14% + var(--r) * 4%) cover calc(20% + var(--r) * 4%);
+    }
+  }
+}

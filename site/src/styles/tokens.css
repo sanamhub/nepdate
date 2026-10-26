@@ -37,7 +37,7 @@
   --nd-step-1: 1.125rem;
   --nd-step-2: clamp(1.6rem, 1.3rem + 1.3vw, 2.25rem);
   --nd-step-3: clamp(2rem, 1.5rem + 2vw, 2.9rem);
-  --nd-step-display: clamp(2.7rem, 1.6rem + 5vw, 4.75rem);
+  --nd-step-display: clamp(2.3rem, 1.3rem + 5vw, 4.75rem);
   --nd-section: clamp(4.5rem, 10vw, 8rem);
   --nd-gutter: clamp(1rem, 4vw, 2rem);
   --nd-wrap: 72rem;

@@ -1,0 +1,62 @@
+---
+// The days in each BS month for a run of years around today, read from nepdate-core when the page
+// is built: the data every port copies and checks. It is a real table, so screen readers get it
+// as one; the current month is ringed in sindoor. Each cell's tick draws in as the table scrolls
+// into view where scroll-driven animation works (landing-sections.css).
+import { NepaliDate, monthShortName } from "nepdate-core";
+
+interface Props {
+  today: NepaliDate;
+}
+const { today } = Astro.props;
+
+/** The last valid day of a BS month: 29 to 32. */
+function length(year: number, month: number): number {
+  for (let day = 32; day > 28; day--) {
+    try {
+      NepaliDate.of(year, month, day);
+      return day;
+    } catch {
+      // Not a day of this month; try the one before.
+    }
+  }
+  throw new Error(`MonthLengths: no length for ${year}-${month}`);
+}
+
+const years = Array.from({ length: 6 }, (_, i) => today.year - 2 + i);
+const months = Array.from({ length: 12 }, (_, i) => i + 1);
+---
+
+<div class="panel months-panel">
+  <table class="months">
+    <caption>
+      Days in each month, BS {years[0]} to {years[years.length - 1]}. A BS month has 29 to 32 days and the
+      lengths change from year to year, so they come from data, not a formula.
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col"><span class="visually-hidden">Year</span></th>
+        {months.map((m) => <th scope="col">{monthShortName(m)}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {
+        years.map((y, r) => (
+          <tr style={`--r:${r}`}>
+            <th scope="row">{y}</th>
+            {months.map((m) =>
+              y === today.year && m === today.month ? (
+                <td class="now">
+                  {length(y, m)}
+                  <span class="visually-hidden"> (this month)</span>
+                </td>
+              ) : (
+                <td>{length(y, m)}</td>
+              ),
+            )}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
