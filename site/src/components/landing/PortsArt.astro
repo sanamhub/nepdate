@@ -1,0 +1,34 @@
+---
+// One calendar dataset feeding every port: a data sheet on the left, a line to each language on
+// the right, and the same mark in every box because every port gives the same answer. The drawing
+// is aria-hidden; the section text says this in words.
+import { ports } from "../../data/ports";
+
+const rowY = (i: number) => 10 + i * 15;
+const sheetOut = { x: 74, y: 66 };
+---
+
+<svg class="art ports-art" viewBox="0 0 300 132" aria-hidden="true" focusable="false">
+  <rect class="art-line" x="14" y="30" width="60" height="72" rx="6"></rect>
+  <path class="art-line" d="M14 44h60"></path>
+  {[54, 63, 72, 81, 90].map((y, i) => <path class="art-line faint" d={`M22 ${y}h${i % 2 ? 30 : 44}`} />)}
+  {
+    ports.map((_, i) => (
+      <path
+        class="art-line faint"
+        d={`M${sheetOut.x} ${sheetOut.y} C 128 ${sheetOut.y}, 132 ${rowY(i) + 6}, 178 ${rowY(i) + 6}`}
+      />
+    ))
+  }
+  {
+    ports.map((port, i) => (
+      <g>
+        <rect class="art-line" x="178" y={rowY(i)} width="12" height="12" rx="3" />
+        <path class="art-ink" d={`M181 ${rowY(i) + 6.5}l2.2 2.2 4-4.6`} />
+        <text class="art-text" x="198" y={rowY(i) + 9.5}>
+          {port.name}
+        </text>
+      </g>
+    ))
+  }
+</svg>

@@ -11,6 +11,7 @@ const adLong = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
   timeZone: "UTC",
 });
+const adPlain = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 const adOf = (d: NepaliDate) => {
   const g = d.toGregorian();
   return adLong.format(new Date(Date.UTC(g.year, g.month - 1, g.day)));
@@ -22,6 +23,9 @@ function showToday() {
     const node = document.querySelector(selector);
     if (node) node.textContent = text;
   };
+  // The AD date the hero's opening sequence starts from; it is hidden once the sequence has played.
+  const ad = today.toGregorian();
+  set("[data-today-ad]", adPlain.format(new Date(Date.UTC(ad.year, ad.month - 1, ad.day))));
   set("[data-today-month]", monthName(today.month, "ne"));
   set("[data-today-day]", toNepaliDigits(today.day));
   set("[data-today-year]", toNepaliDigits(today.year));

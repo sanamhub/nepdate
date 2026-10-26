@@ -26,11 +26,12 @@ src/content/docs/docs/      the docs, served under /docs/
 src/data/ports.ts           every version, package name, install line and cross-language snippet
 src/data/benchmarks.ts      benchmark numbers, copied from each port's docs/benchmarks.md
 src/components/             Starlight's Head with the fonts, and Fonts.astro for both shells
+src/components/landing/     the landing page's drawings: ports, patro, checks, MitiBar
 fonts.mjs                   the three font families for Astro's font API (fontsource, self-hosted)
-src/styles/tokens.css       colours and fonts, shared by both (from MitiBar's design tokens)
+src/styles/tokens.css       colours, fonts, radius, type scale and rhythm, shared by both (from MitiBar's design tokens)
 src/styles/starlight.css    Starlight mapped onto the tokens
 src/styles/landing.css      the landing page
-src/assets/mitibar/         MitiBar snapshots (mitibar --popup --snapshot, --bar-snapshot)
+src/styles/landing-art.css  its drawings and its three animations, each with a still frame
 public/_headers             security headers and asset caching
 wrangler.jsonc              the Worker that serves dist/
 ```

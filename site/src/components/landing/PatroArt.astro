@@ -1,0 +1,29 @@
+---
+// Tithi follow the moon: seven moons waxing from new to full, as a patro week runs, and one sindoor
+// dot under a day the way MitiBar marks a public holiday. Decorative; the week below is the data.
+const r = 10;
+const moons = Array.from({ length: 7 }, (_, i) => {
+  const lit = (i + 0.5) / 7;
+  const cx = 18 + i * 34;
+  const cy = 22;
+  const rx = Math.abs(1 - 2 * lit) * r;
+  const sweep = lit < 0.5 ? 0 : 1;
+  return {
+    cx,
+    cy,
+    d: `M${cx} ${cy - r}A${r} ${r} 0 0 1 ${cx} ${cy + r}A${rx.toFixed(2)} ${r} 0 0 ${sweep} ${cx} ${cy - r}Z`,
+  };
+});
+---
+
+<svg class="art patro-art" viewBox="0 0 240 52" aria-hidden="true" focusable="false">
+  {
+    moons.map((m) => (
+      <g>
+        <circle class="art-line" cx={m.cx} cy={m.cy} r={r} />
+        <path class="art-fill" d={m.d} />
+      </g>
+    ))
+  }
+  <circle class="art-sindoor" cx={moons[4].cx} cy="44" r="2.5"></circle>
+</svg>
