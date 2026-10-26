@@ -249,14 +249,29 @@ const description =
         </svg>
         <div class="field">
           <label for="ad-input">Gregorian (AD)</label>
-          <input
-            id="ad-input"
-            name="ad"
-            type="date"
-            min="1844-04-11"
-            max="2143-04-15"
-            value={`${todayAd.year}-${String(todayAd.month).padStart(2, "0")}-${String(todayAd.day).padStart(2, "0")}`}
-          />
+          <div class="ad-field" data-ad-field>
+            <input
+              id="ad-input"
+              name="ad"
+              type="date"
+              min="1844-04-11"
+              max="2143-04-15"
+              value={`${todayAd.year}-${String(todayAd.month).padStart(2, "0")}-${String(todayAd.day).padStart(2, "0")}`}
+            />
+            <button type="button" class="ad-button" aria-label="Choose an AD date" hidden data-ad-button>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                aria-hidden="true"
+                focusable="false"
+                ><rect x="3.5" y="5" width="17" height="15" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"
+                ></path></svg
+              >
+            </button>
+          </div>
           <p class="result" aria-live="polite" data-ad-result></p>
         </div>
       </form>

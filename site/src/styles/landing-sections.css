@@ -607,6 +607,62 @@
   color: var(--nd-ink-muted);
 }
 
+/* The AD field is the browser's date input, which has no shadow parts to style. It gets the same
+   shell as the BS picker: one bordered field with the calendar button on the right, opening the
+   browser's own calendar (themed by color-scheme in tokens.css). The script reveals the button
+   only where showPicker exists; Firefox draws its own icon, so the button stays hidden there. */
+.ad-field {
+  display: flex;
+  min-height: 3rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  background: var(--nd-raised);
+  transition: border-color 0.15s ease;
+}
+.ad-field:hover {
+  border-color: var(--nd-ink-muted);
+}
+.ad-field:focus-within {
+  outline: 2px solid var(--nd-slate);
+  outline-offset: 2px;
+}
+.field .ad-field input {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  border-radius: var(--nd-radius-m) 0 0 var(--nd-radius-m);
+  background: none;
+}
+.field .ad-field input:focus-visible {
+  outline: none;
+}
+.ad-button {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--nd-hairline);
+  border-radius: 0 var(--nd-radius-m) var(--nd-radius-m) 0;
+  background: none;
+  color: var(--nd-ink-muted);
+  cursor: pointer;
+}
+.ad-button[hidden] {
+  display: none;
+}
+.ad-button:hover {
+  color: var(--nd-ink);
+}
+.ad-button svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+.ad-field.has-button input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
 /* Line work for the small drawings: a 1.25 stroke in --nd-line. */
 
 .art {
