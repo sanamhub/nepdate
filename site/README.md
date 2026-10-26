@@ -31,7 +31,8 @@ fonts.mjs                   the three font families for Astro's font API (fontso
 src/styles/tokens.css       colours, fonts, radius, type scale and rhythm, shared by both (from MitiBar's design tokens)
 src/styles/starlight.css    Starlight mapped onto the tokens
 src/styles/landing.css      the landing page
-src/styles/landing-art.css  its drawings and its three animations, each with a still frame
+src/styles/hero-motion.css  the hero's opening sequence, inlined with the page
+src/styles/landing-art.css  the drawings and their scroll motion, linked below the hero to keep the HTML small
 public/_headers             security headers and asset caching
 wrangler.jsonc              the Worker that serves dist/
 ```

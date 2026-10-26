@@ -14,17 +14,11 @@ const { today } = Astro.props;
 const first = NepaliDate.of(today.year, today.month, 1);
 const days: NepaliDate[] = [];
 for (let d = first; d.month === today.month; d = d.addDays(1)) days.push(d);
-const cells = [
-  ...Array.from({ length: first.weekday }, () => null),
-  ...days.map((d) => ({
-    key: d.toJSON(),
-    num: toNepaliDigits(d.day),
-    today: d.day === today.day,
-    holiday: info(d).isPublicHoliday,
-    event: info(d).events.length > 0,
-    saturday: d.weekday === 6,
-  })),
-];
+// Short class names keep the month small in the page's HTML: t today, h public holiday, s Saturday.
+const cells = days.map((d) => ({
+  num: toNepaliDigits(d.day),
+  cls: [d.day === today.day && "t", info(d).isPublicHoliday && "h", d.weekday === 6 && "s"].filter(Boolean).join(" ") || undefined,
+}));
 const heads = Array.from({ length: 7 }, (_, i) => weekdayShortName(i, "ne"));
 
 // The popup's last line, as in the app: the next public holiday from today, if one is in the data.
@@ -42,18 +36,8 @@ for (let d = today, n = 0; n < 120 && !next; d = d.addDays(1), n++) {
     <div class="popup" lang="ne">
       <p class="popup-title">{`${monthName(today.month, "ne")} ${toNepaliDigits(today.year)}`}</p>
       <ol class="popup-grid">
-        {heads.map((h, i) => <li class:list={["popup-head", { sat: i === 6 }]}>{h}</li>)}
-        {
-          cells.map((c) =>
-            c ? (
-              <li class:list={["popup-day", { "is-today": c.today, "is-holiday": c.holiday, sat: c.saturday, "has-event": c.event }]}>
-                <span>{c.num}</span>
-              </li>
-            ) : (
-              <li class="popup-blank" />
-            ),
-          )
-        }
+        {heads.map((h, i) => <li class={i === 6 ? "w s" : "w"}>{h}</li>)}
+        {cells.map((c, i) => <li class={c.cls} style={i === 0 ? `grid-column-start:${first.weekday + 1}` : undefined}>{c.num}</li>)}
       </ol>
       {
         next && (

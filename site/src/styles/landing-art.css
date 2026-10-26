@@ -1,15 +1,16 @@
-/* The drawings and the page's three moving parts. Line work is one language everywhere: a
-   1.25 stroke in --nd-line, ink for the mark that matters, sindoor only for today and holidays.
+/* The drawings below the hero and their two moving parts. Line work is one language everywhere:
+   a 1.25 stroke in --nd-line, ink for the mark that matters, sindoor only for today and holidays.
+
+   This file is not inlined: index.astro links it in the body, just before the first drawing, so the
+   hero paints without waiting for it and the content after the link never shows unstyled. The
+   hero's own sequence is in hero-motion.css.
 
    Motion, and only where it says something:
-   1. The hero, once on load: today's AD date resolves into the BS date, part by part, and the
-      sindoor disc stamps the day. The BS date is in the HTML from the start; the AD parts are an
-      overlay that fades out.
-   2. The speed rows, as they scroll into view: both bars run at the same pace, so NepDate's stops
+   1. The speed rows, as they scroll into view: both bars run at the same pace, so NepDate's stops
       almost at once and the other library's keeps going.
-   3. The month-boundary grid, as it scrolls into view: the ticks draw in.
-   Without scroll-driven animation, or with reduced motion asked for, every part shows its final
-   frame, which is the whole picture. */
+   2. The month-boundary grid, as it scrolls into view: the ticks draw in, in reading order.
+   Without scroll-driven animation, or with reduced motion asked for, both show their final frame,
+   which is the whole picture. */
 
 /* Line language */
 
@@ -113,9 +114,33 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  text-align: center;
   font-size: 0.9rem;
   line-height: 1;
+}
+.popup-grid li {
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: 1.9em;
+  height: 1.9em;
+  border-radius: var(--nd-radius-pill);
+}
+.popup-grid .w {
+  height: auto;
+  padding-bottom: 0.35rem;
+  color: var(--nd-ink-muted);
+  font-size: 0.68rem;
+}
+.popup-grid .s {
+  color: var(--nd-slate);
+}
+.popup-grid .h {
+  color: var(--nd-sindoor);
+}
+.popup-grid .t {
+  background: var(--nd-sindoor);
+  color: var(--nd-on-sindoor);
+  font-weight: 650;
 }
 .popup-next {
   margin: 0.6rem 0 0;
@@ -124,41 +149,6 @@
   color: var(--nd-ink-muted);
   font-size: 0.78rem;
   line-height: 1.4;
-}
-.popup-head {
-  padding-bottom: 0.35rem;
-  color: var(--nd-ink-muted);
-  font-size: 0.68rem;
-}
-.popup-day span {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  width: 1.9em;
-  height: 1.9em;
-  border-radius: var(--nd-radius-pill);
-}
-.popup-head.sat,
-.popup-day.sat {
-  color: var(--nd-slate);
-}
-.popup-day.is-holiday {
-  color: var(--nd-sindoor);
-}
-.popup-day.has-event span::after {
-  content: "";
-  position: absolute;
-  top: 0.15em;
-  right: 0.15em;
-  width: 0.28rem;
-  height: 0.28rem;
-  border-radius: 50%;
-  background: var(--nd-marigold);
-}
-.popup-day.is-today span {
-  background: var(--nd-sindoor);
-  color: var(--nd-on-sindoor);
-  font-weight: 650;
 }
 .floatbar {
   display: grid;
@@ -222,79 +212,7 @@
   line-height: 1;
 }
 
-/* 1. The hero sequence, about 1.4 seconds, once.
-   0.25s  the AD date ("26 October 2026") lifts away
-   0.45s  the BS month rises into place, then the day (in ink, without its disc) and the year,
-          0.12s apart, settled by about 1.15s
-   1.00s  the sindoor disc stamps the day and the numeral turns to the disc's text colour
-   Reduced motion, or no animation at all: the BS date with its disc, as in the HTML. */
-
-@keyframes ad-out {
-  from {
-    opacity: 1;
-    transform: none;
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-0.35em);
-  }
-}
-@keyframes bs-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.35em);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes day-ink {
-  from {
-    color: var(--nd-ink);
-  }
-  to {
-    color: var(--nd-on-sindoor);
-  }
-}
-@keyframes stamp {
-  from {
-    opacity: 0;
-    transform: scale(1.4);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .today-ad {
-    animation: ad-out 0.36s cubic-bezier(0.4, 0, 1, 1) 0.25s both;
-  }
-  .part {
-    animation: bs-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) var(--at) both;
-  }
-  .part-month {
-    --at: 0.45s;
-  }
-  .part-day {
-    --at: 0.57s;
-  }
-  .part-year {
-    --at: 0.69s;
-  }
-  .part.today-day {
-    animation:
-      bs-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) var(--at) both,
-      day-ink 0.2s ease-out 1s both;
-  }
-  .today-day::before {
-    animation: stamp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) 1s both;
-  }
-}
-
-/* 2 and 3. Scroll-driven, where supported. */
+/* Scroll-driven, where supported. */
 
 @property --run {
   syntax: "<percentage>";
@@ -350,7 +268,7 @@
     }
     svg .tick {
       animation-timeline: --proof;
-      animation-range: cover calc(12% + var(--i) * 0.3%) cover calc(16% + var(--i) * 0.3%);
+      animation-range: cover 12% cover 40%;
     }
   }
 }

@@ -1,24 +1,24 @@
 ---
 // Month boundaries being checked: twelve months across, a run of years down, each cell ticked. The
-// ticks draw in as the section scrolls into view where scroll-driven animation works and reduced
-// motion isn't asked for; everywhere else they are simply drawn. Decorative; the facts beside it
-// carry the numbers.
+// cells are one pattern and all ticks are one path, so the drawing stays small in the page's HTML.
+// With pathLength="1", one dash animation draws the ticks in reading order as the section scrolls
+// into view, where scroll-driven animation works and reduced motion isn't asked for; everywhere
+// else they are simply drawn. Decorative; the facts beside it carry the numbers.
 const cols = 12;
 const rows = 6;
-const cells = Array.from({ length: cols * rows }, (_, i) => ({
-  i,
-  x: 4 + (i % cols) * 22,
-  y: 4 + Math.floor(i / cols) * 22,
-}));
+const ticks = Array.from({ length: cols * rows }, (_, i) => {
+  const x = (i % cols) * 22 + 8;
+  const y = Math.floor(i / cols) * 22 + 12.5;
+  return `M${x} ${y}l3 3 5.5-6.5`;
+}).join("");
 ---
 
 <svg class="art proof-art" viewBox="0 0 266 134" aria-hidden="true" focusable="false">
-  {
-    cells.map((c) => (
-      <g>
-        <rect class="art-line" x={c.x} y={c.y} width="16" height="16" rx="4" />
-        <path class="art-ink tick" style={`--i: ${c.i}`} pathLength="1" d={`M${c.x + 4} ${c.y + 8.5}l3 3 5.5-6.5`} />
-      </g>
-    ))
-  }
+  <defs>
+    <pattern id="proof-cell" width="22" height="22" patternUnits="userSpaceOnUse">
+      <rect class="art-line" x="4" y="4" width="16" height="16" rx="4"></rect>
+    </pattern>
+  </defs>
+  <rect width="266" height="134" fill="url(#proof-cell)"></rect>
+  <path class="art-ink tick" pathLength="1" d={ticks}></path>
 </svg>

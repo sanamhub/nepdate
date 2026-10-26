@@ -3,6 +3,9 @@ import { Code } from "astro:components";
 import { NepaliDate, toNepaliDigits, monthName } from "nepdate-core";
 import { info } from "nepdate-patro";
 import Landing from "../layouts/Landing.astro";
+import "../styles/hero-motion.css";
+// The drawings' stylesheet, linked in the body below the hero (see landing-art.css).
+import artCss from "../styles/landing-art.css?url";
 import MitiBarArt from "../components/landing/MitiBarArt.astro";
 import PatroArt from "../components/landing/PatroArt.astro";
 import PortsArt from "../components/landing/PortsArt.astro";
@@ -130,6 +133,7 @@ const description =
     </div>
   </section>
 
+  <link rel="stylesheet" href={artCss} />
   <section class="section" id="languages" aria-labelledby="languages-title">
     <div class="wrap">
       <div class="head-row">
