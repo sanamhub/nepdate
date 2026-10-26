@@ -21,6 +21,26 @@
   --nd-slate: #3f6383;
   --nd-slate-soft: #e3ebf2;
   --nd-shadow: 0 1px 2px rgb(33 28 23 / 0.06), 0 12px 32px -12px rgb(33 28 23 / 0.18);
+  /* Line work in the drawings: quieter than ink, stronger than a hairline. */
+  --nd-line: #b4a998;
+
+  /* Radius by hierarchy: s for chips and inline code, m for controls, l for panels, pill for the
+     day disc and tags. */
+  --nd-radius-s: 6px;
+  --nd-radius-m: 10px;
+  --nd-radius-l: 16px;
+  --nd-radius-pill: 999px;
+
+  /* A fluid type scale and the page rhythm. */
+  --nd-step--1: 0.875rem;
+  --nd-step-0: 1rem;
+  --nd-step-1: 1.125rem;
+  --nd-step-2: clamp(1.6rem, 1.3rem + 1.3vw, 2.25rem);
+  --nd-step-3: clamp(2rem, 1.5rem + 2vw, 2.9rem);
+  --nd-step-display: clamp(2.7rem, 1.6rem + 5vw, 4.75rem);
+  --nd-section: clamp(4.5rem, 10vw, 8rem);
+  --nd-gutter: clamp(1rem, 4vw, 2rem);
+  --nd-wrap: 72rem;
 
   color-scheme: light;
 }
@@ -38,6 +58,7 @@
   --nd-slate: #8fb1d0;
   --nd-slate-soft: #1d2833;
   --nd-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px -16px rgb(0 0 0 / 0.7);
+  --nd-line: #5c5249;
 
   color-scheme: dark;
 }
