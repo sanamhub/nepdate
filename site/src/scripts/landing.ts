@@ -89,6 +89,25 @@ function reason(error: unknown): string {
   }
 }
 
+// The AD field's own calendar button, matching the BS picker's. It opens the browser's calendar
+// with showPicker. Firefox keeps its built-in icon (no ::-webkit-calendar-picker-indicator to
+// hide), so the button is only shown where that pseudo-element exists.
+function adCalendarButton(form: HTMLFormElement, ad: HTMLInputElement) {
+  const field = form.querySelector<HTMLElement>("[data-ad-field]");
+  const button = form.querySelector<HTMLButtonElement>("[data-ad-button]");
+  if (!field || !button || typeof ad.showPicker !== "function") return;
+  if (!CSS.supports("selector(::-webkit-calendar-picker-indicator)")) return;
+  field.classList.add("has-button");
+  button.hidden = false;
+  button.addEventListener("click", () => {
+    try {
+      ad.showPicker();
+    } catch {
+      ad.focus();
+    }
+  });
+}
+
 function converter(form: HTMLFormElement) {
   const bs = form.querySelector<NepDateInputElement>("#bs-input");
   const ad = form.querySelector<HTMLInputElement>("#ad-input");
@@ -96,6 +115,7 @@ function converter(form: HTMLFormElement) {
   const adOut = form.querySelector<HTMLElement>("[data-ad-result]");
   if (!bs || !ad || !bsOut || !adOut) return;
   form.addEventListener("submit", (event) => event.preventDefault());
+  adCalendarButton(form, ad);
 
   const render = (out: HTMLElement, lines: [string, string?], error = false) => {
     out.classList.toggle("error", error);
