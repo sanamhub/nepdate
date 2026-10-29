@@ -630,7 +630,7 @@
 
 .site-footer {
   border-top: 1px solid var(--nd-hairline);
-  padding-block: 3.5rem 2rem;
+  padding-top: 3.5rem;
   font-size: 0.9rem;
 }
 .footer-grid {
@@ -674,9 +674,24 @@
 .site-footer ul a:hover {
   color: var(--nd-ink);
 }
+/* The valley at the foot of the page: the Himalaya behind Nyatapola, Dharahara, Boudhanath under
+   its prayer flags, Newari houses, Krishna Mandir, a porter with his doko and a chorten, drawn in
+   one colour. The drawing (public/footer-skyline.svg) is a mask, so it takes sindoor in either
+   theme, and its ground runs straight into the band that holds the copyright line. On a narrow
+   screen it is drawn at 66rem and shows the middle of the valley. */
+.footer-art {
+  /* The drawing's own aspect (1600 by 340) at the width it is drawn, so no part is cut off. */
+  height: calc(max(100vw, 66rem) * 0.2125);
+  margin-top: 2.5rem;
+  background: var(--nd-sindoor);
+  -webkit-mask: url("/footer-skyline.svg") bottom center / max(100%, 66rem) auto no-repeat;
+  mask: url("/footer-skyline.svg") bottom center / max(100%, 66rem) auto no-repeat;
+}
 .footer-base {
-  margin-top: 3rem;
-  color: var(--nd-ink-muted);
+  margin-top: -1px;
+  padding-block: 0.4rem 1.1rem;
+  background: var(--nd-sindoor);
+  color: var(--nd-on-sindoor);
   font-size: 0.8rem;
 }
 
