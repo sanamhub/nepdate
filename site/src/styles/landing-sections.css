@@ -9,6 +9,10 @@
    2. The month-length table: each row's ticks draw in as the table scrolls into view.
    Without scroll-driven animation, or with reduced motion asked for, both show their final frame. */
 
+/* The converter's date picker theme rides in this sheet, not the inlined head: the converter is
+   below the fold, so its styles need not delay the first paint. */
+@import "nepdate-datepicker/theme.css";
+
 /* Sections. Every section has the same vertical rhythm; two of them sit on a sunken band so the
    page reads in movements rather than one long stack. */
 

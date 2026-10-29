@@ -80,22 +80,20 @@ const title = "NepDate: fast Nepali dates for every language you ship";
 const description =
   "Bikram Sambat (BS) date libraries for C#, Rust, Go, TypeScript, Python, Swift, Kotlin and C++, built from one dataset and one spec so every language gives the same answer. Plus MitiBar, a Nepali calendar for your desktop.";
 
-// What search and answer engines read about the page: the site, each library and the app.
+// What search and answer engines read about the page: the site, the libraries and the app. Kept
+// short: the page must stay inside the first network round trip. llms.txt has the install lines.
 const site = Astro.site?.href ?? "https://nepdate.com/";
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     { "@type": "WebSite", "@id": `${site}#site`, name: "NepDate", url: site, description },
-    ...ports.map((port) => ({
+    {
       "@type": "SoftwareSourceCode",
-      name: port.upstream ? "NepDate for .NET" : `NepDate for ${port.name}`,
-      description: `Bikram Sambat (Nepali calendar) dates in ${port.name}: conversion to and from AD, arithmetic, formatting, parsing, tithi and public holidays.`,
-      programmingLanguage: port.name,
-      codeRepository: repoUrl(port),
-      url: new URL(`/docs/${port.id}/`, site).href,
-      license: "https://opensource.org/license/mit",
-      isPartOf: { "@id": `${site}#site` },
-    })),
+      name: "NepDate",
+      programmingLanguage: ports.map((port) => port.name),
+      codeRepository: HUB,
+      license: "MIT",
+    },
     {
       "@type": "SoftwareApplication",
       name: "MitiBar",
@@ -219,7 +217,7 @@ const jsonLd = {
                 <div class="install-cmd">
                   <span class="install-kind">Core</span>
                   <code translate="no">{port.install}</code>
-                  <button type="button" class="copy" data-copy={port.install} aria-label={`Copy the ${port.name} core install line`}>
+                  <button type="button" class="copy" data-copy={port.install} aria-label={`Copy ${port.name} core`}>
                     Copy
                   </button>
                 </div>
@@ -227,7 +225,7 @@ const jsonLd = {
                   <div class="install-cmd">
                     <span class="install-kind">Patro</span>
                     <code translate="no">{port.patroInstall}</code>
-                    <button type="button" class="copy" data-copy={port.patroInstall} aria-label={`Copy the ${port.name} patro install line`}>
+                    <button type="button" class="copy" data-copy={port.patroInstall} aria-label={`Copy ${port.name} patro`}>
                       Copy
                     </button>
                   </div>
