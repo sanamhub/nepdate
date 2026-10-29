@@ -1,0 +1,39 @@
+---
+// The home page: this month in Nepal, as it was when the site was built. The script in
+// scripts/today.ts rings today and, if a new month has begun since, opens it.
+import { NepaliDate } from "nepdate-core";
+import Patro from "../layouts/Patro.astro";
+import MonthView from "../components/MonthView.astro";
+import { monthPath, pad } from "../lib/patro";
+
+const today = NepaliDate.today();
+// The first AD day of the months around now, so the script can find the current one.
+const starts: [string, string][] = [];
+for (let i = -1; i <= 13; i++) {
+  const m = ((today.month - 1 + i) % 12 + 12) % 12 + 1;
+  const y = today.year + Math.floor((today.month - 1 + i) / 12);
+  const first = NepaliDate.of(y, m, 1).toGregorian();
+  starts.push([`${first.year}-${pad(first.month)}-${pad(first.day)}`, monthPath(y, m)]);
+}
+const title = "Nepali Patro: today's date, tithi and public holidays | NepDate Patro";
+const description =
+  "The Nepali calendar (Bikram Sambat) with tithi, paksha, public holidays and events for every day, and the AD date beside each. Fast, clean, no ads.";
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "NepDate Patro",
+  url: "https://patro.nepdate.com/",
+  description,
+  inLanguage: ["ne", "en"],
+};
+---
+
+<Patro title={title} description={description} jsonLd={jsonLd}>
+  <div class="month wrap" data-month-starts={JSON.stringify(starts)}>
+    <MonthView year={today.year} month={today.month} />
+  </div>
+</Patro>
+
+<script>
+  import "../scripts/today";
+</script>

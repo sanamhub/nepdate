@@ -1,0 +1,133 @@
+---
+// A page for every day the patro has data for: the date as a calendar leaf, then its tithi,
+// paksha, public holiday and events, with the next public holiday after it.
+import Patro from "../../../../layouts/Patro.astro";
+import Moon from "../../../../components/Moon.astro";
+import {
+  PAKSHA_NAMES,
+  WEEKDAYS,
+  adLong,
+  adWeekdayName,
+  coveredDays,
+  dayPath,
+  monthEn,
+  monthNe,
+  monthPath,
+  ne,
+  pad,
+  type Day,
+} from "../../../../lib/patro";
+
+export function getStaticPaths() {
+  const days = coveredDays();
+  const holidays = days.filter((d) => d.holiday);
+  return days.map((d, i) => ({
+    params: { year: String(d.date.year), month: pad(d.date.month), day: pad(d.date.day) },
+    props: {
+      d,
+      prev: days[i - 1] ?? null,
+      next: days[i + 1] ?? null,
+      nextHoliday: holidays.find((h) => h.iso > d.iso) ?? null,
+    },
+  }));
+}
+
+interface Props {
+  d: Day;
+  prev: Day | null;
+  next: Day | null;
+  nextHoliday: Day | null;
+}
+const { d, prev, next, nextHoliday } = Astro.props;
+const { year, month, day } = d.date;
+const neLong = `${monthNe(month)} ${ne(day)}, ${ne(year)}`;
+const enLong = `${monthEn(month)} ${day}, ${year}`;
+const daysTo = (other: Day) => Math.round((Date.UTC(other.ad.year, other.ad.month - 1, other.ad.day) - Date.UTC(d.ad.year, d.ad.month - 1, d.ad.day)) / 86_400_000);
+const eventsEn = d.events.map((e) => e.en).join(", ");
+const title = `${neLong} | ${enLong} (${adLong(d)})${eventsEn ? `: ${eventsEn}` : ""}`;
+const description = [
+  `${enLong} BS is ${adWeekdayName(d)}, ${adLong(d)}.`,
+  d.tithi && `Tithi ${d.tithi.en}, ${PAKSHA_NAMES[d.tithi.paksha].en}.`,
+  d.holiday && "Public holiday in Nepal.",
+  eventsEn && `${eventsEn}.`,
+]
+  .filter(Boolean)
+  .join(" ");
+---
+
+<Patro title={title} description={description}>
+  <div class="day-page wrap">
+    <p class="crumbs">
+      <a href={`/${year}/`}>{ne(year)}</a> / <a href={monthPath(year, month)}>{monthNe(month)} {ne(year)}</a>
+    </p>
+    <div class="day-grid">
+      <article class:list={["leaf", { holiday: d.holiday, saturday: d.weekday === 6 }]} aria-labelledby="leaf-title">
+        <p class="leaf-weekday">{WEEKDAYS[d.weekday].ne}बार <span lang="en">{adWeekdayName(d)}</span></p>
+        <h1 id="leaf-title">
+          <span class="leaf-day">{ne(day)}</span>
+          <span class="leaf-month">{monthNe(month)} {ne(year)}</span>
+          <span class="visually-hidden" lang="en"> ({enLong})</span>
+        </h1>
+        <p class="leaf-ad" lang="en">{enLong} BS is {adLong(d)}</p>
+        {d.tithi && <Moon tithi={d.tithi} />}
+      </article>
+
+      <dl class="facts">
+        {
+          d.tithi && (
+            <div>
+              <dt>तिथि <span lang="en">Tithi</span></dt>
+              <dd>
+                {d.tithi.np}, {PAKSHA_NAMES[d.tithi.paksha].np}
+                <span class="en" lang="en">{d.tithi.en}, {PAKSHA_NAMES[d.tithi.paksha].en}</span>
+              </dd>
+            </div>
+          )
+        }
+        <div>
+          <dt>बिदा <span lang="en">Holiday</span></dt>
+          <dd>
+            {d.holiday ? <span class="holiday">सार्वजनिक बिदा</span> : "छैन"}
+            <span class="en" lang="en">{d.holiday ? "Public holiday" : "Not a public holiday"}</span>
+          </dd>
+        </div>
+        {
+          d.events.length > 0 && (
+            <div>
+              <dt>चाडपर्व <span lang="en">Events</span></dt>
+              <dd>
+                {d.events.map((e) => (
+                  <span style="display:block">
+                    {e.np}
+                    <span class="en" lang="en">{e.en}</span>
+                  </span>
+                ))}
+              </dd>
+            </div>
+          )
+        }
+        {
+          nextHoliday && (
+            <div>
+              <dt>अर्को बिदा <span lang="en">Next holiday</span></dt>
+              <dd>
+                <a href={dayPath(nextHoliday)}>
+                  {monthNe(nextHoliday.date.month)} {ne(nextHoliday.date.day)}
+                  {nextHoliday.events[0] ? `, ${nextHoliday.events[0].np}` : ""}
+                </a>
+                <span class="en" lang="en">
+                  in {daysTo(nextHoliday)} day{daysTo(nextHoliday) === 1 ? "" : "s"}
+                  {nextHoliday.events[0] ? `, ${nextHoliday.events[0].en}` : ""}
+                </span>
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+    </div>
+    <nav class="day-nav" aria-label="Days">
+      {prev ? <a href={dayPath(prev)} rel="prev">← {monthNe(prev.date.month)} {ne(prev.date.day)}</a> : <span />}
+      {next && <a href={dayPath(next)} rel="next">{monthNe(next.date.month)} {ne(next.date.day)} →</a>}
+    </nav>
+  </div>
+</Patro>

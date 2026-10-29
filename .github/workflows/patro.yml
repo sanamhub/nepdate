@@ -1,0 +1,59 @@
+name: patro
+
+# patro.nepdate.com (ADR-0006). Cloudflare Workers Builds deploys it; this workflow is the gate a
+# pull request must pass first: types, the data tests, a full build of every page, and no high or
+# critical advisory in the dependencies. It also runs when a file patro/ borrows from site/ changes.
+
+on:
+  pull_request:
+    paths:
+      - "patro/**"
+      - "site/fonts.mjs"
+      - "site/src/styles/tokens.css"
+      - "site/src/components/ThemeToggle.astro"
+      - "site/src/scripts/theme.ts"
+      - "site/src/assets/nepdate.svg"
+      - "site/public/favicon.svg"
+      - "site/public/footer-skyline.svg"
+      - ".github/workflows/patro.yml"
+  push:
+    branches: [main]
+    paths:
+      - "patro/**"
+      - "site/fonts.mjs"
+      - "site/src/styles/tokens.css"
+      - "site/src/components/ThemeToggle.astro"
+      - "site/src/scripts/theme.ts"
+      - "site/src/assets/nepdate.svg"
+      - "site/public/favicon.svg"
+      - "site/public/footer-skyline.svg"
+      - ".github/workflows/patro.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: patro-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: patro
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: patro/package-lock.json
+      - run: npm ci
+      - run: npm audit --audit-level=high
+      - run: npm run check
+      - run: npm run build
