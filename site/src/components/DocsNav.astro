@@ -1,0 +1,13 @@
+---
+// The docs header's links, the same as the landing header's, before Starlight's social icons.
+// Replaces Starlight's SocialIcons slot, so the two headers offer the same places to go.
+import Default from "@astrojs/starlight/components/SocialIcons.astro";
+---
+
+<nav class="docs-nav" aria-label="Site">
+  <a href="/">Home</a>
+  <a href="/#languages">Languages</a>
+  <a href="/docs/project/performance/">Performance</a>
+  <a href="/docs/apps/mitibar/">MitiBar</a>
+</nav>
+<Default />

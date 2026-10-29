@@ -58,45 +58,68 @@
   font-weight: 600;
 }
 
-/* Install: one panel. On narrow screens it is a language selector with the hero's tab pattern
-   (scripts/landing.ts), one install line at a time; from 48rem the tabs give way and every
-   language is a row, so the lines can be compared. Every line is in the HTML either way. */
+/* Supported languages. On narrow screens a language selector with the hero's tab pattern
+   (scripts/landing.ts) shows one language at a time; from 48rem the tabs give way and every
+   language shows, two to a row, so the lines can be compared. Every line is in the HTML either way.
+   The languages share one hairline grid rather than floating as separate cards. */
 
-.install [role="tabpanel"] {
+.install-grid {
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
+  overflow: hidden;
+}
+.install .tabs {
+  margin-bottom: 0.75rem;
+}
+.install-lang {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.75rem;
-  padding: 1.1rem 1.25rem 1.25rem;
+  gap: 0.6rem;
+  align-content: start;
+  min-width: 0;
+  padding: 1.15rem 1.25rem 1.2rem;
 }
-.install [role="tabpanel"][hidden] {
+.install-lang[hidden] {
   display: none;
-}
-.install-name {
-  display: none;
-  color: var(--nd-ink);
-  font-weight: 650;
 }
 @media (min-width: 48rem) {
-  .install {
-    padding: 0.25rem 1.25rem;
-  }
   .install .tabs {
     display: none;
   }
-  .install [role="tabpanel"],
-  .install [role="tabpanel"][hidden] {
+  .install-grid {
     display: grid;
-    grid-template-columns: 7.5rem minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 0.9rem 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--nd-hairline);
   }
-  .install [role="tabpanel"] + [role="tabpanel"] {
-    border-top: 1px solid var(--nd-hairline);
+  .install-lang,
+  .install-lang[hidden] {
+    display: grid;
+    background: var(--nd-raised);
   }
-  .install-name {
-    display: block;
-  }
+}
+.install-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  margin-bottom: 0.15rem;
+}
+.lang-icon {
+  flex: none;
+  color: var(--nd-ink);
+}
+.install-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 650;
+}
+.install-count {
+  margin-left: auto;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 .install-cmd {
   display: flex;
@@ -106,14 +129,42 @@
   border: 1px solid var(--nd-hairline);
   border-radius: var(--nd-radius-m);
 }
+.install-kind {
+  flex: none;
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  border-right: 1px solid var(--nd-hairline);
+  color: var(--nd-ink-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
 .install-cmd code {
   flex: 1;
   min-width: 0;
-  padding: 0.6rem 0.8rem;
+  padding: 0.6rem 0.75rem;
   overflow-x: auto;
   white-space: nowrap;
-  font-size: 0.8rem;
-  scrollbar-width: thin;
+  font-size: 0.78rem;
+  scrollbar-width: none;
+}
+.install-cmd code {
+  mask-image: linear-gradient(to right, #000 calc(100% - 1.25rem), transparent);
+}
+.install-cmd code::-webkit-scrollbar {
+  display: none;
+}
+.install-same {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 1px dashed var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  color: var(--nd-ink-muted);
+  font-size: 0.85rem;
 }
 .copy {
   flex: none;
@@ -138,6 +189,7 @@
 .install-links {
   display: flex;
   gap: 1rem;
+  margin-top: 0.15rem;
   font-size: var(--nd-step--1);
   white-space: nowrap;
 }
@@ -192,6 +244,32 @@
 }
 .field input::placeholder {
   color: var(--nd-ink-muted);
+}
+/* The day line under both fields: what the patro says about the converted date. */
+.day-info {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.25rem 0 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--nd-hairline);
+  font-size: 0.925rem;
+}
+.day-info p {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  margin: 0;
+}
+.day-label {
+  color: var(--nd-ink-muted);
+}
+.day-info .is-holiday {
+  color: var(--nd-sindoor);
+  font-weight: 600;
+}
+.day-info.unavailable {
+  display: none;
 }
 .result {
   min-height: 3.4rem;
@@ -279,93 +357,100 @@
   overflow: hidden;
 }
 
-/* Speed: one row per language, NepDate's bar drawn to scale against the next fastest library's.
-   Each bar has its label beside it at every width: who, then the time, and the time never
-   truncates; only a long library name does. On wide screens the heading stays in view while the
-   rows scroll past it. */
+/* Speed: one line per language. Both bars share one track, drawn to scale: the other library's
+   fills it, NepDate's sits on top and stops almost at once. On narrow screens the numbers move
+   under the track. */
 
-.speed-grid {
+.speed-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  gap: 0 4rem;
 }
 @media (min-width: 60rem) {
-  .speed-grid {
+  .speed-head {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 4rem;
-    align-items: start;
+    align-items: end;
   }
-  .sticky-head {
-    position: sticky;
-    top: 6rem;
+  .speed-head p {
+    margin: 0;
   }
 }
 .race {
   list-style: none;
-  padding: 0.25rem clamp(1rem, 3vw, 1.75rem);
+  padding: 0.35rem clamp(1rem, 3vw, 1.5rem);
 }
 .race li {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 11.5rem);
-  column-gap: 0.85rem;
-  row-gap: 0.35rem;
-  padding: 0.95rem 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "lang times"
+    "track track"
+    "nums nums";
+  align-items: center;
+  gap: 0.35rem 1rem;
+  padding: 0.75rem 0;
 }
-@media (min-width: 40rem) {
+@media (min-width: 48rem) {
   .race li {
-    grid-template-columns: minmax(0, 1fr) 14rem;
+    grid-template-columns: 6.5rem minmax(0, 1fr) minmax(0, 19rem) 6.5rem;
+    grid-template-areas: "lang track nums times";
+    padding: 0.6rem 0;
   }
 }
 .race li + li {
   border-top: 1px solid var(--nd-hairline);
 }
-.race-head {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
 .race-lang {
+  grid-area: lang;
   font-weight: 650;
 }
 .race-times {
+  grid-area: times;
+  justify-self: end;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.race-track {
+  grid-area: track;
+  position: relative;
+  height: 0.5rem;
 }
 .race-bar {
-  grid-column: 1;
-  align-self: center;
+  position: absolute;
+  inset-block: 0;
+  left: 0;
   width: var(--w);
   min-width: 3px;
-  height: 0.5rem;
   border-radius: var(--nd-radius-pill);
 }
 .race-bar.ours {
   background: var(--nd-ink);
 }
 .race-bar.theirs {
-  background: color-mix(in srgb, var(--nd-ink-muted) 30%, transparent);
+  background: color-mix(in srgb, var(--nd-ink-muted) 28%, transparent);
 }
-.race-label {
+.race-nums {
+  grid-area: nums;
   display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
+  align-items: baseline;
+  gap: 0.3rem;
   min-width: 0;
   color: var(--nd-ink-muted);
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.race-label .who {
+.race-nums strong {
+  color: var(--nd-ink);
+  font-weight: 650;
+}
+.race-nums .who {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.race-label .time {
-  flex: none;
-}
-.race-label strong {
-  color: var(--nd-ink);
-  font-weight: 650;
+.speed .text-link {
+  margin-top: 1.5rem;
 }
 
 /* Proof: the text and the three facts beside the month-length table. */
@@ -377,20 +462,26 @@
 }
 @media (min-width: 60rem) {
   .proof-grid {
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-    gap: 4rem;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 3.5rem;
     align-items: start;
   }
 }
+/* The four numbers sit in one row under the text and the table, so neither column runs long. */
 .facts {
-  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 2rem;
+  margin: 3rem 0 0;
   border-top: 1px solid var(--nd-hairline);
+}
+@media (min-width: 60rem) {
+  .facts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 .facts div {
-  padding: 1.1rem 0;
-}
-.facts div + div {
-  border-top: 1px solid var(--nd-hairline);
+  padding: 1.25rem 0 0;
 }
 .facts dt {
   font-weight: 600;
@@ -445,6 +536,12 @@
   font-size: 1rem;
   font-weight: 600;
 }
+@media (min-width: 60rem) {
+  .months td {
+    height: 3rem;
+    font-size: 1.05rem;
+  }
+}
 /* Thirteen columns fit a 320px panel: smaller figures, and no ticks, which would crowd them. */
 @media (max-width: 40rem) {
   .months-panel {
@@ -476,6 +573,16 @@
   border-width: 0 1.5px 1.5px 0;
   rotate: 45deg;
 }
+.months td:hover {
+  background: var(--nd-sunken);
+}
+.months-span {
+  margin: 0.9rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--nd-hairline);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
 .months td.now {
   color: var(--nd-sindoor);
   box-shadow: inset 0 0 0 2px var(--nd-sindoor);
@@ -484,8 +591,7 @@
 
 /* Apps and closing */
 
-.apps-grid,
-.closing-grid {
+.apps-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 3rem;
@@ -496,16 +602,22 @@
     gap: 5rem;
     align-items: center;
   }
-  .closing-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 5rem;
-  }
 }
 .closing {
   border-top: 1px solid var(--nd-hairline);
 }
+.closing-row {
+  display: grid;
+  gap: 0.75rem 4rem;
+}
+@media (min-width: 60rem) {
+  .closing-row {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: baseline;
+  }
+}
 .closing p {
-  margin: 1rem 0 0;
+  margin: 0;
   color: var(--nd-ink-muted);
   max-width: 34rem;
 }

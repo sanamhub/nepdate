@@ -5,7 +5,7 @@ import { defineConfig } from "astro/config";
 import starlightLinksValidator from "starlight-links-validator";
 import starlightLlmsTxt from "starlight-llms-txt";
 import { fonts } from "./fonts.mjs";
-import { VERSION } from "./src/data/ports";
+import { VERSION, ports } from "./src/data/ports";
 
 export default defineConfig({
   site: "https://nepdate.com",
@@ -18,9 +18,14 @@ export default defineConfig({
       title: "NepDate",
       description:
         "Bikram Sambat (Nepali calendar) libraries for C#, Rust, Go, TypeScript, Python, Swift, Kotlin and C++, and the MitiBar desktop calendar.",
-      logo: { src: "./src/assets/nepdate.svg", alt: "NepDate" },
+      // The title text beside the logo names the site, so the logo itself is decorative.
+      logo: { src: "./src/assets/nepdate.svg", alt: "" },
       favicon: "/favicon.svg",
-      components: { Head: "./src/components/Head.astro" },
+      components: {
+        Head: "./src/components/Head.astro",
+        SocialIcons: "./src/components/DocsNav.astro",
+        ThemeSelect: "./src/components/ThemeToggle.astro",
+      },
       social: [{ icon: "github", label: "GitHub", href: "https://github.com/sanamhub/nepdate" }],
       editLink: { baseUrl: "https://github.com/sanamhub/nepdate/edit/main/site/" },
       customCss: ["./src/styles/tokens.css", "./src/styles/starlight.css"],
@@ -32,7 +37,22 @@ export default defineConfig({
       ],
       expressiveCode: {
         themes: ["github-dark-default", "github-light-default"],
-        styleOverrides: { borderRadius: "0.5rem", codeFontFamily: "var(--nd-font-mono)" },
+        // Code sits on the landing page's sunken surface in a hairline frame, without a shadow.
+        styleOverrides: {
+          borderRadius: "var(--nd-radius-m)",
+          borderColor: "var(--nd-hairline)",
+          codeFontFamily: "var(--nd-font-mono)",
+          codeBackground: "var(--nd-sunken)",
+          frames: {
+            shadowColor: "transparent",
+            editorTabBarBackground: "var(--nd-raised)",
+            editorActiveTabBackground: "var(--nd-sunken)",
+            editorActiveTabIndicatorTopColor: "transparent",
+            editorActiveTabIndicatorBottomColor: "var(--nd-ink)",
+            terminalTitlebarBackground: "var(--nd-raised)",
+            terminalBackground: "var(--nd-sunken)",
+          },
+        },
       },
       sidebar: [
         {
@@ -79,7 +99,7 @@ export default defineConfig({
         {
           label: "Project",
           items: [
-            { label: "Calendar data", link: "/docs/project/data/" },
+            { label: "Data and credits", link: "/docs/project/data/" },
             { label: "Same answer everywhere", link: "/docs/project/conformance/" },
             { label: "Performance", link: "/docs/project/performance/" },
             { label: "Versions and status", link: "/docs/project/versions/" },
@@ -93,9 +113,14 @@ export default defineConfig({
         starlightLlmsTxt({
           projectName: "NepDate",
           description:
-            "Bikram Sambat (Nepali calendar) libraries with the same behaviour in Rust, Go, TypeScript, Python, Swift, Kotlin and C++, built from one shared dataset and spec.",
-          details:
-            `Every port converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to 2143-04-15). Each ships a core package and a separate patro package (tithi, public holidays, events). Version ${VERSION} is a pre-release.`,
+            "Bikram Sambat (Nepali calendar) date libraries for C#, Rust, Go, TypeScript, Python, Swift, Kotlin and C++ with the same behaviour in every language, built from one shared dataset and spec.",
+          details: [
+            `Every port converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to 2143-04-15). Each ships a core package and a separate patro package (tithi, public holidays, events). Version ${VERSION} is a pre-release. C# NepDate is the original library, one package with its own versions.`,
+            "",
+            "Install the core:",
+            "",
+            ...ports.map((port) => `- ${port.name}: \`${port.install}\``),
+          ].join("\n"),
         }),
       ],
     }),

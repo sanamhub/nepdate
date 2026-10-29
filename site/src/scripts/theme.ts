@@ -1,8 +1,10 @@
-// The header's theme button. It stores the choice under Starlight's key, so the docs open in the
-// same theme.
-const button = document.querySelector<HTMLButtonElement>(".theme-toggle");
+// The header's theme button (ThemeToggle.astro). It stores the choice under Starlight's key, so the
+// landing page and the docs open in the same theme.
+for (const button of document.querySelectorAll<HTMLButtonElement>(".theme-toggle")) {
+  button.addEventListener("click", toggle);
+}
 
-button?.addEventListener("click", () => {
+function toggle() {
   const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   document.documentElement.dataset.theme = next;
   try {
@@ -10,4 +12,4 @@ button?.addEventListener("click", () => {
   } catch {
     // Storage blocked (private window): the choice lasts for this page only.
   }
-});
+}

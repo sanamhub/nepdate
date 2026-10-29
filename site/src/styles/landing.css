@@ -231,7 +231,45 @@ dd code {
    disc on top, the language tabs and a sample below, and a result line per language. */
 
 .hero {
-  padding-block: clamp(2rem, 6vw, 5.5rem) clamp(4rem, 8vw, 7rem);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: clamp(3.5rem, 7vw, 6.5rem) clamp(4rem, 8vw, 7rem);
+}
+
+/* Behind the hero, a wall patro's printed sheet: seven ruled columns under the weekday names, the
+   Saturday column washed in sindoor as a printed patro marks its holiday. It fades out toward the
+   content and the next section, so it reads as paper, not as a pattern. Pure CSS and seven words
+   of text: nothing to download. */
+.patro-sheet {
+  --rule: color-mix(in srgb, var(--nd-hairline) 80%, transparent);
+  --row: clamp(4.5rem, 9vw, 7rem);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-content: start;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, transparent calc(100% / 7 * 6), color-mix(in srgb, var(--nd-sindoor) 5%, transparent) 0),
+    linear-gradient(to right, var(--rule) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    calc(100% / 7) 100%,
+    100% var(--row);
+  background-position: 0 0, 0 0, 0 2.25rem;
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 30%, #000 30%, transparent 100%);
+}
+.patro-sheet span {
+  padding: 0.55rem 0.75rem;
+  color: color-mix(in srgb, var(--nd-ink-muted) 55%, transparent);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.patro-sheet span:last-child {
+  color: color-mix(in srgb, var(--nd-sindoor) 60%, transparent);
 }
 .hero-grid {
   display: grid;
@@ -390,7 +428,11 @@ dd code {
   font-size: 0.82rem;
   line-height: 1.7;
   background: transparent !important;
-  overflow-x: auto;
+  /* No inner scrollbar: the samples are written to fit, and a narrow screen wraps a long line
+     instead of hiding its end. */
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 :root[data-theme="dark"] .astro-code,
 :root[data-theme="dark"] .astro-code span {

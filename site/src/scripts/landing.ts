@@ -70,6 +70,39 @@ function copyButtons() {
   }
 }
 
+/** nepdate-patro is about 25 KB compressed, so it loads only when a date is converted. */
+let patro: Promise<typeof import("nepdate-patro")> | undefined;
+const loadPatro = () => (patro ??= import("nepdate-patro"));
+
+/** The converter's day line: tithi, public holiday and events for the date, from nepdate-patro. */
+async function showDay(out: HTMLElement, date: NepaliDate) {
+  const { coverage, info } = await loadPatro();
+  const { start, end } = coverage();
+  const day = info(date);
+  const set = (selector: string, text: string, lang?: string, holiday = false) => {
+    const value = out.querySelector<HTMLElement>(`${selector} span:last-child`);
+    if (!value) return;
+    value.replaceChildren(text);
+    value.classList.toggle("is-holiday", holiday);
+    if (lang) {
+      const native = document.createElement("span");
+      native.lang = lang;
+      native.textContent = lang === "ne" && day.tithi ? day.tithi.np : "";
+      value.append(native);
+    }
+  };
+  if (NepaliDate.compare(date, start) < 0 || NepaliDate.compare(date, end) > 0) {
+    const range = `The patro covers BS ${start.toJSON()} to ${end.toJSON()}.`;
+    set(".day-tithi", range);
+    set(".day-holiday", "No holiday data for this day");
+    set(".day-events", "No event data for this day");
+    return;
+  }
+  set(".day-tithi", day.tithi ? `${day.tithi.en}, ` : "None listed", day.tithi ? "ne" : undefined);
+  set(".day-holiday", day.isPublicHoliday ? "Public holiday" : "Not a public holiday", undefined, day.isPublicHoliday);
+  set(".day-events", day.events.length ? day.events.map((e) => e.en).join(", ") : "None listed");
+}
+
 /** Why a value isn't a date, in words a visitor can act on. */
 function reason(error: unknown): string {
   if (!(error instanceof NepDateError)) return "That isn't a date this converter understands.";
@@ -113,7 +146,8 @@ function converter(form: HTMLFormElement) {
   const ad = form.querySelector<HTMLInputElement>("#ad-input");
   const bsOut = form.querySelector<HTMLElement>("[data-bs-result]");
   const adOut = form.querySelector<HTMLElement>("[data-ad-result]");
-  if (!bs || !ad || !bsOut || !adOut) return;
+  const dayOut = form.querySelector<HTMLElement>("[data-day-info]");
+  if (!bs || !ad || !bsOut || !adOut || !dayOut) return;
   form.addEventListener("submit", (event) => event.preventDefault());
   adCalendarButton(form, ad);
 
@@ -134,7 +168,16 @@ function converter(form: HTMLFormElement) {
   const showBoth = (date: NepaliDate) => {
     render(bsOut, [`AD ${adOf(date)}`, date.long({ weekday: true, lang: "ne" })]);
     render(adOut, [`BS ${date.long({ weekday: true, pad: false })}`, date.long({ weekday: true, lang: "ne" })]);
+    if (seen) showDay(dayOut, date).catch(() => dayOut.classList.add("unavailable"));
   };
+  // The day line needs nepdate-patro, so it waits until the converter is on screen.
+  let seen = false;
+  new IntersectionObserver((entries, observer) => {
+    if (!entries.some((e) => e.isIntersecting)) return;
+    observer.disconnect();
+    seen = true;
+    if (bs.date) showDay(dayOut, bs.date).catch(() => dayOut.classList.add("unavailable"));
+  }).observe(form);
 
   // The picker parses what the visitor types and fires change when the date is committed (Enter,
   // leaving the field or a day chosen in the calendar). Text it can't read leaves no date and
@@ -171,10 +214,49 @@ function converter(form: HTMLFormElement) {
 
   bs.addEventListener("change", fromBs);
   ad.addEventListener("input", fromAd);
+  // The page may have been built days ago: start from the visitor's own today.
+  bs.date = NepaliDate.today();
   fromBs();
 }
 
+/** The month-length table: pointing at a month shows its AD dates in the line under the table,
+ *  in the same words as the build-time line (components/landing/MonthLengths.astro). */
+function monthSpans() {
+  const line = document.querySelector<HTMLElement>("[data-months-span]");
+  const table = document.querySelector<HTMLTableElement>("[data-months]");
+  if (!line || !table) return;
+  const initial = line.textContent;
+  const plain = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+  const adDay = (d: NepaliDate) => {
+    const g = d.toGregorian();
+    return plain.format(new Date(Date.UTC(g.year, g.month - 1, g.day)));
+  };
+  table.addEventListener("pointerover", (event) => {
+    const cell = (event.target as HTMLElement).closest<HTMLTableCellElement>("td");
+    const year = Number(cell?.parentElement?.dataset.year);
+    if (!cell || !year) return;
+    const month = cell.cellIndex; // column 0 is the year
+    const first = NepaliDate.of(year, month, 1);
+    const last = NepaliDate.of(year, month, Number.parseInt(cell.textContent ?? "", 10));
+    line.textContent = `${monthName(month)} ${year}: ${adDay(first)} to ${adDay(last)}`;
+  });
+  table.addEventListener("pointerleave", () => (line.textContent = initial));
+}
+
+/** Turns the hero's date over at midnight in Nepal (UTC+05:45), for a page left open overnight. */
+function tickAtNepalMidnight() {
+  const offset = (5 * 60 + 45) * 60_000;
+  const day = 86_400_000;
+  const wait = day - ((Date.now() + offset) % day) + 1000;
+  setTimeout(() => {
+    showToday();
+    tickAtNepalMidnight();
+  }, wait);
+}
+
 showToday();
+tickAtNepalMidnight();
+monthSpans();
 document.querySelectorAll<HTMLElement>("[data-tabs]").forEach(tabs);
 copyButtons();
 const form = document.querySelector<HTMLFormElement>("[data-converter]");

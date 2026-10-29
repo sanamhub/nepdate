@@ -7,3 +7,6 @@
 
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
+
+/lang-icons.svg
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
