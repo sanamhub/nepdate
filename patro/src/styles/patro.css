@@ -14,6 +14,9 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   background: var(--nd-surface);
+  /* Room for the scrollbar from the first paint: a page that paints before its end has arrived
+     would otherwise move sideways when the scrollbar appears. */
+  scrollbar-gutter: stable;
 }
 body {
   margin: 0;

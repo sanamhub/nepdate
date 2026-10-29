@@ -12,6 +12,9 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   background: var(--nd-surface);
+  /* Room for the scrollbar from the first paint: a page that paints before its end has arrived
+     would otherwise move sideways when the scrollbar appears. */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -152,12 +155,12 @@ dd code {
   background: var(--nd-sunken);
   text-decoration: none;
 }
-.site-header nav a:is([href="/#languages"], [href="/#performance"], [href="/docs/apps/mitibar/"]) {
+.site-header nav a:is([href="/#languages"], [href="/#performance"], [href="/#mitibar"]) {
   display: none;
 }
 /* MitiBar has its own hero button and section, so a phone's header keeps room for the name. */
 @media (min-width: 30rem) {
-  .site-header nav a[href="/docs/apps/mitibar/"] {
+  .site-header nav a[href="/#mitibar"] {
     display: inline-block;
   }
 }
@@ -223,7 +226,7 @@ dd code {
 
 /* The two apps beside Get started, joined in one bordered group: each with its mark (a calendar
    with today in sindoor, a screen with the taskbar date) and where it runs. */
-.apps {
+.app-links {
   display: inline-flex;
   min-height: 2.75rem;
   border: 1px solid var(--nd-hairline);
@@ -231,7 +234,7 @@ dd code {
   background: var(--nd-raised);
   overflow: hidden;
 }
-.apps a {
+.app-links a {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -241,14 +244,14 @@ dd code {
   font-size: 0.95rem;
   transition: background-color 0.15s ease;
 }
-.apps a + a {
+.app-links a + a {
   border-left: 1px solid var(--nd-hairline);
 }
-.apps a:hover {
+.app-links a:hover {
   background: var(--nd-sunken);
   text-decoration: none;
 }
-.apps small {
+.app-links small {
   color: var(--nd-ink-muted);
   font-size: 0.8rem;
   font-weight: 500;
@@ -522,7 +525,7 @@ input {
 /* In the two-column hero the apps keep their marks and names and drop where they run, so they stay
    on the row with Get started; the marks already say calendar and screen. */
 @media (min-width: 72rem) {
-  .apps small {
+  .app-links small {
     display: none;
   }
 }

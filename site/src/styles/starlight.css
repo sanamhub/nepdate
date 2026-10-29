@@ -194,3 +194,8 @@ header.header {
 site-search kbd {
   display: none;
 }
+
+/* Room for the scrollbar from the first paint, as on the landing page (landing.css). */
+html {
+  scrollbar-gutter: stable;
+}
