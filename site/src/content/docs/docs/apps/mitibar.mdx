@@ -11,13 +11,14 @@ settings one click away. On Windows a small floating bar shows the date and time
 The popup opens from the tray, the bar or a global shortcut, Win+Shift+N, and closes when it loses
 focus. It makes no network requests.
 
-It is built on the [Rust library](/docs/rust/) and lives in the same repository,
-[sanamhub/nepdate-rust](https://github.com/sanamhub/nepdate-rust/tree/main/apps/mitibar).
+It is built on the [Rust library](/docs/rust/) and lives in its own repository,
+[sanamhub/mitibar](https://github.com/sanamhub/mitibar), with its own version line.
 
 ## Download
 
 <p>
-  <a href={MITIBAR_RELEASE}><strong>MitiBar {MITIBAR_VERSION}</strong></a> on GitHub Releases has:
+  MitiBar <strong>{MITIBAR_VERSION}</strong>, the first release from its own repository, is being
+  prepared. <a href={MITIBAR_RELEASE}>GitHub Releases</a> will have:
 </p>
 
 | Platform | Files |
@@ -40,7 +41,7 @@ Every release has a `SHA256SUMS` file and a build provenance attestation. With t
 <Code
   lang="sh"
   code={`sha256sum --check --ignore-missing SHA256SUMS
-gh attestation verify mitibar_${MITIBAR_VERSION}_x64-setup.exe --repo sanamhub/nepdate-rust`}
+gh attestation verify mitibar_${MITIBAR_VERSION}_x64-setup.exe --repo sanamhub/mitibar`}
 />
 
 ## What it does
@@ -69,9 +70,9 @@ xkbcommon and D-Bus. The renderer is software only, so no OpenGL or GPU driver i
 
 | Topic | Where |
 |---|---|
-| Requirements and design | [docs/design](https://github.com/sanamhub/nepdate-rust/blob/main/docs/design/widget-requirements.md) |
-| Idle memory, CPU and cold start | [docs/benchmarks-widget.md](https://github.com/sanamhub/nepdate-rust/blob/main/docs/benchmarks-widget.md) |
-| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-rust/blob/main/apps/mitibar/CHANGELOG.md) |
+| Requirements and design | [docs/design](https://github.com/sanamhub/mitibar/blob/main/docs/design/widget-requirements.md) |
+| Idle memory, CPU and cold start | [docs/benchmarks-widget.md](https://github.com/sanamhub/mitibar/blob/main/docs/benchmarks-widget.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/mitibar/blob/main/CHANGELOG.md) |
 
 MitiBar follows [NepDateWidget](https://github.com/RajuPrasai/NepDateWidget), with its author's
 permission. It is made with [Slint](https://slint.dev) and uses the Noto fonts.
