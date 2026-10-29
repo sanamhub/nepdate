@@ -76,7 +76,7 @@ Time per call for B1 to B8. Lower is better. B8 builds a whole month grid with t
     </tr>
   </thead>
   <tbody>
-    {[...benchmarks, { name: "C# NepDate", ops: csharp.ops }].map((row) => (
+    {[{ name: "C# NepDate", ops: csharp.ops }, ...benchmarks].map((row) => (
       <tr>
         <th scope="row" style="white-space: nowrap">{row.name}</th>
         {row.ops.map((ns) => <td style="text-align: right; white-space: nowrap">{formatNs(ns)}</td>)}
