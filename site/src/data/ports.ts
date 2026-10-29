@@ -40,6 +40,24 @@ const gh = (repo: string) => `https://github.com/sanamhub/${repo}`;
 
 export const ports: Port[] = [
   {
+    id: "csharp",
+    name: "C#",
+    lang: "csharp",
+    repo: "NepDate",
+    core: "NepDate",
+    patro: "NepDate",
+    install: `dotnet add package NepDate --version ${CSHARP_VERSION}`,
+    installLang: "sh",
+    registry: { label: "NuGet", href: "https://www.nuget.org/packages/NepDate/" },
+    api: { label: "NepDate docs", href: "https://nepdate.rajuprasai.com.np/" },
+    sample: `using NepDate;
+
+var date = new NepaliDate(2081, 4, 15);
+Console.WriteLine(date.EnglishDate.ToString("yyyy-MM-dd")); // 2024-07-30
+Console.WriteLine(date.ToLongDateString());                 // Shrawan 15, 2081`,
+    upstream: { href: "https://github.com/RajuPrasai/NepDate", docs: "https://nepdate.rajuprasai.com.np/" },
+  },
+  {
     id: "rust",
     name: "Rust",
     lang: "rust",
@@ -158,24 +176,6 @@ println(date.toLongString())                                                // S
 const nepdate::date d = nepdate::make_date(2081, 4, 15).value();
 const auto ad = d.to_year_month_day();    // 2024-07-30
 std::cout << nepdate::to_string(d);       // 2081/04/15`,
-  },
-  {
-    id: "csharp",
-    name: "C#",
-    lang: "csharp",
-    repo: "NepDate",
-    core: "NepDate",
-    patro: "NepDate",
-    install: `dotnet add package NepDate --version ${CSHARP_VERSION}`,
-    installLang: "sh",
-    registry: { label: "NuGet", href: "https://www.nuget.org/packages/NepDate/" },
-    api: { label: "NepDate docs", href: "https://nepdate.rajuprasai.com.np/" },
-    sample: `using NepDate;
-
-var date = new NepaliDate(2081, 4, 15);
-Console.WriteLine(date.EnglishDate.ToString("yyyy-MM-dd")); // 2024-07-30
-Console.WriteLine(date.ToLongDateString());                 // Shrawan 15, 2081`,
-    upstream: { href: "https://github.com/RajuPrasai/NepDate", docs: "https://nepdate.rajuprasai.com.np/" },
   },
 ];
 
