@@ -7,11 +7,12 @@
 export const VERSION = "0.1.0-beta.1";
 /** The same version as PyPI spells it (PEP 440). */
 export const PYPI_VERSION = "0.1.0b1";
-/** MitiBar's release, tagged in nepdate-rust. */
-export const MITIBAR_VERSION = "0.1.0-beta.1";
+/** MitiBar's next release, the first from its own repository (it has its own version line). */
+export const MITIBAR_VERSION = "0.2.0-beta.1";
 /** C# NepDate, the original library the ports are checked against (hub ADR-0003). */
 export const CSHARP_VERSION = "2.0.7";
-export const MITIBAR_RELEASE = `https://github.com/sanamhub/nepdate-rust/releases/tag/mitibar-v${MITIBAR_VERSION}`;
+export const MITIBAR_REPO = "https://github.com/sanamhub/mitibar";
+export const MITIBAR_RELEASE = `${MITIBAR_REPO}/releases`;
 
 export const HUB = "https://github.com/sanamhub/nepdate";
 /** The calendar site (ADR-0006). */
