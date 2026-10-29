@@ -1,18 +1,18 @@
-// The site's three font families for Astro's font API, read from the installed fontsource
-// packages so the files and their unicode ranges always match the package version. Astro writes
-// the @font-face rules, hashes the files and generates metric-matched fallbacks.
+// The font families for Astro's font API, read from the installed fontsource packages so the files
+// and their unicode ranges always match the package version. Astro writes the @font-face rules,
+// hashes the files and generates metric-matched fallbacks. Shared with patro/ (ADR-0006), which
+// passes its own module URL so the packages resolve from its own node_modules.
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { fontProviders } from "astro/config";
 
-const require = createRequire(import.meta.url);
-
 /**
  * One subset of a fontsource variable package as a local-provider variant.
+ * @param {NodeRequire} require resolves the package from the calling project
  * @param {string} pkg e.g. "@fontsource-variable/noto-sans"
  * @param {string} subset e.g. "latin"
  */
-function variant(pkg, subset) {
+function variant(require, pkg, subset) {
   const css = readFileSync(require.resolve(`${pkg}/wght.css`), "utf8");
   for (const block of css.split("@font-face").slice(1)) {
     const file = /url\(\.\/(files\/[^)]+-wght-normal\.woff2)\)/.exec(block)?.[1];
@@ -32,25 +32,36 @@ function variant(pkg, subset) {
 }
 
 /**
- * @param {string} name
- * @param {string} cssVariable
- * @param {string} pkg
- * @param {string} subset
- * @param {string[]} fallbacks
+ * The font families for a project, resolved from that project's own packages.
+ * @param {string} moduleUrl the calling config's `import.meta.url`
+ * @param {{ mono?: boolean }} [options] `mono: false` leaves out the code face
  */
-const family = (name, cssVariable, pkg, subset, fallbacks) => ({
-  provider: fontProviders.local(),
-  name,
-  cssVariable,
-  fallbacks,
-  optimizedFallbacks: fallbacks.length > 0,
-  options: { variants: [variant(pkg, subset)] },
-});
+export function fontsFor(moduleUrl, { mono = true } = {}) {
+  const require = createRequire(moduleUrl);
+  /**
+   * @param {string} name
+   * @param {string} cssVariable
+   * @param {string} pkg
+   * @param {string} subset
+   * @param {string[]} fallbacks
+   */
+  const family = (name, cssVariable, pkg, subset, fallbacks) => ({
+    provider: fontProviders.local(),
+    name,
+    cssVariable,
+    fallbacks,
+    optimizedFallbacks: fallbacks.length > 0,
+    options: { variants: [variant(require, pkg, subset)] },
+  });
+  return [
+    // Devanagari comes first in --nd-font-sans and covers only Devanagari, so it has no fallbacks
+    // of its own: Latin text falls through to Noto Sans and its metric-matched fallback.
+    family("Noto Sans Devanagari", "--nd-font-noto-deva", "@fontsource-variable/noto-sans-devanagari", "devanagari", []),
+    family("Noto Sans", "--nd-font-noto", "@fontsource-variable/noto-sans", "latin", ["sans-serif"]),
+    ...(mono
+      ? [family("JetBrains Mono", "--nd-font-jetbrains", "@fontsource-variable/jetbrains-mono", "latin", ["monospace"])]
+      : []),
+  ];
+}
 
-export const fonts = [
-  // Devanagari comes first in --nd-font-sans and covers only Devanagari, so it has no fallbacks of
-  // its own: Latin text falls through to Noto Sans and its metric-matched fallback.
-  family("Noto Sans Devanagari", "--nd-font-noto-deva", "@fontsource-variable/noto-sans-devanagari", "devanagari", []),
-  family("Noto Sans", "--nd-font-noto", "@fontsource-variable/noto-sans", "latin", ["sans-serif"]),
-  family("JetBrains Mono", "--nd-font-jetbrains", "@fontsource-variable/jetbrains-mono", "latin", ["monospace"]),
-];
+export const fonts = fontsFor(import.meta.url);
