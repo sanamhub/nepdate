@@ -2,12 +2,17 @@
 
 > The Nepali calendar (Bikram Sambat) with the AD date, tithi, paksha, public holidays and events for each day.
 
-Built from the NepDate libraries (https://nepdate.com). Dates cover BS 1901 to 2199; tithi, holidays and events cover BS 2077 to 2084, with tithi from 2078. Patro data is informational, not an official calendar.
+Built from the [NepDate](https://nepdate.com/) libraries. Dates cover BS 1901 to 2199; tithi, holidays and events cover BS 2077 to 2084, with tithi from 2078. Patro data is informational, not an official calendar. Pages follow the URL patterns below, so any year, month or day can be reached directly.
 
 ## Pages
 
-- https://patro.nepdate.com/: the current month in Nepal
-- https://patro.nepdate.com/2083/: a BS year, its twelve months and its public holidays
-- https://patro.nepdate.com/2083/07/: a BS month (Kartik 2083), every day with its AD date, tithi, holidays and events
-- https://patro.nepdate.com/2083/07/22/: one day, with tithi, paksha, holiday, events and the next public holiday
-- https://patro.nepdate.com/2083/holidays.ics: a year's public holidays as an iCalendar file
+- [This month](https://patro.nepdate.com/): the current month in Nepal
+- [A year, BS 2083](https://patro.nepdate.com/2083/): its twelve months and public holidays; any year from 1901 to 2199 at `/YYYY/`
+- [A month, Kartik 2083](https://patro.nepdate.com/2083/07/): every day with its AD date, tithi, holidays and events; any month at `/YYYY/MM/`
+- [A day, Kartik 22, 2083](https://patro.nepdate.com/2083/07/22/): tithi, paksha, holiday, events and the next public holiday; days the patro covers at `/YYYY/MM/DD/`
+- [Public holidays of 2083 as iCalendar](https://patro.nepdate.com/2083/holidays.ics): add them to a calendar app; one file per year with holidays
+
+## Optional
+
+- [NepDate libraries and docs](https://nepdate.com/llms.txt): the same calendar for C#, Rust, Go, TypeScript, Python, Swift, Kotlin and C++
+- [Calendar data and credits](https://nepdate.com/docs/project/data/): where the month lengths, tithi and holidays come from
