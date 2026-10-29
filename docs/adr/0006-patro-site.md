@@ -25,8 +25,9 @@ data), which would slow the docs build and its link check.
    same way ADR-0005 builds `site/`: static files, no Worker code, no token in GitHub. Previews per
    pull request.
 2. **One design system.** `patro/` imports the colour tokens, the fonts setup and the valley skyline
-   from `site/` by relative path, so a change to the look is made once. The patro has its own
-   layout and components.
+   from `site/` by relative path, and the theme switch from `web/`, a folder for code both sites
+   share (code under `site/` compiles against `site/`'s packages). A change to the look is made
+   once. The patro has its own layout and components.
 3. **Pages, all static, all built from the published packages:**
    - a month page for every BS month, 1901 to 2199 (`/2083/07/`), with AD dates, tithi, public
      holidays and events where the patro has them;

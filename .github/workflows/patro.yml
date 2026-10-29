@@ -2,7 +2,7 @@ name: patro
 
 # patro.nepdate.com (ADR-0006). Cloudflare Workers Builds deploys it; this workflow is the gate a
 # pull request must pass first: types, the data tests, a full build of every page, and no high or
-# critical advisory in the dependencies. It also runs when a file patro/ borrows from site/ changes.
+# critical advisory in the dependencies. It also runs when a file patro/ borrows from site/ or web/ changes.
 
 on:
   pull_request:
@@ -10,8 +10,7 @@ on:
       - "patro/**"
       - "site/fonts.mjs"
       - "site/src/styles/tokens.css"
-      - "site/src/components/ThemeToggle.astro"
-      - "site/src/scripts/theme.ts"
+      - "web/**"
       - "site/src/assets/nepdate.svg"
       - "site/public/favicon.svg"
       - "site/public/footer-skyline.svg"
@@ -22,8 +21,7 @@ on:
       - "patro/**"
       - "site/fonts.mjs"
       - "site/src/styles/tokens.css"
-      - "site/src/components/ThemeToggle.astro"
-      - "site/src/scripts/theme.ts"
+      - "web/**"
       - "site/src/assets/nepdate.svg"
       - "site/public/favicon.svg"
       - "site/public/footer-skyline.svg"

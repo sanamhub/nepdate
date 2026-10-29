@@ -28,8 +28,9 @@ src/scripts/today.ts          rings today in Nepal and keeps the home page on th
 src/styles/patro.css          the patro's styles; the tokens are site/src/styles/tokens.css
 ```
 
-The tokens, fonts (`site/fonts.mjs`), theme switch, logo and valley drawing are read from
-`../site`, so a change to the look is made once. CI builds this site when any of them changes.
+The tokens, fonts (`site/fonts.mjs`), logo and valley drawing are read from `../site`, and the
+theme switch from `../web`, so a change to the look is made once. CI builds this site when any of
+them changes. None of them needs `site/`'s packages, so this site builds with only its own installed.
 
 ## Data
 

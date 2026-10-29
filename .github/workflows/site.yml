@@ -6,10 +6,10 @@ name: site
 
 on:
   pull_request:
-    paths: ["site/**", ".github/workflows/site.yml"]
+    paths: ["site/**", "web/**", ".github/workflows/site.yml"]
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/site.yml"]
+    paths: ["site/**", "web/**", ".github/workflows/site.yml"]
 
 permissions:
   contents: read

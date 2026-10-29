@@ -1,10 +1,10 @@
 // The font families for Astro's font API, read from the installed fontsource packages so the files
 // and their unicode ranges always match the package version. Astro writes the @font-face rules,
 // hashes the files and generates metric-matched fallbacks. Shared with patro/ (ADR-0006), which
-// passes its own module URL so the packages resolve from its own node_modules.
+// passes its own module URL and its own Astro's font providers, so nothing resolves from site/:
+// this file imports no package.
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { fontProviders } from "astro/config";
 
 /**
  * One subset of a fontsource variable package as a local-provider variant.
@@ -34,9 +34,10 @@ function variant(require, pkg, subset) {
 /**
  * The font families for a project, resolved from that project's own packages.
  * @param {string} moduleUrl the calling config's `import.meta.url`
+ * @param {typeof import("astro/config").fontProviders} providers the caller's `fontProviders`
  * @param {{ mono?: boolean }} [options] `mono: false` leaves out the code face
  */
-export function fontsFor(moduleUrl, { mono = true } = {}) {
+export function fontsFor(moduleUrl, providers, { mono = true } = {}) {
   const require = createRequire(moduleUrl);
   /**
    * @param {string} name
@@ -46,7 +47,7 @@ export function fontsFor(moduleUrl, { mono = true } = {}) {
    * @param {string[]} fallbacks
    */
   const family = (name, cssVariable, pkg, subset, fallbacks) => ({
-    provider: fontProviders.local(),
+    provider: providers.local(),
     name,
     cssVariable,
     fallbacks,
@@ -64,4 +65,3 @@ export function fontsFor(moduleUrl, { mono = true } = {}) {
   ];
 }
 
-export const fonts = fontsFor(import.meta.url);

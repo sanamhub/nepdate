@@ -1,10 +1,10 @@
 // nepdate.com: the landing page (src/pages/index.astro) and the docs under /docs/ (Starlight).
 // Built to static files in dist/ and served by a Cloudflare Worker (wrangler.jsonc, ADR-0005).
 import starlight from "@astrojs/starlight";
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 import starlightLinksValidator from "starlight-links-validator";
 import starlightLlmsTxt from "starlight-llms-txt";
-import { fonts } from "./fonts.mjs";
+import { fontsFor } from "./fonts.mjs";
 import { VERSION, ports } from "./src/data/ports";
 
 export default defineConfig({
@@ -12,7 +12,7 @@ export default defineConfig({
   trailingSlash: "ignore",
   // Inline the CSS: one round trip less before first paint, at a few KB of HTML per page.
   build: { format: "directory", inlineStylesheets: "always" },
-  fonts,
+  fonts: fontsFor(import.meta.url, fontProviders),
   integrations: [
     starlight({
       title: "NepDate",
@@ -24,7 +24,7 @@ export default defineConfig({
       components: {
         Head: "./src/components/Head.astro",
         SocialIcons: "./src/components/DocsNav.astro",
-        ThemeSelect: "./src/components/ThemeToggle.astro",
+        ThemeSelect: "../web/ThemeToggle.astro",
       },
       social: [{ icon: "github", label: "GitHub", href: "https://github.com/sanamhub/nepdate" }],
       editLink: { baseUrl: "https://github.com/sanamhub/nepdate/edit/main/site/" },
