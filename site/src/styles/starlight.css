@@ -125,3 +125,72 @@ h1#_top {
 .sl-markdown-content table.bench :is(th, td) {
   padding-inline: 0.45rem;
 }
+
+/* The header matches the landing page's: translucent paper with a blur, the same links and the
+   same light and dark switch (DocsNav.astro, ThemeToggle.astro). */
+header.header {
+  background-color: color-mix(in srgb, var(--nd-surface) 86%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom-color: var(--nd-hairline);
+}
+.docs-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.docs-nav a,
+.theme-toggle {
+  color: var(--nd-ink-muted);
+  font-size: 0.925rem;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--nd-radius-m);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.docs-nav a:hover,
+.theme-toggle:hover {
+  color: var(--nd-ink);
+  background: var(--nd-sunken);
+}
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+:root[data-theme="light"] .theme-toggle .sun,
+:root[data-theme="dark"] .theme-toggle .moon {
+  display: none;
+}
+/* The links only fit beside the search box on wide screens; narrower, the menu has the sidebar. */
+@media (max-width: 72rem) {
+  .docs-nav {
+    display: none;
+  }
+}
+
+/* Asides in the landing page's colours: the caution note in marigold, not a bright yellow block. */
+:root {
+  --sl-color-orange-low: #3a2a12;
+  --sl-color-orange: #e8a33d;
+  --sl-color-orange-high: #f3d6a6;
+}
+:root[data-theme="light"] {
+  --sl-color-orange-low: #fbf1df;
+  --sl-color-orange: #b9741a;
+  --sl-color-orange-high: #5f3c0d;
+}
+.starlight-aside {
+  border-radius: var(--nd-radius-m);
+  border-inline-start-width: 3px;
+}
+
+/* The search button's accessible name is "Search"; its Ctrl K hint would make the visible text
+   differ from that name, which screen-reader and voice-control users rely on matching. */
+site-search kbd {
+  display: none;
+}

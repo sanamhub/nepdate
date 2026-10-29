@@ -27,6 +27,8 @@ export interface Port {
   patro: string;
   /** One line for the landing page's install list. */
   install: string;
+  /** How to add the patro (tithi, holidays, events); null where the core package already has it. */
+  patroInstall: string | null;
   installLang: string;
   registry: { label: string; href: string };
   api: { label: string; href: string };
@@ -47,14 +49,17 @@ export const ports: Port[] = [
     core: "NepDate",
     patro: "NepDate",
     install: `dotnet add package NepDate --version ${CSHARP_VERSION}`,
+    patroInstall: null,
     installLang: "sh",
     registry: { label: "NuGet", href: "https://www.nuget.org/packages/NepDate/" },
     api: { label: "NepDate docs", href: "https://nepdate.rajuprasai.com.np/" },
     sample: `using NepDate;
 
 var date = new NepaliDate(2081, 4, 15);
-Console.WriteLine(date.EnglishDate.ToString("yyyy-MM-dd")); // 2024-07-30
-Console.WriteLine(date.ToLongDateString());                 // Shrawan 15, 2081`,
+// 2024-07-30
+Console.WriteLine(date.EnglishDate.ToString("yyyy-MM-dd"));
+// Shrawan 15, 2081
+Console.WriteLine(date.ToLongDateString());`,
     upstream: { href: "https://github.com/RajuPrasai/NepDate", docs: "https://nepdate.rajuprasai.com.np/" },
   },
   {
@@ -65,15 +70,16 @@ Console.WriteLine(date.ToLongDateString());                 // Shrawan 15, 2081`
     core: "nepdate",
     patro: "nepdate-patro",
     install: `cargo add nepdate@=${VERSION}`,
+    patroInstall: `cargo add nepdate-patro@=${VERSION}`,
     installLang: "sh",
     registry: { label: "crates.io", href: "https://crates.io/crates/nepdate" },
     api: { label: "docs.rs", href: "https://docs.rs/nepdate" },
     sample: `use nepdate::{Lang, LongDate, NepaliDate};
 
 let date = NepaliDate::new(2081, 4, 15)?;
-let ad = date.to_gregorian();
-assert_eq!((ad.year(), ad.month(), ad.day()), (2024, 7, 30));
-println!("{}", date.long(LongDate::default(), Lang::En)); // Shrawan 15, 2081`,
+let ad = date.to_gregorian(); // 2024-07-30
+// Shrawan 15, 2081
+println!("{}", date.long(LongDate::default(), Lang::En));`,
   },
   {
     id: "go",
@@ -83,6 +89,7 @@ println!("{}", date.long(LongDate::default(), Lang::En)); // Shrawan 15, 2081`,
     core: "github.com/sanamhub/nepdate-go",
     patro: "github.com/sanamhub/nepdate-go/patro",
     install: `go get github.com/sanamhub/nepdate-go@v${VERSION}`,
+    patroInstall: `import "github.com/sanamhub/nepdate-go/patro"`,
     installLang: "sh",
     registry: { label: "pkg.go.dev", href: "https://pkg.go.dev/github.com/sanamhub/nepdate-go" },
     api: { label: "pkg.go.dev", href: "https://pkg.go.dev/github.com/sanamhub/nepdate-go" },
@@ -91,8 +98,9 @@ if err != nil {
 	log.Fatal(err)
 }
 y, m, day := d.Gregorian()
-fmt.Println(y, int(m), day)                            // 2024 7 30
-fmt.Println(d.Format("MMMM d, yyyy", nepdate.English)) // Shrawan 15, 2081`,
+fmt.Println(y, int(m), day) // 2024 7 30
+// Shrawan 15, 2081
+fmt.Println(d.Format("MMMM d, yyyy", nepdate.English))`,
   },
   {
     id: "typescript",
@@ -102,6 +110,7 @@ fmt.Println(d.Format("MMMM d, yyyy", nepdate.English)) // Shrawan 15, 2081`,
     core: "nepdate-core",
     patro: "nepdate-patro",
     install: "npm install nepdate-core@beta",
+    patroInstall: "npm install nepdate-patro@beta",
     installLang: "sh",
     registry: { label: "npm", href: "https://www.npmjs.com/package/nepdate-core" },
     api: { label: "API.md", href: `${gh("nepdate-typescript")}/blob/main/docs/API.md` },
@@ -119,6 +128,7 @@ date.long();        // "Shrawan 15, 2081"`,
     core: "nepdate-core",
     patro: "nepdate-patro",
     install: "pip install --pre nepdate-core",
+    patroInstall: "pip install --pre nepdate-patro",
     installLang: "sh",
     registry: { label: "PyPI", href: "https://pypi.org/project/nepdate-core/" },
     api: { label: "API.md", href: `${gh("nepdate-python")}/blob/main/docs/API.md` },
@@ -136,6 +146,7 @@ date.long()     # 'Shrawan 15, 2081'`,
     core: "NepDate",
     patro: "NepDatePatro",
     install: `.package(url: "https://github.com/sanamhub/nepdate-swift", exact: "${VERSION}")`,
+    patroInstall: `.product(name: "NepDatePatro", package: "nepdate-swift")`,
     installLang: "swift",
     registry: { label: "Swift Package Index", href: "https://swiftpackageindex.com/sanamhub/nepdate-swift" },
     api: { label: "API.md", href: `${gh("nepdate-swift")}/blob/main/docs/API.md` },
@@ -153,12 +164,15 @@ print(date.long())    // Shrawan 15, 2081`,
     core: "io.github.sanamhub:nepdate",
     patro: "io.github.sanamhub:nepdate-patro",
     install: `implementation("io.github.sanamhub:nepdate:${VERSION}")`,
+    patroInstall: `implementation("io.github.sanamhub:nepdate-patro:${VERSION}")`,
     installLang: "kotlin",
     registry: { label: "Maven Central", href: "https://central.sonatype.com/artifact/io.github.sanamhub/nepdate" },
     api: { label: "API.md", href: `${gh("nepdate-kotlin")}/blob/main/docs/API.md` },
     sample: `val date = NepaliDate.of(2081, 4, 15)
-println("\${date.gregorianYear}-\${date.gregorianMonth}-\${date.gregorianDay}") // 2024-7-30
-println(date.toLongString())                                                // Shrawan 15, 2081`,
+val y = date.gregorianYear   // 2024
+val m = date.gregorianMonth  // 7
+val d = date.gregorianDay    // 30
+println(date.toLongString()) // Shrawan 15, 2081`,
   },
   {
     id: "cpp",
@@ -168,12 +182,13 @@ println(date.toLongString())                                                // S
     core: "nepdate::nepdate",
     patro: "nepdate::patro",
     install: `FetchContent_Declare(nepdate GIT_REPOSITORY https://github.com/sanamhub/nepdate-cpp.git GIT_TAG v${VERSION})`,
+    patroInstall: "target_link_libraries(app PRIVATE nepdate::patro)",
     installLang: "cmake",
     registry: { label: "Releases", href: `${gh("nepdate-cpp")}/releases` },
     api: { label: "API.md", href: `${gh("nepdate-cpp")}/blob/main/docs/API.md` },
     sample: `#include <nepdate/nepdate.hpp>
 
-const nepdate::date d = nepdate::make_date(2081, 4, 15).value();
+const auto d = nepdate::make_date(2081, 4, 15).value();
 const auto ad = d.to_year_month_day();    // 2024-07-30
 std::cout << nepdate::to_string(d);       // 2081/04/15`,
   },

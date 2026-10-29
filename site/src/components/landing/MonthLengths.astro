@@ -3,7 +3,7 @@
 // is built: the data every port copies and checks. It is a real table, so screen readers get it
 // as one; the current month is ringed in sindoor. Each cell's tick draws in as the table scrolls
 // into view where scroll-driven animation works (landing-sections.css).
-import { NepaliDate, monthShortName } from "nepdate-core";
+import { NepaliDate, monthName, monthShortName } from "nepdate-core";
 
 interface Props {
   today: NepaliDate;
@@ -23,12 +23,25 @@ function length(year: number, month: number): number {
   throw new Error(`MonthLengths: no length for ${year}-${month}`);
 }
 
+const adFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+const adDay = (d: NepaliDate) => {
+  const g = d.toGregorian();
+  return adFormat.format(new Date(Date.UTC(g.year, g.month - 1, g.day)));
+};
+/** "Kartik 2083: 18 October 2026 to 16 November 2026", for the line under the table. The script
+ *  in scripts/landing.ts writes the same line for the month under the pointer. */
+function span(year: number, month: number): string {
+  const first = NepaliDate.of(year, month, 1);
+  const last = NepaliDate.of(year, month, length(year, month));
+  return `${monthName(month)} ${year}: ${adDay(first)} to ${adDay(last)}`;
+}
+
 const years = Array.from({ length: 6 }, (_, i) => today.year - 2 + i);
 const months = Array.from({ length: 12 }, (_, i) => i + 1);
 ---
 
 <div class="panel months-panel">
-  <table class="months">
+  <table class="months" data-months>
     <caption>
       Days in each month, BS {years[0]} to {years[years.length - 1]}. A BS month has 29 to 32 days and the
       lengths change from year to year, so they come from data, not a formula.
@@ -42,7 +55,7 @@ const months = Array.from({ length: 12 }, (_, i) => i + 1);
     <tbody>
       {
         years.map((y, r) => (
-          <tr style={`--r:${r}`}>
+          <tr style={`--r:${r}`} data-year={y}>
             <th scope="row">{y}</th>
             {months.map((m) =>
               y === today.year && m === today.month ? (
@@ -59,4 +72,5 @@ const months = Array.from({ length: 12 }, (_, i) => i + 1);
       }
     </tbody>
   </table>
+  <p class="months-span" aria-hidden="true" data-months-span>{span(today.year, today.month)}</p>
 </div>

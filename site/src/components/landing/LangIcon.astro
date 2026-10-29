@@ -1,0 +1,19 @@
+---
+// A language's mark, drawn in the current text colour so the list stays one colour. The paths
+// live in the cached sprite /lang-icons.svg (data/lang-icons.ts), not in the page.
+import { langIcons } from "../../data/lang-icons";
+
+interface Props {
+  id: string;
+  size?: number;
+}
+const { id, size = 20 } = Astro.props;
+---
+
+{
+  langIcons[id] && (
+    <svg class="lang-icon" width={size} height={size} aria-hidden="true" focusable="false">
+      <use href={`/lang-icons.svg#${id}`} />
+    </svg>
+  )
+}
