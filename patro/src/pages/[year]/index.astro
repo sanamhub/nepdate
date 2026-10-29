@@ -1,0 +1,95 @@
+---
+// A page for every BS year: its twelve months small, like the back of a wall patro, and its public
+// holidays with an .ics file to add them to a calendar app.
+import Patro from "../../layouts/Patro.astro";
+import {
+  FIRST_YEAR,
+  LAST_YEAR,
+  WEEKDAYS,
+  dayPath,
+  monthDays,
+  monthEn,
+  monthNe,
+  monthPath,
+  ne,
+  yearHasPatro,
+  yearHolidays,
+} from "../../lib/patro";
+
+export function getStaticPaths() {
+  return Array.from({ length: LAST_YEAR - FIRST_YEAR + 1 }, (_, i) => ({ params: { year: String(FIRST_YEAR + i) } }));
+}
+
+const year = Number(Astro.params.year);
+const months = Array.from({ length: 12 }, (_, i) => {
+  const days = monthDays(year, i + 1);
+  const cells = [...Array.from({ length: days[0].weekday }, () => null), ...days];
+  return { month: i + 1, weeks: Array.from({ length: Math.ceil(cells.length / 7) }, (_, w) => cells.slice(w * 7, w * 7 + 7)) };
+});
+const holidays = yearHolidays(year);
+const title = `${ne(year)} को पात्रो | Nepali calendar ${year} BS with public holidays`;
+const description = `The Nepali calendar for ${year} BS: all twelve months${holidays.length ? `, ${holidays.length} public holidays` : ""}, tithi and events.`;
+---
+
+<Patro title={title} description={description}>
+  <div class="month wrap">
+    <div class="month-head">
+      <div>
+        <h1 class="month-title">{ne(year)}</h1>
+        <p class="month-sub" lang="en">Bikram Sambat {year}</p>
+      </div>
+      <nav class="month-nav" aria-label="Years">
+        {year > FIRST_YEAR && <a href={`/${year - 1}/`} rel="prev" lang="en">{year - 1}</a>}
+        {year < LAST_YEAR && <a href={`/${year + 1}/`} rel="next" lang="en">{year + 1}</a>}
+      </nav>
+    </div>
+
+    <div class="year-months">
+      {
+        months.map(({ month, weeks }) => (
+          <section class="mini" aria-labelledby={`m${month}`}>
+            <h2 id={`m${month}`}>
+              <a href={monthPath(year, month)}>{monthNe(month)}</a>
+              <span class="en" lang="en">{monthEn(month)}</span>
+            </h2>
+            <table>
+              <thead>
+                <tr>{WEEKDAYS.map((w) => <th scope="col" abbr={w.en}>{w.ne}</th>)}</tr>
+              </thead>
+              <tbody>
+                {weeks.map((week) => (
+                  <tr>{week.map((d) => (d ? <td class:list={{ holiday: d.holiday }}>{ne(d.date.day)}</td> : <td />))}</tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        ))
+      }
+    </div>
+
+    {
+      yearHasPatro(year) && holidays.length > 0 && (
+        <section class="side" style="margin-top:3rem" aria-labelledby="holidays">
+          <h2 id="holidays">सार्वजनिक बिदा {ne(year)} <span lang="en">Public holidays</span></h2>
+          <ol class="list">
+            {holidays.map((d) => (
+              <li class="holiday">
+                <span class="when">
+                  {monthNe(d.date.month)} {ne(d.date.day)}
+                  <small lang="en">{d.ad.day}/{d.ad.month}/{d.ad.year}</small>
+                </span>
+                <span class="what">
+                  <a href={dayPath(d)}>{d.events.map((e) => e.np).join(", ") || "सार्वजनिक बिदा"}</a>
+                  <span class="en" lang="en">{d.events.map((e) => e.en).join(", ") || "Public holiday"}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+          <p class="note" lang="en">
+            <a href={`/${year}/holidays.ics`} download>Add these holidays to your calendar (.ics)</a>
+          </p>
+        </section>
+      )
+    }
+  </div>
+</Patro>

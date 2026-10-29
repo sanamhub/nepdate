@@ -1,0 +1,13 @@
+# NepDate Patro
+
+> The Nepali calendar (Bikram Sambat) with the AD date, tithi, paksha, public holidays and events for each day.
+
+Built from the NepDate libraries (https://nepdate.com). Dates cover BS 1901 to 2199; tithi, holidays and events cover BS 2077 to 2084, with tithi from 2078. Patro data is informational, not an official calendar.
+
+## Pages
+
+- https://patro.nepdate.com/: the current month in Nepal
+- https://patro.nepdate.com/2083/: a BS year, its twelve months and its public holidays
+- https://patro.nepdate.com/2083/07/: a BS month (Kartik 2083), every day with its AD date, tithi, holidays and events
+- https://patro.nepdate.com/2083/07/22/: one day, with tithi, paksha, holiday, events and the next public holiday
+- https://patro.nepdate.com/2083/holidays.ics: a year's public holidays as an iCalendar file

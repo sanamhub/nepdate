@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://patro.nepdate.com/sitemap-index.xml

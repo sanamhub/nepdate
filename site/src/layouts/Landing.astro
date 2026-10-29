@@ -5,9 +5,9 @@
 import "../styles/tokens.css";
 import "../styles/landing.css";
 import Fonts from "../components/Fonts.astro";
-import ThemeToggle from "../components/ThemeToggle.astro";
+import ThemeToggle from "../../../web/ThemeToggle.astro";
 import logo from "../assets/nepdate.svg";
-import { HUB, DATA_ERROR_FORM, ports } from "../data/ports";
+import { HUB, DATA_ERROR_FORM, PATRO, ports } from "../data/ports";
 
 interface Props {
   title: string;
@@ -66,6 +66,7 @@ const year = new Date().getFullYear();
           <a href="/docs/">Docs</a>
           <a href="/#languages">Languages</a>
           <a href="/#performance">Performance</a>
+          <a href={PATRO}>Patro</a>
           <a href="/docs/apps/mitibar/">MitiBar</a>
           <a class="icon-link" href={HUB} aria-label="NepDate on GitHub">
             <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"
@@ -125,6 +126,7 @@ const year = new Date().getFullYear();
           <ul>
             <li><a href={HUB}>GitHub</a></li>
             <li><a href="/docs/project/performance/">Performance</a></li>
+            <li><a href={PATRO}>Patro</a></li>
             <li><a href="/docs/apps/mitibar/">MitiBar</a></li>
             <li><a href={DATA_ERROR_FORM}>Report a wrong date</a></li>
             <li><a href="/llms.txt">llms.txt</a></li>

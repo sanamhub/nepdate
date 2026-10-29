@@ -152,8 +152,14 @@ dd code {
   background: var(--nd-sunken);
   text-decoration: none;
 }
-.site-header nav a:is([href="/#languages"], [href="/#performance"]) {
+.site-header nav a:is([href="/#languages"], [href="/#performance"], [href="/docs/apps/mitibar/"]) {
   display: none;
+}
+/* MitiBar has its own hero button and section, so a phone's header keeps room for the name. */
+@media (min-width: 30rem) {
+  .site-header nav a[href="/docs/apps/mitibar/"] {
+    display: inline-block;
+  }
 }
 @media (min-width: 36rem) {
   .site-header nav a[href="/#languages"] {
@@ -213,6 +219,39 @@ dd code {
 }
 .button.primary:hover {
   opacity: 0.86;
+}
+
+/* The two apps beside Get started, joined in one bordered group: each with its mark (a calendar
+   with today in sindoor, a screen with the taskbar date) and where it runs. */
+.apps {
+  display: inline-flex;
+  min-height: 2.75rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  background: var(--nd-raised);
+  overflow: hidden;
+}
+.apps a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.85rem;
+  color: var(--nd-ink);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background-color 0.15s ease;
+}
+.apps a + a {
+  border-left: 1px solid var(--nd-hairline);
+}
+.apps a:hover {
+  background: var(--nd-sunken);
+  text-decoration: none;
+}
+.apps small {
+  color: var(--nd-ink-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 /* Panels: the one container for code, data and the converter. A hairline box at the large
@@ -277,7 +316,8 @@ dd code {
   gap: 2.75rem;
   align-items: center;
 }
-@media (min-width: 60rem) {
+/* Two columns only where the card keeps today's date on one line and the actions fit one row. */
+@media (min-width: 72rem) {
   .hero-grid {
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
     gap: 4rem;
@@ -478,4 +518,11 @@ a,
 button,
 input {
   touch-action: manipulation;
+}
+/* In the two-column hero the apps keep their marks and names and drop where they run, so they stay
+   on the row with Get started; the marks already say calendar and screen. */
+@media (min-width: 72rem) {
+  .apps small {
+    display: none;
+  }
 }

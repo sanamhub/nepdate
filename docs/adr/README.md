@@ -10,6 +10,7 @@ repository. Immutable once accepted; supersede with a new ADR.
 | [0003](0003-parity-with-csharp.md) | Parity with C# NepDate, one set of deviations for every port | Accepted |
 | [0004](0004-patro-in-a-separate-package.md) | Patro (tithi, holidays, events) in a separate package | Accepted |
 | [0005](0005-website-on-nepdate-com.md) | The website on nepdate.com, built from site/ in the hub | Accepted |
+| [0006](0006-patro-site.md) | patro.nepdate.com, a calendar site built from patro/ in the hub | Proposed (amends 0005 decision 3) |
 
 New ADR: copy the shape of 0001 (Status, Date, Approved by, Context, Decision, Consequences,
 Alternatives considered) as `NNNN-kebab-title.md`.

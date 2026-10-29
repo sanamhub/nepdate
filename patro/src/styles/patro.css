@@ -1,0 +1,629 @@
+/* The patro's styles, inlined with each page. Tokens come from ../site/src/styles/tokens.css.
+
+   The month is a printed wall patro set clean: seven ruled columns, the BS day large in
+   Devanagari with the AD day small in the corner, the tithi under it, public holidays and every
+   Saturday in sindoor, today ringed. Above the grid, the month's moon band: one small moon per day
+   drawn from its tithi, Purnima full and Aunsi dark. The page ends in nepdate.com's valley. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--nd-surface);
+}
+body {
+  margin: 0;
+  background: var(--nd-surface);
+  color: var(--nd-ink);
+  font-family: var(--nd-font-sans);
+  font-size: var(--nd-step-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a {
+  color: var(--nd-slate);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+p a {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 0.2em;
+}
+:focus-visible {
+  outline: 2px solid var(--nd-slate);
+  outline-offset: 2px;
+  border-radius: var(--nd-radius-s);
+}
+.wrap {
+  width: 100%;
+  max-width: var(--nd-wrap);
+  margin-inline: auto;
+  padding-inline: var(--nd-gutter);
+}
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 20;
+  background: var(--nd-ink);
+  color: var(--nd-surface);
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--nd-radius-m);
+}
+.skip:focus {
+  top: 0.75rem;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+[lang="en"] {
+  font-family: var(--nd-font-noto), sans-serif;
+}
+
+/* Header */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--nd-surface) 86%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--nd-hairline);
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3.75rem;
+  gap: 1rem;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--nd-ink);
+  font-weight: 650;
+  font-size: 1.1rem;
+}
+.brand:hover {
+  text-decoration: none;
+}
+.brand-en {
+  color: var(--nd-ink-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+.site-header nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.site-header nav a,
+.theme-toggle {
+  color: var(--nd-ink-muted);
+  font-size: 0.925rem;
+  font-weight: 500;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--nd-radius-m);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.site-header nav a:hover,
+.theme-toggle:hover {
+  color: var(--nd-ink);
+  background: var(--nd-sunken);
+  text-decoration: none;
+}
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+:root[data-theme="light"] .theme-toggle .sun,
+:root[data-theme="dark"] .theme-toggle .moon {
+  display: none;
+}
+
+/* Month page */
+
+.month {
+  padding-block: clamp(1.5rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem);
+}
+.month-grid-wrap {
+  display: grid;
+  gap: 2.5rem;
+}
+@media (min-width: 64rem) {
+  .month-grid-wrap {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    align-items: start;
+  }
+}
+.month-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-bottom: 1.25rem;
+}
+.month-title {
+  margin: 0;
+  font-size: var(--nd-step-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.month-sub {
+  margin: 0.4rem 0 0;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step-1);
+}
+.month-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+.month-nav a {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  background: var(--nd-raised);
+  color: var(--nd-ink);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.month-nav a:hover {
+  border-color: var(--nd-ink-muted);
+  text-decoration: none;
+}
+
+/* The moon band: one moon per day of the month, in the grid's order of days. */
+.moons {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.75rem;
+  list-style: none;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-raised);
+}
+.moons li {
+  display: grid;
+  place-items: center;
+}
+.moons .moon {
+  --size: clamp(0.5rem, 1.6vw, 0.95rem);
+}
+
+/* A moon drawn from its tithi: --lit is the lit share of the disc, waxing on the right. The lit
+   half is one pseudo-element; an ellipse whose width follows the phase either covers part of it
+   (crescent) or adds to it (gibbous). */
+.moon {
+  --size: 0.7rem;
+  /* Opaque, so the shadow ellipse hides the lit half where it overlaps it. */
+  --dark: color-mix(in srgb, var(--nd-ink-muted) 28%, var(--nd-raised));
+  --light: var(--nd-marigold);
+  position: relative;
+  display: inline-block;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--dark);
+  overflow: hidden;
+  flex: none;
+}
+.moon::before,
+.moon::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+.moon::before {
+  width: 50%;
+  background: var(--light);
+}
+.moon.waxing::before {
+  right: 0;
+}
+.moon.waning::before {
+  left: 0;
+}
+.moon::after {
+  left: 50%;
+  width: var(--ellipse);
+  translate: -50% 0;
+  border-radius: 50%;
+}
+.moon.crescent::after {
+  background: var(--dark);
+}
+.moon.gibbous::after {
+  background: var(--light);
+}
+.moon.full {
+  background: var(--light);
+}
+.moon.new::before,
+.moon.new::after {
+  display: none;
+}
+
+/* The grid. A real table: a screen reader reads a week as a row. */
+.patro {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border: 1px solid var(--nd-hairline);
+  background: var(--nd-raised);
+}
+.patro caption {
+  caption-side: bottom;
+  padding-top: 0.75rem;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+  text-align: left;
+}
+.patro th {
+  padding: 0.55rem 0.25rem;
+  border: 1px solid var(--nd-hairline);
+  background: var(--nd-sunken);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.patro th .en {
+  display: block;
+  color: var(--nd-ink-muted);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+.patro th:last-child {
+  color: var(--nd-sindoor);
+}
+.patro td {
+  height: clamp(4.25rem, 11vw, 7.25rem);
+  padding: 0;
+  border: 1px solid var(--nd-hairline);
+  vertical-align: top;
+}
+.patro td:last-child {
+  background: color-mix(in srgb, var(--nd-sindoor) 4%, transparent);
+}
+.cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: clamp(0.3rem, 1vw, 0.55rem);
+  color: var(--nd-ink);
+  text-decoration: none;
+  transition: background-color 0.12s ease;
+}
+a.cell:hover {
+  background: var(--nd-sunken);
+  text-decoration: none;
+}
+.cell-bs {
+  font-size: clamp(1.15rem, 3.4vw, 1.9rem);
+  font-weight: 650;
+  line-height: 1.1;
+}
+.cell-ad {
+  position: absolute;
+  top: clamp(0.3rem, 1vw, 0.55rem);
+  right: clamp(0.3rem, 1vw, 0.55rem);
+  color: var(--nd-ink-muted);
+  font-family: var(--nd-font-noto), sans-serif;
+  font-size: clamp(0.62rem, 1.6vw, 0.8rem);
+  font-variant-numeric: tabular-nums;
+}
+.cell-tithi {
+  margin-top: auto;
+  color: var(--nd-ink-muted);
+  font-size: clamp(0.58rem, 1.5vw, 0.75rem);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cell-event {
+  color: var(--nd-ink);
+  font-size: clamp(0.58rem, 1.5vw, 0.75rem);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cell .moon {
+  --size: 0.55rem;
+  position: absolute;
+  bottom: clamp(0.35rem, 1vw, 0.6rem);
+  right: clamp(0.3rem, 1vw, 0.55rem);
+}
+td:last-child .cell-bs,
+.cell.holiday .cell-bs,
+.cell.holiday .cell-event {
+  color: var(--nd-sindoor);
+}
+.cell.today {
+  box-shadow: inset 0 0 0 2px var(--nd-sindoor);
+}
+.cell.today .cell-bs {
+  color: var(--nd-sindoor);
+}
+@media (max-width: 40rem) {
+  .cell-event,
+  .cell-ad .ad-month {
+    display: none;
+  }
+  .patro th .en {
+    display: none;
+  }
+}
+
+/* The month's side: its holidays and events in full. */
+.side h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+.side h2 + .list {
+  margin-bottom: 2rem;
+}
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--nd-hairline);
+}
+.list li {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--nd-hairline);
+  font-size: 0.925rem;
+}
+.list .when {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.list .when small {
+  display: block;
+  color: var(--nd-ink-muted);
+  font-family: var(--nd-font-noto), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+.list .what a {
+  color: var(--nd-ink);
+}
+.list .what .en {
+  display: block;
+  color: var(--nd-ink-muted);
+  font-size: 0.82rem;
+}
+.list .holiday .when,
+.list .holiday .what > a {
+  color: var(--nd-sindoor);
+}
+.note {
+  margin: 1rem 0 0;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+}
+
+/* Day page */
+
+.day-page {
+  padding-block: clamp(1.5rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem);
+}
+.crumbs {
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+}
+.day-grid {
+  display: grid;
+  gap: 2rem;
+}
+@media (min-width: 56rem) {
+  .day-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 3.5rem;
+    align-items: start;
+  }
+}
+.leaf {
+  position: relative;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
+  box-shadow: var(--nd-shadow);
+}
+.leaf.holiday {
+  border-top: 6px solid var(--nd-sindoor);
+}
+.leaf-weekday {
+  margin: 0;
+  color: var(--nd-ink-muted);
+  font-weight: 500;
+}
+.leaf-day {
+  margin: 0.25rem 0 0;
+  font-size: clamp(4.5rem, 16vw, 8.5rem);
+  font-weight: 700;
+  line-height: 1;
+}
+.leaf.holiday .leaf-day,
+.leaf.saturday .leaf-day {
+  color: var(--nd-sindoor);
+}
+.leaf-month {
+  margin: 0.5rem 0 0;
+  font-size: var(--nd-step-2);
+  font-weight: 650;
+}
+.leaf-ad {
+  margin: 0.75rem 0 0;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step-1);
+}
+.leaf .moon {
+  --size: 3.25rem;
+  position: absolute;
+  top: clamp(1.5rem, 4vw, 2.5rem);
+  right: clamp(1.5rem, 4vw, 2.5rem);
+}
+.facts {
+  margin: 0;
+  border-top: 1px solid var(--nd-hairline);
+}
+.facts > div {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--nd-hairline);
+}
+.facts dt {
+  color: var(--nd-ink-muted);
+}
+.facts dd {
+  margin: 0;
+}
+.facts dd .en {
+  display: block;
+  color: var(--nd-ink-muted);
+  font-size: 0.9rem;
+}
+.facts .holiday {
+  color: var(--nd-sindoor);
+  font-weight: 650;
+}
+.day-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Year page */
+
+.year-months {
+  display: grid;
+  gap: 1.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
+  margin-top: 2rem;
+}
+.mini h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+.mini h2 a {
+  color: var(--nd-ink);
+}
+.mini h2 .en {
+  margin-left: 0.4rem;
+  color: var(--nd-ink-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.mini table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.mini th {
+  color: var(--nd-ink-muted);
+  font-weight: 500;
+  font-size: 0.62rem;
+  padding-bottom: 0.25rem;
+}
+.mini td {
+  height: 1.7rem;
+}
+.mini td:last-child,
+.mini .holiday {
+  color: var(--nd-sindoor);
+  font-weight: 650;
+}
+
+/* Footer: nepdate.com's valley, its ground running into the band with the copyright line. */
+
+.site-footer {
+  border-top: 1px solid var(--nd-hairline);
+  padding-top: 2.5rem;
+  font-size: 0.9rem;
+}
+.footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  color: var(--nd-ink-muted);
+}
+.footer-row p {
+  margin: 0;
+  max-width: 40rem;
+}
+.footer-art {
+  /* The drawing's own aspect (1600 by 340) at the width it is drawn, so no part is cut off. */
+  height: calc(max(100vw, 66rem) * 0.2125);
+  margin-top: 2rem;
+  background: var(--nd-sindoor);
+  -webkit-mask: var(--skyline) bottom center / max(100%, 66rem) auto no-repeat;
+  mask: var(--skyline) bottom center / max(100%, 66rem) auto no-repeat;
+}
+.footer-base {
+  margin-top: -1px;
+  padding-block: 0.4rem 1.1rem;
+  background: var(--nd-sindoor);
+  color: var(--nd-on-sindoor);
+  font-size: 0.8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
+a,
+button {
+  touch-action: manipulation;
+}
+.leaf h1 {
+  margin: 0;
+  font-weight: inherit;
+}
+.leaf-day,
+.leaf-month {
+  display: block;
+}

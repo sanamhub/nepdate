@@ -14,6 +14,8 @@ export const CSHARP_VERSION = "2.0.7";
 export const MITIBAR_RELEASE = `https://github.com/sanamhub/nepdate-rust/releases/tag/mitibar-v${MITIBAR_VERSION}`;
 
 export const HUB = "https://github.com/sanamhub/nepdate";
+/** The calendar site (ADR-0006). */
+export const PATRO = "https://patro.nepdate.com/";
 export const DATA_ERROR_FORM = "https://github.com/sanamhub/nepdate/issues/new/choose";
 
 export interface Port {

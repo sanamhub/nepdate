@@ -1,0 +1,88 @@
+---
+// The patro's page shell: head, header and the valley footer. The tokens, the theme switch and the
+// drawings are nepdate.com's (../site), so the two sites look like one family (ADR-0006).
+import "../../../site/src/styles/tokens.css";
+import "../styles/patro.css";
+import ThemeToggle from "../../../web/ThemeToggle.astro";
+import { Font } from "astro:assets";
+import logo from "../../../site/src/assets/nepdate.svg";
+import favicon from "../../../site/public/favicon.svg?url";
+import skyline from "../../../site/public/footer-skyline.svg?url";
+
+interface Props {
+  title: string;
+  description: string;
+  /** schema.org data for the page, written as JSON-LD. */
+  jsonLd?: object;
+}
+const { title, description, jsonLd } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="ne" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={favicon} type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#FDFBF8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#16120E" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NepDate Patro" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <Font cssVariable="--nd-font-noto-deva" />
+    <Font cssVariable="--nd-font-noto" />
+    <script is:inline>
+      // The same theme rule as nepdate.com, run before paint.
+      (() => {
+        let stored = "";
+        try {
+          stored = localStorage.getItem("starlight-theme") || "";
+        } catch {}
+        const theme = stored || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+        document.documentElement.dataset.theme = theme === "light" ? "light" : "dark";
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-row">
+        <a class="brand" href="/">
+          <img src={logo.src} width="28" height="28" alt="" />
+          <span>पात्रो <span class="brand-en">Patro</span></span>
+        </a>
+        <nav aria-label="Main">
+          <a href="/" data-today-link>Today</a>
+          <a href="https://nepdate.com/">NepDate</a>
+          <ThemeToggle />
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer" style={`--skyline: url("${skyline}")`}>
+      <div class="wrap footer-row">
+        <p>
+          Dates from <a href="https://nepdate.com/">NepDate</a>; tithi, holidays and events from the{" "}
+          <a href="https://nepdate.com/docs/project/data/">patro data</a>, informational and not an official calendar.
+          No ads, no tracking.
+        </p>
+        <p><a href="https://github.com/sanamhub/nepdate/issues/new/choose">Report a wrong date</a></p>
+      </div>
+      <div class="footer-art" aria-hidden="true"></div>
+      <div class="footer-base"><div class="wrap">© {year} NepDate contributors</div></div>
+    </footer>
+  </body>
+</html>

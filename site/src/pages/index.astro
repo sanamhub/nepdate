@@ -11,7 +11,7 @@ import MonthLengths from "../components/landing/MonthLengths.astro";
 import LangIcon from "../components/landing/LangIcon.astro";
 import { downloads, formatCount } from "../data/downloads";
 import { benchmarks, competitorCount, csharp, formatNs, nearest } from "../data/benchmarks";
-import { DATA_ERROR_FORM, HUB, MITIBAR_RELEASE, MITIBAR_VERSION, VERSION, ports, repoUrl } from "../data/ports";
+import { DATA_ERROR_FORM, HUB, MITIBAR_RELEASE, MITIBAR_VERSION, PATRO, VERSION, ports, repoUrl } from "../data/ports";
 
 // Rendered at build time so the page reads right without JavaScript; the script in
 // scripts/landing.ts replaces it with the visitor's own "today in Nepal" on load.
@@ -167,7 +167,24 @@ const jsonLd = {
         </p>
         <div class="actions">
           <a class="button primary" href="/docs/quickstart/">Get started</a>
-          <a class="button" href="#mitibar">Get MitiBar for your desktop</a>
+          <nav class="apps" aria-label="Apps">
+            <a href={PATRO}>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
+                ><rect x="3.5" y="5" width="17" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"
+                ></rect><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                ></path><circle cx="15.5" cy="15" r="1.6" fill="var(--nd-sindoor)"></circle></svg
+              >
+              <span>Patro <small>web</small></span>
+            </a>
+            <a href="#mitibar">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
+                ><rect x="3" y="4" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"
+                ></rect><path d="M8 20.5h8M12 17v3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                ></path><rect x="11" y="12" width="7" height="2.6" rx="1.3" fill="var(--nd-sindoor)"></rect></svg
+              >
+              <span>MitiBar <small>desktop</small></span>
+            </a>
+          </nav>
         </div>
       </div>
     </div>
@@ -380,6 +397,13 @@ const jsonLd = {
         }
       </ol>
       <p class="note">Holidays in red, events marked with a dot. Patro data is informational, not an official calendar.</p>
+      <div class="actions">
+        <a class="button primary" href={PATRO}>Open the full patro</a>
+      </div>
+      <p class="note">
+        Every month with its tithi, public holidays and events, a page for each day, and each year's holidays for your
+        calendar app, at <a href={PATRO}>patro.nepdate.com</a>. Built from these same packages.
+      </p>
     </div>
   </section>
 

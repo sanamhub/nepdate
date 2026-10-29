@@ -1,0 +1,19 @@
+// patro.nepdate.com (ADR-0006): the static files Astro builds into dist/, served by a Cloudflare
+// Worker with no code of its own, like nepdate.com (site/wrangler.jsonc). Workers Builds runs
+// `npm ci && npm run build` in patro/ and `npx wrangler deploy` on main; pull requests get previews.
+{
+  "name": "nepdate-patro",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [
+    { "pattern": "patro.nepdate.com", "custom_domain": true }
+  ],
+  "workers_dev": false,
+  "previews": {},
+  "preview_urls": true,
+  "observability": { "enabled": false }
+}

@@ -1,0 +1,175 @@
+---
+// One BS month as a wall patro: the title, the moon band, the grid and the month's holidays and
+// events. Used by the month pages and the home page. Today is marked in the browser
+// (scripts/today.ts) from each cell's AD date, so a page built days ago still rings the right day.
+import Moon from "./Moon.astro";
+import {
+  WEEKDAYS,
+  adMonthName,
+  adSpan,
+  dayPath,
+  monthDays,
+  monthEn,
+  monthNe,
+  monthPath,
+  ne,
+  neighbours,
+  pad,
+  yearHasPatro,
+} from "../lib/patro";
+
+interface Props {
+  year: number;
+  month: number;
+}
+const { year, month } = Astro.props;
+const days = monthDays(year, month);
+const lead = days[0].weekday;
+const cells = [...Array.from({ length: lead }, () => null), ...days];
+const weeks = Array.from({ length: Math.ceil(cells.length / 7) }, (_, w) => {
+  const row = cells.slice(w * 7, w * 7 + 7);
+  return [...row, ...Array.from({ length: 7 - row.length }, () => null)];
+});
+const { prev, next } = neighbours(year, month);
+const adIso = (d: (typeof days)[number]) => `${d.ad.year}-${pad(d.ad.month)}-${pad(d.ad.day)}`;
+const holidays = days.filter((d) => d.holiday);
+const events = days.filter((d) => d.events.length > 0);
+const withData = days.some((d) => d.covered);
+const shortTithi = (np: string) => np.replace(/\s.*$/, "");
+---
+
+<div class="month-head">
+  <div>
+    <h1 class="month-title">{monthNe(month)} {ne(year)}</h1>
+    <p class="month-sub" lang="en">{monthEn(month)} {year}, {adSpan(days)}</p>
+  </div>
+  <nav class="month-nav" aria-label="Months">
+    {prev && <a href={monthPath(prev.year, prev.month)} rel="prev" aria-label={`Previous month, ${monthEn(prev.month)} ${prev.year}`}>←</a>}
+    <a href={`/${year}/`} lang="en">{year}</a>
+    {next && <a href={monthPath(next.year, next.month)} rel="next" aria-label={`Next month, ${monthEn(next.month)} ${next.year}`}>→</a>}
+  </nav>
+</div>
+
+<div class="month-grid-wrap">
+  <div>
+    {
+      withData && (
+        <ol class="moons" aria-label="The moon on each day of the month">
+          {days.map((d) => (
+            <li title={d.tithi ? `${ne(d.date.day)}: ${d.tithi.np}` : undefined}>
+              {d.tithi ? <Moon tithi={d.tithi} /> : <i class="moon" aria-hidden="true" />}
+            </li>
+          ))}
+        </ol>
+      )
+    }
+    <table class="patro">
+      <caption lang="en">
+        {monthEn(month)} {year}. Public holidays and Saturdays in red; the small number is the AD date.
+        {!withData && " The patro data has no tithi or holidays for this month."}
+      </caption>
+      <thead>
+        <tr>
+          {
+            WEEKDAYS.map((w) => (
+              <th scope="col">
+                {w.ne}
+                <span class="en" lang="en">{w.en}</span>
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          weeks.map((week) => (
+            <tr>
+              {week.map((d) =>
+                d === null ? (
+                  <td />
+                ) : (
+                  <td>
+                    {(() => {
+                      const Tag = d.covered ? "a" : "div";
+                      return (
+                        <Tag
+                          class:list={["cell", { holiday: d.holiday }]}
+                          href={d.covered ? dayPath(d) : undefined}
+                          data-ad={adIso(d)}
+                        >
+                          <span class="cell-bs">{ne(d.date.day)}</span>
+                          <span class="cell-ad" lang="en">
+                            {d.ad.day}
+                            {d.ad.day === 1 && <span class="ad-month"> {adMonthName(d.ad.month).slice(0, 3)}</span>}
+                          </span>
+                          {d.tithi && <span class="cell-tithi">{shortTithi(d.tithi.np)}</span>}
+                          {d.events[0] && <span class="cell-event">{d.events[0].np}</span>}
+                          {d.tithi && (d.tithi.number === 15 || d.tithi.number === 8) && <Moon tithi={d.tithi} />}
+                          {d.holiday && <span class="visually-hidden">Public holiday</span>}
+                        </Tag>
+                      );
+                    })()}
+                  </td>
+                ),
+              )}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <aside class="side" aria-label="This month">
+    {
+      holidays.length > 0 && (
+        <>
+          <h2>बिदा <span lang="en">Public holidays</span></h2>
+          <ol class="list">
+            {holidays.map((d) => (
+              <li class="holiday">
+                <span class="when">
+                  {ne(d.date.day)}
+                  <small lang="en">{d.ad.day}/{d.ad.month}</small>
+                </span>
+                <span class="what">
+                  <a href={dayPath(d)}>{d.events.map((e) => e.np).join(", ") || "सार्वजनिक बिदा"}</a>
+                  <span class="en" lang="en">{d.events.map((e) => e.en).join(", ") || "Public holiday"}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </>
+      )
+    }
+    {
+      events.length > 0 && (
+        <>
+          <h2>चाडपर्व र दिवस <span lang="en">Festivals and days</span></h2>
+          <ol class="list">
+            {events
+              .filter((d) => !d.holiday)
+              .map((d) => (
+                <li>
+                  <span class="when">
+                    {ne(d.date.day)}
+                    <small lang="en">{d.ad.day}/{d.ad.month}</small>
+                  </span>
+                  <span class="what">
+                    <a href={dayPath(d)}>{d.events.map((e) => e.np).join(", ")}</a>
+                    <span class="en" lang="en">{d.events.map((e) => e.en).join(", ")}</span>
+                  </span>
+                </li>
+              ))}
+          </ol>
+        </>
+      )
+    }
+    {
+      !yearHasPatro(year) && (
+        <p class="note" lang="en">
+          The patro data covers BS 2077 to 2084, so this month shows the dates only.
+        </p>
+      )
+    }
+  </aside>
+</div>
