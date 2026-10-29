@@ -10,3 +10,6 @@
 
 /lang-icons.svg
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/footer-skyline.svg
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
