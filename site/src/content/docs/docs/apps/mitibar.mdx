@@ -17,15 +17,14 @@ It is built on the [Rust library](/docs/rust/) and lives in its own repository,
 ## Download
 
 <p>
-  MitiBar <strong>{MITIBAR_VERSION}</strong>, the first release from its own repository, is being
-  prepared. <a href={MITIBAR_RELEASE}>GitHub Releases</a> will have:
+  <a href={MITIBAR_RELEASE}><strong>MitiBar {MITIBAR_VERSION}</strong></a> on GitHub Releases has:
 </p>
 
 | Platform | Files |
 |---|---|
 | Windows 10 and 11 | NSIS installer or portable zip, x64 and ARM64 |
 | macOS | universal `.dmg` |
-| Linux | `.AppImage` or `.deb` |
+| Linux | `.AppImage` or `.deb`, x64 |
 
 :::caution[Unsigned beta]
 The beta is not code-signed, so Windows SmartScreen and macOS Gatekeeper warn before the first run.
@@ -46,12 +45,14 @@ gh attestation verify mitibar_${MITIBAR_VERSION}_x64-setup.exe --repo sanamhub/m
 
 ## What it does
 
-- **Tray**: today's BS day on the icon on Windows and Linux, and the day and month as the menu-bar
-  title on macOS (the next release shows the bar's top line there instead). The tooltip has the BS and AD dates. The menu has Open, Copy today (BS), Copy
+- **Tray**: today's BS day on the icon on Windows and Linux, and the bar's top line as the menu-bar
+  title on macOS. The tooltip has the BS and AD dates. The menu has Open, Copy today (BS), Copy
   today (AD), Show bar (Windows), Settings and Quit.
-- **Floating bar (Windows)**: one or two lines you choose from weekday, time, a second clock, BS and
-  AD dates, tithi and today's holiday. Drag it anywhere; it snaps to edges and stays above the
-  taskbar.
+- **Floating bar (Windows)**: one or two lines you choose from the weekday, the BS day, month and
+  year, the BS and AD dates, the time, a second clock such as `SGT 10:11 AM`, tithi and today's
+  holiday, each line bold or regular. It starts with the weekday and BS date over the AD date.
+  Drag it anywhere; it snaps to edges, stays above the taskbar and hides while a full-screen app is
+  in front.
 - **Month view**: BS and AD day numbers, tithi under each day, holidays in red, events marked with a
   dot. Zoom out to a year or a decade, go to any date, or pin the popup open.
 - **Settings**: language (English or Nepali), theme, the bar's two lines, the shortcut, a second
@@ -60,7 +61,9 @@ gh attestation verify mitibar_${MITIBAR_VERSION}_x64-setup.exe --repo sanamhub/m
 ## Build it yourself
 
 ```sh
-cargo run -p mitibar --release
+git clone https://github.com/sanamhub/mitibar
+cd mitibar
+cargo run --release
 ```
 
 On Linux it needs a tray (StatusNotifierItem or the GNOME AppIndicator extension), fontconfig,
