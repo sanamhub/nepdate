@@ -527,6 +527,14 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+.race-nums:has(.race-note) {
+  flex-wrap: wrap;
+}
+/* Under a library that keeps pace with NepDate: what it gets wrong. */
+.race-note {
+  flex-basis: 100%;
+  white-space: normal;
+}
 .race-nums strong {
   color: var(--nd-ink);
   font-weight: 650;

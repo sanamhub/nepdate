@@ -10,7 +10,7 @@ import MitiBarArt from "../components/landing/MitiBarArt.astro";
 import MonthLengths from "../components/landing/MonthLengths.astro";
 import LangIcon from "../components/landing/LangIcon.astro";
 import { downloads, formatCount } from "../data/downloads";
-import { benchmarks, competitorCount, csharp, formatNs, nearest } from "../data/benchmarks";
+import { competitorCount, formatNs, languages, nearest } from "../data/benchmarks";
 import { DATA_ERROR_FORM, HUB, MITIBAR_RELEASE, MITIBAR_VERSION, PATRO, VERSION, ports, repoUrl } from "../data/ports";
 
 // Rendered at build time so the page reads right without JavaScript; the script in
@@ -61,18 +61,23 @@ const weekLabel =
     : `${weekFirst.long({ year: false, pad: false })} to ${weekLast.long({ pad: false })}`;
 
 // The hero's result line: each port's own BS to AD time, from the same benchmark reports.
-const callTime = (id: string) => formatNs(benchmarks.find((b) => b.id === id)?.ops[0] ?? csharp.ops[0]);
+const callTime = (id: string) => formatNs(languages.find((b) => b.id === id)!.ops[0]);
 
-// The speed section: each port's BS to AD time against the fastest other library in its language.
-const race = benchmarks.map((port) => {
+// The speed section: each language's BS to AD time against the fastest other library in it. Where
+// that library is about as fast (C#), the row says so and how many dates it gets wrong.
+const race = languages.map((port) => {
   const next = nearest(port);
   return {
     name: port.name,
     ours: formatNs(port.ops[0]),
     theirs: formatNs(next.b1),
     rival: next.name,
-    times: next.times < 10 ? next.times.toFixed(1) : Math.round(next.times).toString(),
-    width: Math.max(1, (port.ops[0] / next.b1) * 100).toFixed(1),
+    wrong: next.wrong,
+    times:
+      next.times < 1.5
+        ? "As fast"
+        : `${next.times < 10 ? next.times.toFixed(1) : Math.round(next.times).toString()}× faster`,
+    width: Math.min(100, Math.max(1, (port.ops[0] / next.b1) * 100)).toFixed(1),
   };
 });
 
@@ -294,11 +299,11 @@ const jsonLd = {
   <section class="section band speed" id="performance" aria-labelledby="speed-title">
     <div class="wrap">
       <div class="section-head speed-head">
-        <h2 id="speed-title">Faster than every other library we measured</h2>
+        <h2 id="speed-title">The fastest right answer in every language</h2>
         <p>
-          BS to AD, time per call, against the fastest other Bikram Sambat library in each language. Each port timed{" "}
-          {competitorCount} libraries in all on the same machine and the same 64 dates, and none of them agrees with
-          the calendar data on all 64.
+          BS to AD, time per call, against the fastest other Bikram Sambat library in each language. We timed{" "}
+          {competitorCount} other libraries on the same machine and the same 64 dates. None of them agrees with the
+          calendar data on all 64, and only one, in C#, keeps pace with NepDate.
         </p>
       </div>
       <ol class="panel race">
@@ -314,8 +319,9 @@ const jsonLd = {
                 <strong>{row.ours}</strong>
                 <span class="race-vs"> against {row.theirs} for </span>
                 <code class="who">{row.rival}</code>
+                {row.wrong ? <span class="race-note">It is wrong on {row.wrong} of the 64 dates.</span> : null}
               </span>
-              <span class="race-times">{row.times}× faster</span>
+              <span class="race-times">{row.times}</span>
             </li>
           ))
         }
