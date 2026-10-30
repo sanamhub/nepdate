@@ -78,6 +78,8 @@ jobs:
             echo "Hub commits since \`${old:0:7}\`:"
             echo
             if [[ "$old" =~ ^[0-9a-f]{40}$ ]]; then
+              # \(..) is jq's string interpolation, not a shell expansion
+              # shellcheck disable=SC2016
               gh api "repos/sanamhub/nepdate/compare/$old...$new" \
                 --jq '.commits[] | "- [`\(.sha[0:7])`](\(.html_url)) \(.commit.message | split("\n")[0])"'
             else
@@ -156,5 +158,5 @@ jobs:
           title: "chore(shared): sync from nepdate ${{ needs.prepare.outputs.short }}"
           body-path: ${{ runner.temp }}/in/body.md
           labels: shared-sync
-          assignees: ${{ vars.SYNC_ASSIGNEE || github.repository_owner }}
+          assignees: ${{ vars.SYNC_ASSIGNEE }}
           delete-branch: true

@@ -1,0 +1,194 @@
+# Re-imports the hub's data from C# NepDate every day and opens or updates one PR on branch
+# bot/upstream-sync (ADR-0002 §6, docs/runbooks/data-update.md). The check that builds and runs
+# upstream code has no token beyond a read-only one; a second job applies the artifact and reports.
+name: upstream-sync
+
+on:
+  schedule:
+    - cron: "15 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  # Builds and runs C# NepDate, so it gets no secrets and no write permission. Everything it learns
+  # leaves as files in one artifact.
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: "8.0.x"
+      - name: Clone C# NepDate
+        id: upstream
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/results"
+          git clone --filter=blob:none https://github.com/RajuPrasai/NepDate "$RUNNER_TEMP/upstream"
+          previous="$(git show HEAD:data/UPSTREAM)"
+          head="$(git -C "$RUNNER_TEMP/upstream" rev-parse HEAD)"
+          if [ "$head" = "$previous" ]; then
+            echo "moved=false" >> "$GITHUB_OUTPUT"
+            echo "upstream is still at ${head:0:7}"
+          else
+            echo "moved=true" >> "$GITHUB_OUTPUT"
+            echo "upstream moved from ${previous:0:7} to ${head:0:7}"
+          fi
+      - name: Import the data
+        id: import
+        if: steps.upstream.outputs.moved == 'true'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python tools/extract_from_csharp.py "$RUNNER_TEMP/upstream" --summary "$RUNNER_TEMP/summary.md" \
+            2>&1 | tee "$RUNNER_TEMP/results/import.log"
+      - name: Regenerate the vectors
+        id: vectors
+        if: steps.import.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python tools/make_vectors.py 2>&1 | tee "$RUNNER_TEMP/results/vectors.log"
+      - name: Check the spec and the vectors
+        id: verify
+        if: steps.import.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python spec/reference/verify_vectors.py 2>&1 | tee "$RUNNER_TEMP/results/verify.log"
+      - name: Check the data itself
+        id: sanity
+        if: steps.import.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python tools/data_sanity.py 2>&1 | tee "$RUNNER_TEMP/results/sanity.log"
+      - name: Compare with what the C# code computes
+        id: exhaustive
+        if: steps.import.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          {
+            dotnet run -c Release --project tools/csharp-exhaustive \
+              -p:NepDateSource="$RUNNER_TEMP/upstream" -- "$RUNNER_TEMP/exhaustive"
+            python tools/compare_exhaustive.py "$RUNNER_TEMP/exhaustive"
+          } 2>&1 | tee "$RUNNER_TEMP/results/exhaustive.log"
+      - name: List the upstream commits outside the data
+        id: code
+        run: |
+          set -euo pipefail
+          python tools/upstream_sync.py code-changed --repo "$RUNNER_TEMP/upstream" \
+            --previous "$(git show HEAD:data/UPSTREAM)" --out "$RUNNER_TEMP/results/code.json"
+      - name: Compare the golden vector version with nuget.org
+        id: nuget
+        run: |
+          set -euo pipefail
+          python tools/upstream_sync.py nuget --out "$RUNNER_TEMP/results/nuget.json"
+      - name: Check how far the data reaches
+        id: status
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python tools/data_status.py --strict 2>&1 | tee "$RUNNER_TEMP/results/status.log"
+      - name: Fold the results into a report
+        id: report
+        if: always()
+        env:
+          IMPORT_OUTCOME: ${{ steps.import.outcome }}
+          VECTORS_OUTCOME: ${{ steps.vectors.outcome }}
+          VERIFY_OUTCOME: ${{ steps.verify.outcome }}
+          SANITY_OUTCOME: ${{ steps.sanity.outcome }}
+          EXHAUSTIVE_OUTCOME: ${{ steps.exhaustive.outcome }}
+          STATUS_OUTCOME: ${{ steps.status.outcome }}
+        run: |
+          set -euo pipefail
+          temp="$RUNNER_TEMP"
+          python tools/upstream_sync.py report --results "$temp/results" --root "$GITHUB_WORKSPACE" \
+            --out "$temp/out" --summary "$temp/summary.md" --upstream "$temp/upstream" \
+            --outcome "import=$IMPORT_OUTCOME" --outcome "vectors=$VECTORS_OUTCOME" \
+            --outcome "verify=$VERIFY_OUTCOME" --outcome "sanity=$SANITY_OUTCOME" \
+            --outcome "exhaustive=$EXHAUSTIVE_OUTCOME" --outcome "status=$STATUS_OUTCOME"
+      - name: Upload the data, the vectors and the report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: upstream-sync
+          path: ${{ runner.temp }}/out
+          retention-days: 7
+          if-no-files-found: warn
+
+  # Applies the artifact and reports. It never checks out or runs anything from the NepDate clone.
+  publish:
+    needs: check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: sync
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: App token
+        id: app-token
+        if: vars.SYNC_APP_ID != ''
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ vars.SYNC_APP_ID }}
+          private-key: ${{ secrets.SYNC_APP_PRIVATE_KEY }}
+          repositories: ${{ github.event.repository.name }}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: upstream-sync
+          path: ${{ runner.temp }}/in
+      # The check job built NepDate's code, so the artifact is read as untrusted: apply checks the PR
+      # title before it becomes an output, and issues accepts only the titles and body files the
+      # tool writes.
+      - name: Apply the artifact
+        id: apply
+        run: python tools/upstream_sync.py apply --artifact "$RUNNER_TEMP/in" --root .
+      - name: Report to the issues
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
+          SYNC_ASSIGNEE: ${{ vars.SYNC_ASSIGNEE }}
+        run: python tools/upstream_sync.py issues --artifact "$RUNNER_TEMP/in"
+      - name: Note how the pull request was opened
+        if: steps.apply.outputs.data_changed == 'true'
+        env:
+          NO_APP: ${{ vars.SYNC_APP_ID == '' }}
+        run: |
+          set -euo pipefail
+          if [ "$NO_APP" = "true" ]; then
+            printf '\n%s\n' "Opened with GITHUB_TOKEN, so CI doesn't start on its own: close and reopen this PR once." \
+              >> "$RUNNER_TEMP/in/pr-body.md"
+          fi
+      - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        if: steps.apply.outputs.data_changed == 'true'
+        with:
+          token: ${{ steps.app-token.outputs.token || github.token }}
+          branch: bot/upstream-sync
+          base: main
+          delete-branch: true
+          commit-message: ${{ steps.apply.outputs.title }}
+          title: ${{ steps.apply.outputs.title }}
+          body-path: ${{ runner.temp }}/in/pr-body.md
+          labels: upstream-sync
+          assignees: ${{ vars.SYNC_ASSIGNEE }}

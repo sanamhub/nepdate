@@ -28,6 +28,11 @@ no releases; ports pin a commit in `shared/VERSION` (ADR-0001). Format:
   unchanged until their meaning is known (U-09).
 - Draft upstream proposals for C# NepDate (`docs/upstream/proposals.md`), with a size breakdown
   of its DLL.
+- `.github/workflows/upstream-sync.yml` and `tools/upstream_sync.py`: the hub re-imports C# NepDate
+  every day at 03:15 UTC and on demand, checks the result against the spec, `data_sanity.py` and
+  the C# code itself, opens or updates the PR on `bot/upstream-sync`, and opens one issue per
+  finding. A new NepDate release on nuget.org is checked on every run. The checks and the one-time
+  setup are in `docs/runbooks/data-update.md`.
 
 ### Changed
 
