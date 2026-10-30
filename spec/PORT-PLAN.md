@@ -110,6 +110,7 @@ user. Before a language's first release:
 - [ ] The release runbook names the weekly and daily runs and the `published-check` label, and the
       changelog has a line under Unreleased.
 
-`tools/package_status.py` reads `spec/packages.json` and reports the newest scheduled check of
-every port; `.github/workflows/package-status.yml` runs it after the last port's weekly check.
+`tools/package_status.py` reads `spec/packages.json` and reports each port's newest scheduled
+install check and newest scheduled registry check;
+`.github/workflows/package-status.yml` runs it after the last port's weekly check.
 

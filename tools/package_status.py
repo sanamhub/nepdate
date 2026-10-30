@@ -1,10 +1,15 @@
-"""Report the last scheduled published-package check of every port.
+"""Report the scheduled published-package checks of every port.
 
 ``spec/packages.json`` is the list of ports, their registries and their ``verify-published``
-workflow. For each port this asks the public GitHub API for the newest scheduled run of that
-workflow and writes one status entry: the package, the version that run checked, its result, the
-day it ran and the run's URL. A port that has never run the workflow on a schedule is reported as
-``not checked``, never as passing, so a missing schedule cannot look green.
+workflow. Each port checks its published package two ways on a schedule: a weekly install check,
+run by the ``weekly`` job, and a daily registry check, run by the ``metadata`` job. For each port
+this walks the workflow's scheduled runs newest first, reads a run's jobs until it has found the
+newest run of each check, and writes one status entry: the package and both checks, each with the
+version it checked, its result, the day it ran and the run's URL.
+
+The two are kept apart because the newest run is usually only the registry check, so a broken
+install would otherwise be hidden until the next weekly run. A check with no run in the window is
+reported as ``not checked``, never as passing, so a missing schedule cannot look green.
 
     python tools/package_status.py
     python tools/package_status.py --json package-status.json --md package-status.md
@@ -15,7 +20,8 @@ When ``GITHUB_TOKEN`` is set it is sent as well, which raises the limit in CI.
 
 The version comes from the job names of the run: every ``verify-published.yml`` names its check
 jobs ``verify <version>``, ``weekly <version>`` and ``metadata <version>``, so the version a run
-checked survives in the API without another artifact. A skipped job is ignored.
+checked survives in the API without another artifact. A skipped job is not a check: it says the
+other kind of scheduled run ran that day, so the walk goes on to an older run.
 """
 
 from __future__ import annotations
@@ -37,6 +43,11 @@ SPEC = ROOT / "spec" / "packages.json"
 API = "https://api.github.com"
 USER_AGENT = "nepdate-package-status"
 VERSIONED_JOB = re.compile(r"^(verify|weekly|metadata) (\S+)(?: \(.*\))?$")
+# The two checks: the status field, and the job kind whose run made it.
+CHECKS = (("install", "weekly"), ("registry", "metadata"))
+# How many scheduled runs to walk before a check counts as not checked.
+RUNS_PER_PAGE = 20
+NOT_CHECKED = {"version": None, "result": "not checked", "checked": None, "run": None}
 # GitHub's conclusions, in the words the table uses.
 RESULT_WORDS = {
     "success": "pass",
@@ -45,6 +56,17 @@ RESULT_WORDS = {
     "timed_out": "timed out",
     "skipped": "skipped",
     "startup_failure": "failed to start",
+    "in_progress": "running",
+}
+# The order a run's jobs are compared in: the worst one speaks for the check.
+RESULT_ORDER = {
+    "success": 0,
+    "queued": 1,
+    "in_progress": 2,
+    "cancelled": 3,
+    "failure": 4,
+    "timed_out": 5,
+    "startup_failure": 6,
 }
 
 Fetcher = Callable[[str], Any]
@@ -108,45 +130,90 @@ def api_getter(token: str | None, api: str = API) -> Fetcher:
     return get
 
 
-def latest_scheduled_run(port: dict[str, Any], get: Fetcher) -> dict[str, Any] | None:
-    """Return the newest scheduled run of a port's workflow, or None.
+def scheduled_runs(
+    port: dict[str, Any], get: Fetcher, per_page: int = RUNS_PER_PAGE
+) -> list[dict[str, Any]]:
+    """Return the scheduled runs of a port's workflow, newest first.
 
     Args:
         port: One entry of ``spec/packages.json``.
         get: The API reader.
+        per_page: How many runs to ask for; the walk ends with this window.
 
     Returns:
-        The run document, or None when the workflow has never run on a schedule.
+        The run documents, newest first; empty when the workflow never ran on a schedule.
     """
     path = (
         f"/repos/{port['repository']}/actions/workflows/{port['workflow']}"
-        "/runs?event=schedule&per_page=1"
+        f"/runs?event=schedule&per_page={per_page}"
     )
     try:
         document = get(path)
     except LookupError:
-        return None
-    runs = document.get("workflow_runs") or []
-    return runs[0] if runs else None
+        return []
+    return document.get("workflow_runs") or []
 
 
-def version_from_jobs(jobs: list[dict[str, Any]]) -> tuple[str, str]:
-    """Read the version and the kind of check from the job names of a run.
+def jobs_of(port: dict[str, Any], run: dict[str, Any], get: Fetcher) -> list[dict[str, Any]]:
+    """Return the jobs of one run.
 
     Args:
-        jobs: The run's jobs.
+        port: One entry of ``spec/packages.json``.
+        run: The run document.
+        get: The API reader.
 
     Returns:
-        The kind (``verify``, ``weekly`` or ``metadata``) and the version, or ``unknown`` twice
-        when no job carries one.
+        The run's jobs, or none when they are not readable, which leaves the check to an older
+        run rather than reporting a result the jobs cannot support.
     """
+    try:
+        document = get(f"/repos/{port['repository']}/actions/runs/{run['id']}/jobs?per_page=100")
+    except LookupError:
+        return []
+    return document.get("jobs") or []
+
+
+def worst_result(results: list[str]) -> str:
+    """Return the result that speaks for a check made of several jobs.
+
+    Args:
+        results: One conclusion or status per job of the check.
+
+    Returns:
+        The worst of them, so one failing matrix leg fails the check.
+    """
+    return max(results, key=lambda result: RESULT_ORDER.get(result, RESULT_ORDER["failure"]))
+
+
+def check_from_run(
+    run: dict[str, Any], jobs: list[dict[str, Any]], kind: str
+) -> dict[str, Any] | None:
+    """Build one check from a run, or None when that check did not run.
+
+    Args:
+        run: The run document.
+        jobs: The run's jobs.
+        kind: ``weekly`` for the install check, ``metadata`` for the registry check.
+
+    Returns:
+        The check with its version, result, day and run URL, or None when no job of that kind
+        ran, which is how a skipped job and a run of the other check are left out.
+    """
+    ran = []
     for job in jobs:
         if job.get("conclusion") == "skipped":
             continue
-        found = VERSIONED_JOB.match(job.get("name") or "")
-        if found:
-            return found.group(1), found.group(2)
-    return "unknown", "unknown"
+        matched = VERSIONED_JOB.match(job.get("name") or "")
+        if matched and matched.group(1) == kind:
+            ran.append((matched.group(2), job.get("conclusion") or job.get("status") or "failure"))
+    if not ran:
+        return None
+    return {
+        "version": ran[0][0],
+        "result": worst_result([result for _, result in ran]),
+        "checked": run_date(run),
+        "run": run.get("html_url"),
+    }
 
 
 def run_date(run: dict[str, Any]) -> str:
@@ -162,15 +229,16 @@ def run_date(run: dict[str, Any]) -> str:
     return stamp[:10]
 
 
-def status_of(port: dict[str, Any], get: Fetcher) -> dict[str, Any]:
+def status_of(port: dict[str, Any], get: Fetcher, per_page: int = RUNS_PER_PAGE) -> dict[str, Any]:
     """Build the status entry of one port.
 
     Args:
         port: One entry of ``spec/packages.json``.
         get: The API reader.
+        per_page: How many scheduled runs to walk at most.
 
     Returns:
-        The entry written to the status file.
+        The entry written to the status file: the port and one object per check.
     """
     entry = {
         "id": port["id"],
@@ -178,28 +246,19 @@ def status_of(port: dict[str, Any], get: Fetcher) -> dict[str, Any]:
         "package": port["package"],
         "repository": port["repository"],
         "workflow": port["workflow"],
-        "version": None,
-        "result": "not checked",
-        "check": None,
-        "checked": None,
-        "run": None,
+        "install": dict(NOT_CHECKED),
+        "registry": dict(NOT_CHECKED),
     }
-    run = latest_scheduled_run(port, get)
-    if run is None:
-        return entry
-    try:
-        jobs = get(f"/repos/{port['repository']}/actions/runs/{run['id']}/jobs?per_page=100")
-    except LookupError:
-        # The run is there but its jobs are not readable; the result is still worth reporting.
-        jobs = {}
-    check, version = version_from_jobs(jobs.get("jobs") or [])
-    entry.update(
-        version=None if version == "unknown" else version,
-        result=run.get("conclusion") or run.get("status") or "unknown",
-        check=None if check == "unknown" else check,
-        checked=run_date(run),
-        run=run.get("html_url"),
-    )
+    missing = {field: kind for field, kind in CHECKS}
+    for run in scheduled_runs(port, get, per_page):
+        jobs = jobs_of(port, run, get)
+        for field, kind in list(missing.items()):
+            check = check_from_run(run, jobs, kind)
+            if check is not None:
+                entry[field] = check
+                del missing[field]
+        if not missing:
+            break
     return entry
 
 
@@ -215,6 +274,28 @@ def result_word(result: str) -> str:
     return RESULT_WORDS.get(result, result)
 
 
+def check_cell(check: dict[str, Any]) -> str:
+    """Write one check as a table cell.
+
+    Args:
+        check: One check of a status entry.
+
+    Returns:
+        The result with the version, the day and the run link, or ``not checked``.
+    """
+    if check.get("result") == "not checked":
+        return "not checked"
+    parts = [result_word(check.get("result") or "unknown")]
+    if check.get("version"):
+        parts.append(f"`{check['version']}`")
+    if check.get("checked"):
+        parts.append(f"on {check['checked']}")
+    cell = " ".join(parts)
+    if check.get("run"):
+        cell += f" ([run]({check['run']}))"
+    return cell
+
+
 def render_table(entries: list[dict[str, Any]]) -> str:
     """Render the status entries as one Markdown table.
 
@@ -227,22 +308,25 @@ def render_table(entries: list[dict[str, Any]]) -> str:
     lines = [
         "## Published packages",
         "",
-        "The newest scheduled check of each port's `verify-published` workflow.",
+        "The newest scheduled install check (`weekly`) and registry check (`metadata`) of each"
+        " port's `verify-published` workflow.",
         "",
-        "| Package | Version | Result | Checked | Run |",
-        "| --- | --- | --- | --- | --- |",
+        "| Package | Install | Registry |",
+        "| --- | --- | --- |",
     ]
     for entry in entries:
-        version = f"`{entry['version']}`" if entry["version"] else ""
-        checked = entry["checked"] or ""
-        run = f"[run]({entry['run']})" if entry["run"] else ""
         lines.append(
-            f"| `{entry['package']}` ({entry['name']}) | {version} | "
-            f"{result_word(entry['result'])} | {checked} | {run} |"
+            f"| `{entry['package']}` ({entry['name']}) | "
+            f"{check_cell(entry['install'])} | {check_cell(entry['registry'])} |"
         )
-    unchecked = sum(1 for entry in entries if entry["result"] == "not checked")
-    if unchecked:
-        lines += ["", f"{unchecked} of {len(entries)} ports have no scheduled run yet, so they are not checked."]
+    for field, _kind in CHECKS:
+        unchecked = sum(1 for entry in entries if entry[field]["result"] == "not checked")
+        if unchecked:
+            lines += [
+                "",
+                f"{unchecked} of {len(entries)} ports have no scheduled {field} check, so they are"
+                " not checked.",
+            ]
     return "\n".join(lines) + "\n"
 
 
@@ -274,7 +358,7 @@ def main(argv: list[str] | None = None) -> int:
         0 when the report was written, 1 when the API or a file failed.
     """
     parser = argparse.ArgumentParser(
-        description="Report the last scheduled verify-published run of every port.",
+        description="Report the scheduled install and registry checks of every port.",
         epilog="GITHUB_TOKEN raises the API rate limit when it is set in the environment.",
     )
     parser.add_argument("--spec", type=Path, default=SPEC, help="the port list")

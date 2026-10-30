@@ -1,5 +1,5 @@
 {
-  "about": "What each port publishes, where it is published, and the workflow that checks the published copy. tools/package_status.py reads this file to report the last scheduled check of every port, and the site may read it later. A new language adds one entry here and its own verify-published.yml (spec/PORT-PLAN.md). C# NepDate is not listed: it is the upstream library, published from its own repository with its own version line.",
+  "about": "What each port publishes, where it is published, and the workflow that checks the published copy. tools/package_status.py reads this file to report the scheduled install and registry checks of every port, and the site may read it later. A new language adds one entry here and its own verify-published.yml (spec/PORT-PLAN.md). C# NepDate is not listed: it is the upstream library, published from its own repository with its own version line.",
   "ports": [
     {
       "id": "rust",

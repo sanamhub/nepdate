@@ -1,9 +1,10 @@
 name: package-status
 
-# Collects the newest scheduled verify-published run of every port in spec/packages.json and
-# writes the table to the run summary and the JSON to an artifact, which the site can read later.
-# It runs on Monday afternoon, a few hours after the last port's check, so a bad week is visible
-# in one place. A port that has never run on a schedule is reported as not checked, never as
+# Collects the newest scheduled install check and the newest scheduled registry check of every port
+# in spec/packages.json and writes the table to the run summary and the JSON to an artifact, which
+# the site can read later. The two are reported apart so a broken install is not hidden by the daily
+# registry run. It runs on Monday afternoon, a few hours after the last port's check, so a bad week is
+# visible in one place. A check that has no scheduled run is reported as not checked, never as
 # passing. Read-only: it asks the public API and writes no issue.
 
 on:
