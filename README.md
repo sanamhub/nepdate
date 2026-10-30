@@ -54,7 +54,7 @@ lines, with the exact version, are in each repository's README and its GitHub re
 
 | App | What it is | Where |
 |---|---|---|
-| MitiBar | Tray calendar for Windows, macOS and Linux, with a floating date bar on Windows, built on the Rust library | [0.2.0-beta.2](https://github.com/sanamhub/mitibar/releases/tag/v0.2.0-beta.2), unsigned pre-release, in its own repository [mitibar](https://github.com/sanamhub/mitibar) |
+| MitiBar | Tray calendar for Windows, macOS and Linux, with a floating date bar on Windows, built on the Rust library | [latest release](https://github.com/sanamhub/mitibar/releases/latest), not code-signed yet, in its own repository [mitibar](https://github.com/sanamhub/mitibar) |
 | NepDate for Android and iOS | Month view, holidays, widgets; no ads, account or network | [nepdate-mobile](https://github.com/sanamhub/nepdate-mobile), in development |
 
 ## How the ports use this repository

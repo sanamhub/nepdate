@@ -26,10 +26,9 @@ It is built on the [Rust library](/docs/rust/) and lives in its own repository,
 | macOS | universal `.dmg` |
 | Linux | `.AppImage` or `.deb`, x64 |
 
-:::caution[Unsigned beta]
-The beta is not code-signed, so Windows SmartScreen and macOS Gatekeeper warn before the first run.
-The release notes say how to open it on each platform. Its idle memory, CPU and cold-start targets
-are not yet confirmed on a quiet machine.
+:::caution[Not code-signed yet]
+MitiBar is not code-signed yet, so Windows SmartScreen and macOS Gatekeeper warn before the first
+run. The release notes say how to open it on each platform. Check the download as shown below.
 :::
 
 ## Check a download
@@ -50,11 +49,15 @@ gh attestation verify mitibar_${MITIBAR_VERSION}_x64-setup.exe --repo sanamhub/m
   today (AD), Show bar (Windows), Settings and Quit.
 - **Floating bar (Windows)**: one or two lines you choose from the weekday, the BS day, month and
   year, the BS and AD dates, the time, a second clock such as `SGT 10:11 AM`, tithi and today's
-  holiday, each line bold or regular. It starts with the weekday and BS date over the AD date.
+  holiday, each line bold or regular. It starts with the weekday and AD date over the BS date in
+  bold; the Default, Date and time, Minimal and All presets set both lines at once, and one button
+  swaps them.
   Drag it anywhere; it snaps to edges, stays above the taskbar and hides while a full-screen app is
   in front.
 - **Month view**: BS and AD day numbers, tithi under each day, holidays in red, events marked with a
-  dot. Zoom out to a year or a decade, go to any date, or pin the popup open.
+  dot, and today as a tile. Zoom out to a year or a decade, go to any date, or pin the popup open.
+- **Converter**: BS to AD, AD to BS, and the days between two dates, with a Copy button for each
+  result.
 - **Settings**: language (English or Nepali), theme, the bar's two lines, the shortcut, a second
   time zone, and start at login.
 
