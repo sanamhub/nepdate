@@ -1,6 +1,6 @@
 ---
 title: C
-description: Use the nepdate-c core and patro libraries from C11 with CMake, pkg-config, the amalgamation or Zig.
+description: Use the nepdate-c core and patro libraries from C11 with CMake, pkg-config, the amalgamation, vcpkg, Conan or Zig.
 ---
 
 import { Code } from "@astrojs/starlight/components";
@@ -40,7 +40,7 @@ The other ways in:
 | `cmake --install` | `find_package(nepdate-c CONFIG REQUIRED)`, or `pkg-config nepdate-c nepdate-c-patro` |
 | Amalgamation | `nepdate.c` and `nepdate.h`, plus `nepdate_patro.c` and `nepdate_patro.h`, from the release archive or `dist/` |
 | vcpkg and Conan | the overlay ports in `ports/` and the recipes in `conan/`, until the registry submissions are accepted |
-| Zig | `build.zig` and `build.zig.zon`, tested with Zig 0.17.0 |
+| Zig | `zig fetch` and `build.zig`, see [Zig](#zig) below |
 
 Each [GitHub release](https://github.com/sanamhub/nepdate-c/releases) has the source archive and
 the amalgamation archive with `SHA256SUMS` and a build provenance attestation. The installed names
@@ -152,6 +152,60 @@ int main(void) {
 
 Names are UTF-8 bytes with a length, not NUL-terminated strings. A day outside BS 2077-01-01 to
 2084-08-20 has no tithi, no holiday and no events.
+
+## Zig
+
+The repository is a Zig package, tested with Zig 0.17.0. Add the release tag to your
+`build.zig.zon`:
+
+<Code lang="sh" code={`zig fetch --save git+https://github.com/sanamhub/nepdate-c#v${VERSION}`} />
+
+Then link the two static libraries and turn the headers into a Zig module in `build.zig`:
+
+```zig title="build.zig"
+const nepdate = b.dependency("nepdate_c", .{ .target = target, .optimize = optimize });
+
+const headers = b.addTranslateC(.{
+    .root_source_file = b.path("src/c.h"), // #include <nepdate.h> and <nepdate_patro.h>
+    .target = target,
+    .optimize = optimize,
+});
+headers.addIncludePath(nepdate.path("include"));
+
+const exe = b.addExecutable(.{
+    .name = "app",
+    .root_module = b.createModule(.{
+        .root_source_file = b.path("src/main.zig"),
+        .target = target,
+        .optimize = optimize,
+        .imports = &.{.{ .name = "c", .module = headers.createModule() }},
+    }),
+});
+exe.root_module.linkLibrary(nepdate.artifact("nepdate-c"));
+exe.root_module.linkLibrary(nepdate.artifact("nepdate-c-patro"));
+```
+
+```zig title="src/main.zig"
+const std = @import("std");
+const c = @import("c");
+
+pub fn main() !void {
+    var date: c.nepdate_date = undefined;
+    var ad: c.nepdate_ymd = undefined;
+    if (c.nepdate_from_bs(2081, 4, 15, &date) != c.NEPDATE_OK or
+        c.nepdate_to_ad(date, &ad) != c.NEPDATE_OK)
+    {
+        return error.InvalidDate;
+    }
+    // 2024-07-30
+    std.debug.print("{d}-{d:0>2}-{d:0>2}\n", .{ ad.year, @as(u32, @intCast(ad.month)), @as(u32, @intCast(ad.day)) });
+
+    var info: c.nepdate_patro_day_info = undefined;
+    if (c.nepdate_patro_info(date, &info) == c.NEPDATE_OK and info.has_tithi) {
+        std.debug.print("{s}\n", .{info.tithi.en[0..info.tithi.en_length]}); // Dashami
+    }
+}
+```
 
 ## Speed
 

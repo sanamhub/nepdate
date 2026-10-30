@@ -62,12 +62,15 @@
   font-weight: 600;
 }
 
-/* Supported languages. On narrow screens a language selector with the hero's tab pattern
-   (scripts/landing.ts) shows one language at a time; from 48rem the tabs give way and every
-   language shows, two to a row, so the lines can be compared. Every line is in the HTML either way.
-   The languages share one hairline grid rather than floating as separate cards. */
+/* Supported languages. One row per language: who it is for on the left, the install lines and
+   links on the right, so every language reads the same way down the page. On narrow screens a
+   language selector with the hero's tab pattern (scripts/landing.ts) shows one row at a time; from
+   48rem the tabs give way and every row shows. Every line is in the HTML either way.
+   The one flourish: each row carries its language marks large and faint at the end of the name
+   column, two or three of them where one package serves several languages (TypeScript and JavaScript, Kotlin,
+   Java and Android). */
 
-.install-grid {
+.langs {
   border: 1px solid var(--nd-hairline);
   border-radius: var(--nd-radius-l);
   background: var(--nd-raised);
@@ -76,54 +79,113 @@
 .install .tabs {
   margin-bottom: 0.75rem;
 }
-.install-lang {
+.lang {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  gap: 0.6rem;
-  align-content: start;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "id"
+    "cmds"
+    "links";
+  gap: 1rem;
   min-width: 0;
-  padding: 1.15rem 1.25rem 1.2rem;
+  padding: 1.35rem 1.25rem;
+  overflow: hidden;
 }
-.install-lang[hidden] {
+.lang[hidden] {
   display: none;
 }
 @media (min-width: 48rem) {
   .install .tabs {
     display: none;
   }
-  .install-grid {
+  .lang,
+  .lang[hidden] {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1px;
-    background: var(--nd-hairline);
+    grid-template-columns: 14rem minmax(0, 1fr);
+    grid-template-areas:
+      "id cmds"
+      "id links";
+    gap: 0.75rem 2rem;
+    padding: 1.5rem 1.75rem;
   }
-  .install-lang,
-  .install-lang[hidden] {
-    display: grid;
-    background: var(--nd-raised);
+  .lang + .lang {
+    border-top: 1px solid var(--nd-hairline);
   }
 }
-.install-head {
+.lang-watermark {
+  position: absolute;
+  z-index: -1;
+  top: 0.9rem;
+  right: 1rem;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  color: var(--nd-ink);
+  opacity: 0.06;
+  pointer-events: none;
+}
+.lang-watermark .lang-icon {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+.lang-watermark .lang-icon + .lang-icon {
+  width: 3rem;
+  height: 3rem;
+  margin-left: -0.5rem;
+}
+@media (min-width: 48rem) {
+  /* In the empty end of the name column, clear of the install lines. */
+  .lang-watermark {
+    top: 50%;
+    right: auto;
+    left: 9.5rem;
+    transform: translateY(-50%);
+  }
+  .lang-watermark .lang-icon {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+  .lang-watermark .lang-icon + .lang-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+.lang-id {
+  grid-area: id;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
   min-width: 0;
-  margin-bottom: 0.15rem;
 }
 .lang-icon {
   flex: none;
   color: var(--nd-ink);
 }
-.install-name {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 650;
+.lang-mark {
+  margin-top: 0.1rem;
 }
-.install-count {
-  margin-left: auto;
+.lang-name {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.lang-also,
+.lang-count {
+  margin: 0.15rem 0 0;
   color: var(--nd-ink-muted);
   font-size: var(--nd-step--1);
+}
+.lang-count {
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+}
+.lang-cmds {
+  grid-area: cmds;
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
 }
 .install-cmd {
   display: flex;
@@ -190,12 +252,33 @@
   color: var(--nd-ink);
   background: var(--nd-raised);
 }
-.install-links {
+.lang-links {
+  grid-area: links;
   display: flex;
-  gap: 1rem;
-  margin-top: 0.15rem;
-  font-size: var(--nd-step--1);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.25rem;
+  padding: 0 0.8rem 0 0.65rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-s);
+  background: var(--nd-raised);
+  color: var(--nd-ink);
+  font-size: 0.8rem;
+  font-weight: 600;
   white-space: nowrap;
+  transition: border-color 0.15s ease;
+}
+.chip:hover {
+  text-decoration: none;
+  border-color: var(--nd-ink-muted);
+}
+.chip .lang-icon {
+  color: var(--nd-ink-muted);
 }
 
 /* Converter */
@@ -443,6 +526,14 @@
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+.race-nums:has(.race-note) {
+  flex-wrap: wrap;
+}
+/* Under a library that keeps pace with NepDate: what it gets wrong. */
+.race-note {
+  flex-basis: 100%;
+  white-space: normal;
 }
 .race-nums strong {
   color: var(--nd-ink);

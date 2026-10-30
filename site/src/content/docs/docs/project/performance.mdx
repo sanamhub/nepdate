@@ -3,17 +3,18 @@ title: Performance
 description: How fast each port is, measured the same way in every language, against every other Bikram Sambat library we could find.
 ---
 
-import { BENCHMARK_SPEC, OPERATIONS, benchmarks, competitorCount, csharp, formatNs, nearest } from "../../../../data/benchmarks";
+import { BENCHMARK_SPEC, OPERATIONS, benchmarks, competitorCount, formatNs, languages, nearest } from "../../../../data/benchmarks";
 
 Every port is benchmarked on the same eight operations and the same 64 dates, defined once in the
 hub's [`spec/BENCHMARK.md`](https://github.com/sanamhub/nepdate/blob/main/spec/BENCHMARK.md). Each
-port also measures every other Bikram Sambat library it could find in its language, on the same
-machine and the same dates.
+port, and the hub for C# NepDate, also measures every other Bikram Sambat library it could find in
+its language, on the same machine and the same dates.
 
 <p>
-  In all {benchmarks.length} languages, every port is faster than all {competitorCount} other libraries on both
-  conversions. None of those libraries gives the same answer as the hub's data on all 64 dates;
-  each report lists where they differ.
+  None of the {competitorCount} other libraries gives the same answer as the hub's data on all 64
+  dates; each report lists where they differ. In all {benchmarks.length} port languages, the port is
+  faster than every other library on both conversions. In C#, OSN.NepaliCalendar is about as fast
+  as NepDate, a little faster on BS to AD and slower on AD to BS, and gets 3 of the dates wrong.
 </p>
 
 ## Against other libraries
@@ -31,7 +32,7 @@ BS to AD (B1), time per call. "Next fastest" is the fastest other library in tha
     </tr>
   </thead>
   <tbody>
-    {benchmarks.map((port) => {
+    {languages.map((port) => {
       const next = nearest(port);
       return (
         <tr>
@@ -42,7 +43,10 @@ BS to AD (B1), time per call. "Next fastest" is the fastest other library in tha
             </a>
           </th>
           <td style="text-align: right; white-space: nowrap">{formatNs(port.ops[0])}</td>
-          <td><code>{next.name}</code></td>
+          <td>
+            <code>{next.name}</code>
+            {next.wrong ? `, wrong on ${next.wrong} of 64` : ""}
+          </td>
           <td style="text-align: right; white-space: nowrap">{formatNs(next.b1)}</td>
           <td style="text-align: right">{port.competitors.length}</td>
         </tr>
@@ -76,7 +80,7 @@ Time per call for B1 to B8. Lower is better. B8 builds a whole month grid with t
     </tr>
   </thead>
   <tbody>
-    {[{ name: "C# NepDate", ops: csharp.ops }, ...benchmarks].map((row) => (
+    {languages.map((row) => (
       <tr>
         <th scope="row" style="white-space: nowrap">{row.name}</th>
         {row.ops.map((ns) => <td style="text-align: right; white-space: nowrap">{formatNs(ns)}</td>)}
@@ -85,7 +89,8 @@ Time per call for B1 to B8. Lower is better. B8 builds a whole month grid with t
   </tbody>
 </table>
 
-C# NepDate 2.0.7 on .NET 10 is the reference ([its report](https://github.com/sanamhub/nepdate/blob/main/docs/benchmarks/dotnet.md)).
+The C# row is C# NepDate 2.0.7 on .NET 10, the reference ([its report](https://github.com/sanamhub/nepdate/blob/main/docs/benchmarks/dotnet.md)).
+Its other libraries were timed in a later run, where NepDate itself took 15.1 ns on BS to AD.
 The conversions, arithmetic and patro lookups allocate nothing in Rust, C++, C, Go and Swift.
 
 ## Reading the numbers
