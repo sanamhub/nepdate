@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # The sync workflows start CI this way on the PRs they open with GITHUB_TOKEN.
+  workflow_dispatch:
 
 permissions:
   contents: read

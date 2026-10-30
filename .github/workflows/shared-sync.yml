@@ -1,6 +1,7 @@
 # Reusable: replaces a spoke's shared/ with the hub's main, runs the spoke's generator and opens or
 # updates one PR on branch bot/shared-sync (ADR-0001 decision 3, docs/runbooks/data-update.md).
-# Call it weekly from the spoke, pinned to a full hub commit SHA, secrets passed by name:
+# Call it weekly from the spoke, pinned to a full hub commit SHA, secrets passed by name. The spoke's
+# CI workflow needs a workflow_dispatch trigger (see the ci-workflow input):
 #
 #   on:
 #     schedule:
@@ -13,6 +14,7 @@
 #       permissions:
 #         contents: write
 #         pull-requests: write
+#         actions: write
 #       uses: sanamhub/nepdate/.github/workflows/shared-sync.yml@<sha> # main 2026-10-09
 #       with:
 #         regenerate: ./gradlew codegen
@@ -33,9 +35,13 @@ on:
         description: Runner for the regenerate step.
         type: string
         default: ubuntu-24.04
+      ci-workflow:
+        description: The spoke's CI workflow file, started on the PR when it is opened with GITHUB_TOKEN. It needs a workflow_dispatch trigger.
+        type: string
+        default: ci.yml
     secrets:
       SYNC_APP_PRIVATE_KEY:
-        description: Private key of the sync GitHub App. Without it the PR is opened with GITHUB_TOKEN and CI doesn't start on it.
+        description: Private key of an optional sync GitHub App. Without it the PR is opened with GITHUB_TOKEN and the ci-workflow is started on it.
         required: false
 
 permissions:
@@ -124,6 +130,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      actions: write
     steps:
       - name: App token
         id: app-token
@@ -141,16 +148,9 @@ jobs:
           name: shared-sync
           path: ${{ runner.temp }}/in
       - name: Apply the patch
-        env:
-          NO_APP: ${{ vars.SYNC_APP_ID == '' }}
-        run: |
-          set -euo pipefail
-          git apply --index "$RUNNER_TEMP/in/sync.patch"
-          if [ "$NO_APP" = "true" ]; then
-            printf '\n%s\n' "Opened with GITHUB_TOKEN, so CI doesn't start on its own: close and reopen this PR once." \
-              >> "$RUNNER_TEMP/in/body.md"
-          fi
+        run: git apply --index "$RUNNER_TEMP/in/sync.patch"
       - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        id: pr
         with:
           token: ${{ steps.app-token.outputs.token || github.token }}
           branch: bot/shared-sync
@@ -158,5 +158,16 @@ jobs:
           title: "chore(shared): sync from nepdate ${{ needs.prepare.outputs.short }}"
           body-path: ${{ runner.temp }}/in/body.md
           labels: shared-sync
-          assignees: ${{ vars.SYNC_ASSIGNEE }}
+          assignees: ${{ vars.SYNC_ASSIGNEE || github.repository_owner }}
           delete-branch: true
+      # A PR pushed with GITHUB_TOKEN starts no workflow, but a workflow_dispatch does, and its checks
+      # land on the PR's head commit. With the App the push itself starts CI.
+      - name: Start CI on the pull request
+        if: >-
+          vars.SYNC_APP_ID == '' &&
+          (steps.pr.outputs.pull-request-operation == 'created' ||
+           steps.pr.outputs.pull-request-operation == 'updated')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_WORKFLOW: ${{ inputs.ci-workflow }}
+        run: gh workflow run "$CI_WORKFLOW" --repo "$GITHUB_REPOSITORY" --ref bot/shared-sync

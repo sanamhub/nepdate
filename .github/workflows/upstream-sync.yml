@@ -140,6 +140,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+      actions: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -168,19 +169,10 @@ jobs:
       - name: Report to the issues
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
-          SYNC_ASSIGNEE: ${{ vars.SYNC_ASSIGNEE }}
+          SYNC_ASSIGNEE: ${{ vars.SYNC_ASSIGNEE || github.repository_owner }}
         run: python tools/upstream_sync.py issues --artifact "$RUNNER_TEMP/in"
-      - name: Note how the pull request was opened
-        if: steps.apply.outputs.data_changed == 'true'
-        env:
-          NO_APP: ${{ vars.SYNC_APP_ID == '' }}
-        run: |
-          set -euo pipefail
-          if [ "$NO_APP" = "true" ]; then
-            printf '\n%s\n' "Opened with GITHUB_TOKEN, so CI doesn't start on its own: close and reopen this PR once." \
-              >> "$RUNNER_TEMP/in/pr-body.md"
-          fi
       - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        id: pr
         if: steps.apply.outputs.data_changed == 'true'
         with:
           token: ${{ steps.app-token.outputs.token || github.token }}
@@ -191,4 +183,14 @@ jobs:
           title: ${{ steps.apply.outputs.title }}
           body-path: ${{ runner.temp }}/in/pr-body.md
           labels: upstream-sync
-          assignees: ${{ vars.SYNC_ASSIGNEE }}
+          assignees: ${{ vars.SYNC_ASSIGNEE || github.repository_owner }}
+      # A PR pushed with GITHUB_TOKEN starts no workflow, but a workflow_dispatch does, and its checks
+      # land on the PR's head commit. With the App the push itself starts CI.
+      - name: Start CI on the pull request
+        if: >-
+          steps.apply.outputs.data_changed == 'true' && vars.SYNC_APP_ID == '' &&
+          (steps.pr.outputs.pull-request-operation == 'created' ||
+           steps.pr.outputs.pull-request-operation == 'updated')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --repo "$GITHUB_REPOSITORY" --ref bot/upstream-sync
