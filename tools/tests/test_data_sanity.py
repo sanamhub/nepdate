@@ -27,10 +27,8 @@ class DataSanityTest(unittest.TestCase):
         cal = data_sanity.nepcal.load(ROOT)
         self.assertEqual([f.year for f in data_sanity.new_year_findings(cal)], [2088])
 
-    def test_only_2084_new_year_name_is_wrong(self):
-        findings = data_sanity.new_year_name_findings(ROOT)
-        self.assertEqual([(f.year, f.detail) for f in findings],
-                         [(2084, '2084-01-01 is named "New Year 2083"')])
+    def test_no_new_year_name_is_wrong(self):
+        self.assertEqual(data_sanity.new_year_name_findings(ROOT), [])
 
     def test_wrong_new_year_name_exits_1(self):
         root = scratch_root(self, 'data')

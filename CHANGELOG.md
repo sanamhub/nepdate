@@ -36,6 +36,8 @@ no releases; ports pin a commit in `shared/VERSION` (ADR-0001). Format:
 
 ### Changed
 
+- Calendar data synced from NepDate c6fff4f: the BS 2084 New Year event is named "New Year 2084"
+  (it read "New Year 2083"), so that known data question is closed.
 - The second package in every port is the patro (पात्रो: tithi, holidays, events), named by each
   ecosystem's conventions (ADR-0004). `data/meta/` became `data/patro/` and `spec/META.md` became
   `spec/PATRO.md`. PARITY D-13 records that C# keeps one package.
