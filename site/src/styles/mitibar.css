@@ -215,8 +215,19 @@
   border-top: 2px solid var(--nd-ink);
 }
 .mb-places dt {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   font-weight: 650;
   font-size: var(--nd-step-1);
+}
+.mb-get [role="tab"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.os-icon {
+  flex: none;
 }
 .mb-places dd {
   margin: 0.5rem 0 0;

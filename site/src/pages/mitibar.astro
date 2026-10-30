@@ -9,6 +9,7 @@ import "../styles/mitibar.css";
 // The shared section styles (sections, bands, panels, tabs), linked after the hero as on the home page.
 import sectionsCss from "../styles/landing-sections.css?url";
 import appIcon from "../assets/mitibar-icon.png";
+import OsIcon from "../components/landing/OsIcon.astro";
 import { line, presets } from "../scripts/mitibar-bar";
 import { MITIBAR_REPO, MITIBAR_VERSION, PATRO } from "../data/ports";
 import {
@@ -135,18 +136,18 @@ const jsonLd = {
       </div>
       <dl class="mb-places">
         <div>
-          <dt>Windows</dt>
+          <dt><OsIcon os="windows" size={22} />Windows</dt>
           <dd>
             A small bar above the taskbar, wherever you drag it, and today's day on the tray icon. The bar hides while a
             full-screen app is in front.
           </dd>
         </div>
         <div>
-          <dt>macOS</dt>
+          <dt><OsIcon os="macos" size={22} />macOS</dt>
           <dd>Today's day in the menu bar. Click it for the month.</dd>
         </div>
         <div>
-          <dt>Linux</dt>
+          <dt><OsIcon os="linux" size={22} />Linux</dt>
           <dd>Today's day in the system tray, on desktops that show tray icons. Click it for the month.</dd>
         </div>
       </dl>
@@ -229,6 +230,7 @@ const jsonLd = {
                 tabindex={i === 0 ? 0 : -1}
                 data-os={p.id}
               >
+                <OsIcon os={p.id} />
                 {p.name}
               </button>
             ))

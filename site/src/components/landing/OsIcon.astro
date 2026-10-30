@@ -1,0 +1,18 @@
+---
+// A system's mark beside its name: the Windows four panes, the Apple logo and Tux, one colour
+// (currentColor) on a 24 px grid. Apple and Tux are Simple Icons 16.35.0 (CC0); the Windows
+// panes are drawn here. The paths live in src/assets/os/, where the version check does not read
+// path data as version numbers. Decorative: the name always sits next to the mark.
+import windows from "../../assets/os/windows.svg?raw";
+import macos from "../../assets/os/macos.svg?raw";
+import linux from "../../assets/os/linux.svg?raw";
+
+interface Props {
+  os: "windows" | "macos" | "linux";
+  size?: number;
+}
+const { os, size = 18 } = Astro.props;
+const paths = { windows, macos, linux };
+---
+
+<svg class="os-icon" viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" focusable="false" set:html={paths[os]} />
