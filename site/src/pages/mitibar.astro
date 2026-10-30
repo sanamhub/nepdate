@@ -246,7 +246,9 @@ const jsonLd = {
                 ))}
               </ul>
               <p class="mb-verify">
-                Check a file against <a href={SHA256SUMS}>SHA256SUMS</a>: <code>{p.verify}</code>
+                Check a file against <a href={SHA256SUMS}>SHA256SUMS</a>: <code>{p.verify}</code>. With the GitHub
+                CLI you can also check that the release workflow built it:{" "}
+                <code>gh attestation verify &lt;file&gt; -R sanamhub/mitibar</code>.
               </p>
             </div>
           ))
