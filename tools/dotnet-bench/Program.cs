@@ -21,10 +21,20 @@ if (args.Length > 0 && args[0] == "--inputs")
     return;
 }
 
+if (args.Length > 0 && args[0] == "--agrees")
+{
+    // Checks the other C# libraries' B1 and B2 results against the hub data, for docs/benchmarks/dotnet.md.
+    Competitors.PrintAgreement();
+    return;
+}
+
 // spec/BENCHMARK.md §1: pin to logical CPU 2 (mask 0x4), a performance core on the reference machine.
 var affinity = (IntPtr)0x4;
 var config = DefaultConfig.Instance
     .AddJob(Job.Default.WithRuntime(CoreRuntime.Core10_0).WithAffinity(affinity))
-    .AddJob(Job.Default.WithRuntime(CoreRuntime.Core80).WithAffinity(affinity));
+    .AddJob(Job.Default.WithRuntime(CoreRuntime.Core80).WithAffinity(affinity))
+    // NepaliCalendarBS ships a Debug build on nuget.org. That is the assembly its users get, so it
+    // is measured as published instead of being refused by the optimizations check.
+    .WithOptions(ConfigOptions.DisableOptimizationsValidator);
 
 BenchmarkSwitcher.FromAssembly(typeof(Benchmarks).Assembly).Run(args, config);
