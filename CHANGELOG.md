@@ -33,6 +33,12 @@ no releases; ports pin a commit in `shared/VERSION` (ADR-0001). Format:
   the C# code itself, opens or updates the PR on `bot/upstream-sync`, and opens one issue per
   finding. A new NepDate release on nuget.org is checked on every run. The checks and the one-time
   setup are in `docs/runbooks/data-update.md`.
+- `spec/packages.json` lists what each port publishes, in which registry, under which package
+  names, with the install command a user types and the workflow that checks the published copy.
+  `tools/package_status.py` reads each port's newest scheduled install check and newest scheduled
+  registry check from the public GitHub API and writes the status file and a Markdown table, and
+  `.github/workflows/package-status.yml` runs it after the last port's weekly check. A check with
+  no scheduled run is "not checked", never passing.
 
 ### Changed
 

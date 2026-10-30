@@ -1,0 +1,39 @@
+name: package-status
+
+# Collects the newest scheduled install check and the newest scheduled registry check of every port
+# in spec/packages.json and writes the table to the run summary and the JSON to an artifact, which
+# the site can read later. The two are reported apart so a broken install is not hidden by the daily
+# registry run. It runs on Monday afternoon, a few hours after the last port's check, so a bad week is
+# visible in one place. A check that has no scheduled run is reported as not checked, never as
+# passing. Read-only: it asks the public API and writes no issue.
+
+on:
+  schedule:
+    - cron: "7 16 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  status:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Collect the status
+        env:
+          # The public API needs no token; this one only raises the rate limit in CI.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 tools/package_status.py --json package-status.json --md package-status.md
+      - name: Step summary
+        run: cat package-status.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: package-status
+          path: |
+            package-status.json
+            package-status.md
+          retention-days: 30
