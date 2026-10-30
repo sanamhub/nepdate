@@ -40,7 +40,9 @@ wrangler.jsonc              the Worker that serves dist/
 ## Rules
 
 - A new release: change the version in `src/data/ports.ts`. Nothing else names a version, and
-  `npm run check` fails if a page does.
+  `npm run check` fails if a page does. For MitiBar, do this after the GitHub release is
+  published and follow the [MitiBar release
+  checklist](https://github.com/sanamhub/mitibar/blob/main/docs/runbooks/release-mitibar.md#after-releasing).
 - Benchmark numbers change only with the port's report they come from. The build fails if a number
   says a port is not faster than a library it claims to beat.
 - Code samples are copied from the port's README, which its CI runs, or built only from names in its
@@ -54,4 +56,5 @@ wrangler.jsonc              the Worker that serves dist/
 
 Cloudflare Workers Builds watches this repository with `site` as its root directory: `npm ci && npm
 run build`, then `npx wrangler deploy` on `main`. Each pull request gets a preview URL in its checks.
-The `site` workflow in `.github/workflows/` is the gate before merge.
+The `site` workflow in `.github/workflows/` is the gate before merge. If a merge does not produce a
+production deployment, run `npx wrangler deploy` from this directory and check the live pages.
