@@ -1,0 +1,390 @@
+/* MitiBar's page. It uses the NepDate tokens, since the site's colours are MitiBar's own, and adds
+   one object: the bar, drawn in HTML at twice its size on a desktop, next to a copy at real size.
+   The bar's box follows the app's (mitibar src/app/bar.rs): two left-aligned lines, raised surface,
+   hairline border, the bold line in the ink colour and the regular one muted.
+
+   Nothing moves on its own. Picking a preset or a language changes the bar at once; with motion
+   allowed, the bar's width eases to the new text so the change reads as one bar, not a swap. */
+
+.mb-hero {
+  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(3.5rem, 8vw, 6rem);
+}
+.mb-hero-grid {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  align-items: center;
+}
+@media (min-width: 62rem) {
+  .mb-hero-grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+.mb-copy {
+  min-width: 0;
+}
+.mb-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 1.75rem;
+  font-weight: 650;
+  font-size: var(--nd-step-1);
+}
+.mb-brand img {
+  border-radius: 10px;
+}
+.mb-hero h1 {
+  margin: 0;
+  font-size: var(--nd-step-display);
+  line-height: 1.02;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.mb-hero .lede {
+  max-width: 34rem;
+  margin: 1.5rem 0 0;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step-1);
+  line-height: 1.6;
+}
+.mb-meta {
+  margin: 1.25rem 0 0;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+}
+
+/* The desk: a corner of a screen, the bar above the taskbar at the right as the app first places
+   it, and today's day on the tray icon. */
+
+.mb-stage {
+  min-width: 0;
+  margin: 0;
+}
+.mb-desk {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: clamp(15rem, 34vw, 22rem);
+  overflow: hidden;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background:
+    radial-gradient(120% 90% at 10% 0%, var(--nd-slate-soft), transparent 60%),
+    var(--nd-sunken);
+}
+.mb-desk .mb-bar {
+  align-self: flex-end;
+  margin: 0 clamp(1rem, 4vw, 2.5rem) clamp(1rem, 3vw, 1.75rem) 1rem;
+}
+.mb-taskbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 3.25rem;
+  padding-inline: 1.1rem;
+  border-top: 1px solid var(--nd-hairline);
+  background: var(--nd-raised);
+}
+.mb-app {
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1.25px solid var(--nd-line);
+  border-radius: var(--nd-radius-s);
+}
+.mb-tray {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-left: auto;
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--nd-hairline);
+}
+.mb-tray-day {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-sindoor);
+  color: var(--nd-on-sindoor);
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1;
+}
+
+/* The bar. Real size is the app's 12 px text at 100% scale; the large one is twice that. */
+
+.mb-bar {
+  display: inline-grid;
+  justify-items: start;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: 6px;
+  background: var(--nd-raised);
+  box-shadow: var(--nd-shadow);
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.mb-bar.is-large {
+  padding: 0.55rem 1.05rem 0.6rem;
+  border-radius: 12px;
+  font-size: clamp(1.05rem, 0.7rem + 1.3vw, 1.5rem);
+}
+.mb-line {
+  color: var(--nd-ink-muted);
+}
+.mb-line.bold {
+  color: var(--nd-ink);
+  font-weight: 700;
+}
+.mb-line:empty {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mb-bar.is-large {
+    transition: width 0.2s ease;
+  }
+}
+
+/* Presets and language under the desk, then the real-size bar. */
+
+.mb-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+.mb-segment {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  background: var(--nd-raised);
+}
+.mb-segment button {
+  min-height: 2.25rem;
+  padding: 0 0.8rem;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--nd-ink-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 550;
+  cursor: pointer;
+}
+.mb-segment button:hover {
+  color: var(--nd-ink);
+}
+.mb-segment button[aria-checked="true"] {
+  background: var(--nd-ink);
+  color: var(--nd-surface);
+}
+.mb-real {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  margin: 0.25rem 0 0;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+}
+.mb-real .mb-bar {
+  box-shadow: none;
+}
+
+/* Where the date sits: three platforms in one row on wide screens. */
+
+.mb-places {
+  display: grid;
+  gap: 1.5rem 2.5rem;
+  margin: 0;
+}
+@media (min-width: 48rem) {
+  .mb-places {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.mb-places div {
+  padding-top: 1rem;
+  border-top: 2px solid var(--nd-ink);
+}
+.mb-places dt {
+  font-weight: 650;
+  font-size: var(--nd-step-1);
+}
+.mb-places dd {
+  margin: 0.5rem 0 0;
+  color: var(--nd-ink-muted);
+  line-height: 1.6;
+}
+
+/* Screenshots: the app's own snapshots at their pixel size, so the text is as sharp as on screen. */
+
+.mb-shots {
+  display: grid;
+  gap: 3rem 2rem;
+  align-items: start;
+}
+@media (min-width: 60rem) {
+  .mb-shots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.mb-shot {
+  min-width: 0;
+  margin: 0;
+}
+.mb-shot-frame {
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-surface);
+}
+.mb-shot-frame img {
+  width: auto;
+  max-width: 100%;
+  max-height: 34rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  box-shadow: var(--nd-shadow);
+}
+:root[data-theme="dark"] .light-only,
+:root:not([data-theme="dark"]) .dark-only {
+  display: none;
+}
+.mb-shot h3 {
+  margin: 1.25rem 0 0;
+  font-size: var(--nd-step-1);
+  font-weight: 650;
+}
+.mb-shot p {
+  max-width: 34rem;
+  margin: 0.4rem 0 0;
+  color: var(--nd-ink-muted);
+  line-height: 1.6;
+}
+
+/* Small on purpose: a ledger of four figures, each with what it counts. */
+
+.mb-numbers {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--nd-hairline);
+}
+@media (min-width: 48rem) {
+  .mb-numbers {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.mb-numbers div {
+  padding: 1.25rem 1.25rem 1.25rem 0;
+  border-bottom: 1px solid var(--nd-hairline);
+}
+.mb-numbers dt {
+  font-size: var(--nd-step-3);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.mb-numbers dd {
+  margin: 0.25rem 0 0;
+  color: var(--nd-ink-muted);
+}
+.mb-fine {
+  margin: 1.25rem 0 0;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+}
+
+/* Download. */
+
+.mb-download .section-head p,
+.mb-small .section-head p {
+  max-width: 40rem;
+  margin: 0.75rem 0 0;
+  color: var(--nd-ink-muted);
+  line-height: 1.6;
+}
+.mb-get {
+  padding: 0;
+  overflow: hidden;
+}
+.mb-get [role="tabpanel"] {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+.mb-files {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mb-files li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--nd-hairline);
+}
+.mb-files a {
+  font-weight: 600;
+}
+.mb-files span {
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+}
+.mb-verify {
+  margin: 1.1rem 0 0;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.mb-trust {
+  max-width: 44rem;
+  margin-top: 2.5rem;
+}
+.mb-trust h3 {
+  margin: 0;
+  font-size: var(--nd-step-1);
+  font-weight: 650;
+}
+.mb-trust p {
+  margin: 0.6rem 0 0;
+  color: var(--nd-ink-muted);
+  line-height: 1.6;
+}
+
+/* More. */
+
+.mb-more-grid {
+  display: grid;
+  gap: 2.5rem 4rem;
+}
+@media (min-width: 52rem) {
+  .mb-more-grid {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+.mb-more h2 {
+  margin: 0;
+  font-size: var(--nd-step-2);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+.mb-more p {
+  max-width: 38rem;
+  margin: 0.9rem 0 0;
+  color: var(--nd-ink-muted);
+  line-height: 1.65;
+}
