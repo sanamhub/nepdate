@@ -8,7 +8,7 @@ export const VERSION = "0.1.0-beta.1";
 /** The same version as PyPI spells it (PEP 440). */
 export const PYPI_VERSION = "0.1.0b1";
 /** MitiBar's release, tagged in its own repository (it has its own version line). */
-export const MITIBAR_VERSION = "0.2.0-beta.2";
+export const MITIBAR_VERSION = "0.2.0-beta.3";
 /** C# NepDate, the original library the ports are checked against (hub ADR-0003). */
 export const CSHARP_VERSION = "2.0.7";
 export const MITIBAR_REPO = "https://github.com/sanamhub/mitibar";
