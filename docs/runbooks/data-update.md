@@ -10,11 +10,12 @@ projections carried over from NepDate.
 ## How data flows
 
 ```
-C# NepDate ──(Mon) upstream-sync.yml──► hub PR "chore(data): sync from NepDate"
-                                              │ review, CI, merge
-                                              ▼
-                              sanamhub/nepdate main
-                                              │
+nuget.org ───┐
+             ├─(daily 03:15 UTC) upstream-sync.yml─► hub PR "chore(data): sync from NepDate <sha>"
+                                                                           │ review, CI, merge
+                                                                           ▼
+                                                                 sanamhub/nepdate main
+                                                                           │
             ┌───────────(Tue) shared-sync.yml in each spoke──────────┐
             ▼                                ▼                        ▼
    nepdate-rust PR "chore(shared): …"  nepdate-go PR …     nepdate-typescript, -python,
@@ -22,25 +23,42 @@ C# NepDate ──(Mon) upstream-sync.yml──► hub PR "chore(data): sync from
             │ review, CI, merge, patch release
 ```
 
+Nothing is installed in the NepDate repository: the hub pulls from it, using the public clone
+and the public NuGet feed.
+
 ## Hub: `upstream-sync.yml`
 
-This workflow is designed but not in the repository yet. Until it lands, run the import by hand:
-`py tools/extract_from_csharp.py <NepDate clone> --summary changes.md`, then
-`py tools/make_vectors.py` and `./scripts/ci.sh`, and open the PR yourself.
-
-Once added, it runs every Monday and on demand (*Actions → upstream-sync → Run workflow*). Five checks, each
-reported to the assignee (`vars.SYNC_ASSIGNEE`, default the repository owner):
+Runs every day at 03:15 UTC and on demand (*Actions → upstream-sync → Run workflow*). A run
+clones NepDate with blob filtering, imports the data, and records five checks, each reported to
+the assignee (`vars.SYNC_ASSIGNEE`, default the repository owner):
 
 | Check | When it fires | What you get |
 |---|---|---|
-| Upstream data changed | NepDate `HEAD` differs from `data/UPSTREAM` and the re-import changes `data/` | a PR on branch `bot/upstream-sync` with the new data, regenerated vectors, the upstream commit list and the `verify_vectors.py` result. Re-runs update the same PR |
-| Upstream code changed | commits touched NepDate files outside `Core/Dictionaries` | an issue listing them. Behaviour may have changed: compare with `spec/` and decide |
-| New NepDate NuGet version | nuget.org has a version newer than `tools/csharp-golden` uses | the same issue: consider regenerating the golden vectors |
-| Data running out | `tools/data_status.py --strict` fails (under 183 days of tithi, holiday or event data left) | an issue with the end dates |
-| Importer failed | `extract_from_csharp.py` exits non-zero (upstream changed its file layout) | an issue with the error output |
+| Upstream data changed | NepDate `HEAD` differs from `data/UPSTREAM` and the re-import changes `data/` | a PR on branch `bot/upstream-sync` with the new data, regenerated vectors, the upstream commit list and every check's result. Re-runs update the same PR |
+| Upstream code changed | commits touched NepDate files outside `Core/Dictionaries` | the "Upstream NepDate changed outside the data" issue, listing them |
+| New NepDate release | nuget.org has a release newer than the one `tools/csharp-golden` pins | a comment on that same issue: consider regenerating the golden vectors |
+| Data running out | `tools/data_status.py --strict` fails (under 183 days of tithi, holiday or event data left) | the "Data running out" issue with the end dates |
+| Importer failed | the importer, or a check that validates its output, exits non-zero | the "Upstream NepDate import failed" issue with the error output |
 
-Issues are labelled `upstream-sync`. A check that fires again comments on its open issue
-instead of opening a new one.
+When `HEAD` already equals `data/UPSTREAM`, the importer and the checks around it are skipped, so
+a quiet day costs seconds: the code, release and data-running-out checks still run. A check the
+run could not perform (nuget.org unreachable, for example) is recorded in the report and raises
+nothing.
+
+Everything a run learns leaves the check job as one artifact: `data/`, `spec/vectors/`, `report.md`
+with every result, `results.json`, the PR body and one file per issue, kept 7 days. The second job
+downloads that artifact, applies the data and opens the PR and the issues. It never checks out
+the NepDate clone and runs nothing from it, so a commit message or a file name from upstream can
+only ever appear as text.
+
+Issues are labelled `upstream-sync` and assigned like the PR. A check that fires again comments
+on its open issue only when the body would change, so it adds nothing on a day that repeats
+yesterday's finding; the bodies carry end dates rather than "days left" for the same reason.
+
+To run the same checks by hand, against a clone: `py tools/extract_from_csharp.py <clone>
+--summary changes.md`, then `py tools/make_vectors.py`, `py spec/reference/verify_vectors.py`,
+`py tools/compare_exhaustive.py <out-dir>` after `tools/csharp-exhaustive`, and `./scripts/ci.sh`.
+`py tools/upstream_sync.py --help` covers the reporting half.
 
 ### Reviewing a hub sync PR
 
@@ -49,7 +67,9 @@ instead of opening a new one.
 2. Month-length changes: list each changed year in the PR with the evidence link. They make
    C# golden rows differ. Either regenerate the golden vectors against the NepDate version
    that contains the change (`tools/csharp-golden`), or add a deviation to `spec/PARITY.md`.
-3. CI green → merge. `CHANGELOG.md`: `Changed: calendar data synced from NepDate <short-sha>`.
+3. When the import settles a finding listed in `data/known-questions.json`, remove the entry and
+   its row in `data/README.md` in the same PR.
+4. CI green → merge. `CHANGELOG.md`: `Changed: calendar data synced from NepDate <short-sha>`.
 
 ## Spokes: `shared-sync.yml`
 
@@ -88,17 +108,19 @@ Acceptable sources for a hand edit:
 PRs opened with the default `GITHUB_TOKEN` don't start CI, so both workflows use a GitHub App
 token:
 
-1. Create one GitHub App owned by you, with repository permissions *Contents*,
-   *Pull requests* and *Issues* set to read and write. No webhook. Install it on the hub and
-   on each spoke, nothing else.
-2. In each of those repositories: variable `SYNC_APP_ID` and secret `SYNC_APP_PRIVATE_KEY`, set on
-   an environment `sync` that only the `main` branch can use. Workflows ask for tokens scoped to
-   their own repository (`repositories:` input), but the key itself can mint a token for any
-   repository the App is installed on: if one repository's secrets leak, revoke the key in the
-   App settings and create a new one for all repositories.
-3. Optional: variable `SYNC_ASSIGNEE` to a GitHub username.
-4. In each of those repositories, create the label `upstream-sync` (hub) or `shared-sync`
-   (spokes).
+1. Create one GitHub App owned by you, with repository permissions *Contents*, *Pull requests*
+   and *Issues* set to read and write. No webhook. Install it on the hub and on each spoke,
+   nothing else.
+2. On the hub: variable `SYNC_APP_ID` and secret `SYNC_APP_PRIVATE_KEY`, both on an environment
+   `sync` that only the `main` branch can use, and the label `upstream-sync`.
+3. On each spoke: the same variable and secret on its own `sync` environment, limited to `main`,
+   and the label `shared-sync`.
+4. Optional, on either: variable `SYNC_ASSIGNEE` set to a GitHub username. Without it the PRs and
+   the issues go to the repository owner, which only works while the owner is a user.
+
+Workflows ask for tokens scoped to their own repository (`repositories:` input), but the key
+itself can mint a token for any repository the App is installed on: if one repository's secrets
+leak, revoke the key in the App settings and create a new one for all repositories.
 
 Without the app the workflows still run with `GITHUB_TOKEN`. Their PR body then asks you to
-close and reopen the PR once so CI starts.
+close and reopen the PR once so CI starts. Issues are opened either way.
