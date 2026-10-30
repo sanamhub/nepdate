@@ -30,7 +30,7 @@ and the public NuGet feed.
 
 Runs every day at 03:15 UTC and on demand (*Actions → upstream-sync → Run workflow*). A run
 clones NepDate with blob filtering, imports the data, and records five checks, each reported to
-the assignee in `vars.SYNC_ASSIGNEE`, or to nobody when it is not set:
+the assignee (`vars.SYNC_ASSIGNEE`, default the repository owner):
 
 | Check | When it fires | What you get |
 |---|---|---|
@@ -107,26 +107,23 @@ Acceptable sources for a hand edit:
 
 ## One-time setup (maintainer)
 
-PRs opened with the default `GITHUB_TOKEN` don't start CI, so both workflows use a GitHub App
-token:
+Both workflows run with the default `GITHUB_TOKEN`; no App or secret is needed:
 
-1. Create one GitHub App owned by you, with repository permissions *Contents*, *Pull requests*
-   and *Issues* set to read and write. No webhook. Install it on the hub and on each spoke,
-   nothing else.
-2. On the hub: variable `SYNC_APP_ID` and secret `SYNC_APP_PRIVATE_KEY`, both on an environment
-   `sync` that only the `main` branch can use, and the label `upstream-sync`.
-3. On each spoke: the same variable and secret on its own `sync` environment, limited to `main`,
-   and the label `shared-sync`.
-4. Optional, on either: variable `SYNC_ASSIGNEE` set to a GitHub username. Without it the PRs and
-   the issues have no assignee. It cannot default to the repository owner: the owner is the
-   `sanamhub` organization, and GitHub only assigns users.
+1. On the hub and on each spoke with a sync: *Settings → Actions → General → Workflow
+   permissions → Allow GitHub Actions to create and approve pull requests*. Without it the PR
+   step fails with "GitHub Actions is not permitted to create or approve pull requests".
+2. The label `upstream-sync` on the hub and `shared-sync` on each spoke with a sync.
+3. Each spoke's CI workflow has a `workflow_dispatch` trigger, and the spoke's caller job grants
+   `actions: write` (the snippet at the top of `shared-sync.yml`).
+4. Optional: variable `SYNC_ASSIGNEE` set to a GitHub username, if the PRs and issues should go
+   to someone other than the repository owner.
 
-Workflows ask for tokens scoped to their own repository (`repositories:` input), but the key
-itself can mint a token for any repository the App is installed on: if one repository's secrets
-leak, revoke the key in the App settings and create a new one for all repositories.
+A push made with `GITHUB_TOKEN` starts no workflow, so after opening or updating the PR each sync
+starts the repository's CI on the bot branch with `workflow_dispatch`; its checks show on the PR
+as usual.
 
-Without the app the workflows fall back to `GITHUB_TOKEN`, which can open a PR only when the
-repository allows it (*Settings → Actions → General → Allow GitHub Actions to create and approve
-pull requests*); otherwise the PR step fails with "GitHub Actions is not permitted to create or
-approve pull requests". With that setting on, the PR body asks you to close and reopen the PR once
-so CI starts. Issues are opened either way. The App is the intended setup.
+Optional, a GitHub App instead: create one with *Contents*, *Pull requests* and *Issues* set to
+read and write and no webhook, install it on the repositories, and put variable `SYNC_APP_ID` and
+secret `SYNC_APP_PRIVATE_KEY` on an environment `sync` limited to `main`. The workflows then use
+its token, and its pushes start CI on their own. The key can mint a token for any repository the
+App is installed on: if one repository's secrets leak, revoke the key in the App settings.
