@@ -3,7 +3,8 @@
 // and the floating bar. The month is the real one, read from nepdate-core and nepdate-patro when
 // the page is built, with public holidays and today in sindoor and Saturdays in slate as in the
 // app. The drawing is aria-hidden; the caption says what it shows.
-import { NepaliDate, monthName, toNepaliDigits, weekdayName, weekdayShortName } from "nepdate-core";
+import { NepaliDate, monthName, toNepaliDigits, weekdayShortName } from "nepdate-core";
+import { line, presets } from "../../scripts/mitibar-bar";
 import { info } from "nepdate-patro";
 
 interface Props {
@@ -20,6 +21,8 @@ const cells = days.map((d) => ({
   cls: [d.day === today.day && "t", info(d).isPublicHoliday && "h", d.weekday === 6 && "s"].filter(Boolean).join(" ") || undefined,
 }));
 const heads = Array.from({ length: 7 }, (_, i) => weekdayShortName(i, "ne"));
+// The bar as a fresh install shows it, from the same formatter as the MitiBar page.
+const bar = presets[0];
 
 // The popup's last line, as in the app: the next public holiday from today, if one is in the data.
 let next: { name: string; date: string } | null = null;
@@ -48,8 +51,8 @@ for (let d = today, n = 0; n < 120 && !next; d = d.addDays(1), n++) {
       }
     </div>
     <div class="floatbar" lang="ne">
-      <span>{weekdayName(today.weekday, "ne")}</span>
-      <strong>{today.long({ lang: "ne", pad: false })}</strong>
+      <span>{line(bar.top, today, null, "ne")}</span>
+      <strong>{line(bar.bottom, today, null, "ne")}</strong>
     </div>
     <div class="taskbar">
       <span class="task-app"></span>
