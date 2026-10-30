@@ -37,6 +37,8 @@ export interface Port {
   api: { label: string; href: string };
   /** BS 2081-04-15 to AD and the long English form, in this language. */
   sample: string;
+  /** Other languages the same packages serve, shown beside the name with their marks. */
+  alsoFor?: { name: string; icon: string }[];
   /** Set for C# NepDate: maintained upstream, with its own version and one package. */
   upstream?: { href: string; docs: string };
 }
@@ -116,6 +118,7 @@ fmt.Println(d.Format("MMMM d, yyyy", nepdate.English))`,
     patroInstall: "npm install nepdate-patro@beta",
     installLang: "sh",
     registry: { label: "npm", href: "https://www.npmjs.com/package/nepdate-core" },
+    alsoFor: [{ name: "JavaScript", icon: "javascript" }],
     api: { label: "API.md", href: `${gh("nepdate-typescript")}/blob/main/docs/API.md` },
     sample: `import { NepaliDate } from "nepdate-core";
 
@@ -170,6 +173,10 @@ print(date.long())    // Shrawan 15, 2081`,
     patroInstall: `implementation("io.github.sanamhub:nepdate-patro:${VERSION}")`,
     installLang: "kotlin",
     registry: { label: "Maven Central", href: "https://central.sonatype.com/artifact/io.github.sanamhub/nepdate" },
+    alsoFor: [
+      { name: "Java", icon: "java" },
+      { name: "Android", icon: "android" },
+    ],
     api: { label: "API.md", href: `${gh("nepdate-kotlin")}/blob/main/docs/API.md` },
     sample: `val date = NepaliDate.of(2081, 4, 15)
 val y = date.gregorianYear   // 2024

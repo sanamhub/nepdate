@@ -218,45 +218,68 @@ const jsonLd = {
             ))
           }
         </div>
-        <div class="install-grid">
+        <div class="langs">
           {
             ports.map((port, i) => (
-              <div class="install-lang" role="tabpanel" id={`install-${port.id}`} aria-labelledby={`install-tab-${port.id}`} hidden={i !== 0}>
-                <div class="install-head">
-                  <LangIcon id={port.id} />
-                  <h3 class="install-name">{port.name}</h3>
-                  {downloads[port.id] && (
-                    <span class="install-count" title={`${downloads[port.id].registry}, ${downloads[port.id].span}`}>
-                      {formatCount(downloads[port.id].count)} downloads
-                    </span>
-                  )}
+              <article
+                class="lang"
+                role="tabpanel"
+                id={`install-${port.id}`}
+                aria-labelledby={`install-tab-${port.id}`}
+                hidden={i !== 0}
+              >
+                <div class="lang-watermark" aria-hidden="true">
+                  {[port.id, ...(port.alsoFor ?? []).map((also) => also.icon)].map((icon) => (
+                    <LangIcon id={icon} size={96} />
+                  ))}
                 </div>
-                <div class="install-cmd">
-                  <span class="install-kind">Core</span>
-                  <code translate="no">{port.install}</code>
-                  <button type="button" class="copy" data-copy={port.install} aria-label={`Copy ${port.name} core`}>
-                    Copy
-                  </button>
+                <div class="lang-id">
+                  <LangIcon id={port.id} size={28} class="lang-mark" />
+                  <div>
+                    <h3 class="lang-name">{port.name}</h3>
+                    {port.alsoFor && <p class="lang-also">Also {port.alsoFor.map((also) => also.name).join(" and ")}</p>}
+                    {downloads[port.id] && (
+                      <p class="lang-count" title={`${downloads[port.id].registry}, ${downloads[port.id].span}`}>
+                        {formatCount(downloads[port.id].count)} downloads
+                      </p>
+                    )}
+                  </div>
                 </div>
-                {port.patroInstall ? (
+                <div class="lang-cmds">
                   <div class="install-cmd">
-                    <span class="install-kind">Patro</span>
-                    <code translate="no">{port.patroInstall}</code>
-                    <button type="button" class="copy" data-copy={port.patroInstall} aria-label={`Copy ${port.name} patro`}>
+                    <span class="install-kind">Core</span>
+                    <code translate="no">{port.install}</code>
+                    <button type="button" class="copy" data-copy={port.install} aria-label={`Copy ${port.name} core`}>
                       Copy
                     </button>
                   </div>
-                ) : (
-                  <p class="install-same">The patro is part of the same package.</p>
-                )}
-                <div class="install-links">
-                  <a href={`/docs/${port.id}/`}>
+                  {port.patroInstall ? (
+                    <div class="install-cmd">
+                      <span class="install-kind">Patro</span>
+                      <code translate="no">{port.patroInstall}</code>
+                      <button type="button" class="copy" data-copy={port.patroInstall} aria-label={`Copy ${port.name} patro`}>
+                        Copy
+                      </button>
+                    </div>
+                  ) : (
+                    <p class="install-same">The patro is part of the same package.</p>
+                  )}
+                </div>
+                <div class="lang-links">
+                  <a class="chip" href={`/docs/${port.id}/`}>
+                    <LangIcon id="guide" size={15} />
                     Guide<span class="visually-hidden"> for {port.name}</span>
                   </a>
-                  <a href={port.registry.href}>{port.registry.label}</a>
-                  <a href={repoUrl(port)}>Source</a>
+                  <a class="chip" href={port.registry.href}>
+                    <LangIcon id="package" size={15} />
+                    {port.registry.label}
+                  </a>
+                  <a class="chip" href={repoUrl(port)}>
+                    <LangIcon id="source" size={15} />
+                    Source<span class="visually-hidden"> of {port.name}</span>
+                  </a>
                 </div>
-              </div>
+              </article>
             ))
           }
         </div>
