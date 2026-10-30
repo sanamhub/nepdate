@@ -66,6 +66,14 @@ export const benchmarks: PortBenchmark[] = [
     source: blob("nepdate-cpp", "docs/benchmarks.md"),
   },
   {
+    id: "c",
+    name: "C",
+    machine: `${LAPTOP}, MSVC`,
+    ops: [4.87, 6.02, 7.57, 9.36, 42.12, 24.5, 15.63, 534.41],
+    competitors: [{ name: "aatishnn", b1: 26801.56, b2: 23111.56 }],
+    source: blob("nepdate-c", "docs/benchmarks.md"),
+  },
+  {
     id: "go",
     name: "Go",
     machine: LAPTOP,

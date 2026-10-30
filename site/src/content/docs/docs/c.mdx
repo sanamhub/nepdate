@@ -1,21 +1,170 @@
 ---
 title: C
-description: NepDate for C11, a Bikram Sambat library with no allocation and no dependencies. In development.
+description: Use the nepdate-c core and patro libraries from C11 with CMake, pkg-config, the amalgamation or Zig.
 ---
 
-A C11 library for Bikram Sambat dates: conversion to and from the Gregorian calendar, arithmetic,
-formatting and parsing, and the patro in its own library. It allocates nothing, keeps no global
-state and needs nothing but a C compiler, so it also builds into Zig projects and into extensions
-for languages that call C.
+import { Code } from "@astrojs/starlight/components";
+import { VERSION } from "../../../data/ports";
 
-:::note[Not released yet]
-The build, the checks and the CI on Windows, Linux, macOS, 32-bit and big-endian machines are in
-place; the date code is being written. Until the first release, use one of the
-[released languages](/docs/quickstart/).
+Bikram Sambat dates for ISO C11. The core allocates nothing, keeps no global state and needs no
+library beyond a C compiler: no libc call, no `<time.h>` unless you want the `struct tm` bridge.
+Every input, including a `nepdate_date` built from any bit pattern, is free of undefined behaviour.
+`nepdate-c-patro` is a second library on top of it for tithi, public holidays and events.
+
+:::caution[Pre-release]
+This is the first public pre-release. The API may still change before 0.1.0.
 :::
 
-The target is the speed of the [Rust library](/docs/rust/), measured on the same machine in the
-same session, with no undefined behaviour for any input. Like every port, it runs the shared test
-data from the hub before it ships.
+## Install
 
-Follow the work at [sanamhub/nepdate-c](https://github.com/sanamhub/nepdate-c).
+Pull the release tag with CMake `FetchContent`:
+
+<Code
+  lang="cmake"
+  title="CMakeLists.txt"
+  code={`include(FetchContent)
+FetchContent_Declare(nepdate-c
+    GIT_REPOSITORY https://github.com/sanamhub/nepdate-c.git
+    GIT_TAG v${VERSION})
+FetchContent_MakeAvailable(nepdate-c)
+target_link_libraries(your_app PRIVATE nepdate-c::nepdate nepdate-c::patro)`}
+/>
+
+Set `NEPDATE_C_BUILD_PATRO` to `OFF` before `FetchContent_MakeAvailable` if you need only the core,
+and `NEPDATE_C_WITH_TM` to `OFF` to leave out the `struct tm` bridge and its `<time.h>` include.
+
+The other ways in:
+
+| Way | What you use |
+|---|---|
+| `cmake --install` | `find_package(nepdate-c CONFIG REQUIRED)`, or `pkg-config nepdate-c nepdate-c-patro` |
+| Amalgamation | `nepdate.c` and `nepdate.h`, plus `nepdate_patro.c` and `nepdate_patro.h`, from the release archive or `dist/` |
+| vcpkg and Conan | the overlay ports in `ports/` and the recipes in `conan/`, until the registry submissions are accepted |
+| Zig | `build.zig` and `build.zig.zon`, tested with Zig 0.17.0 |
+
+Each [GitHub release](https://github.com/sanamhub/nepdate-c/releases) has the source archive and
+the amalgamation archive with `SHA256SUMS` and a build provenance attestation. The installed names
+never clash with the C++ port's: the headers are `nepdate.h` and `nepdate_patro.h`, the libraries
+`nepdate-c` and `nepdate-c-patro`, and both ports can be installed into one prefix.
+
+CI builds and tests it with GCC 13, Clang 18, MSVC 2022 and `zig cc`, on Windows, Linux and macOS,
+on a 32-bit target and on a big-endian one.
+
+## Quick start
+
+```c
+#include <nepdate.h>
+#include <stdio.h>
+
+int main(void) {
+    nepdate_date date;
+    nepdate_ymd ad;
+    if (nepdate_from_bs(2081, 4, 15, &date) != NEPDATE_OK ||
+        nepdate_to_ad(date, &ad) != NEPDATE_OK) {
+        return 1;
+    }
+    char text[64];
+    const nepdate_long_options options = {.weekday = false, .year = true, .pad = true};
+    nepdate_format_long(date, options, NEPDATE_ENGLISH, text, sizeof text);
+    printf("%s\n", text);                                  /* Shrawan 15, 2081 */
+    printf("%04d-%02d-%02d\n", ad.year, ad.month, ad.day); /* 2024-07-30 */
+
+    nepdate_date back;
+    nepdate_ymd bs;
+    if (nepdate_from_ad(2024, 7, 30, &back) == NEPDATE_OK &&
+        nepdate_to_bs(back, &bs) == NEPDATE_OK) {
+        printf("%04d/%02d/%02d\n", bs.year, bs.month, bs.day); /* 2081/04/15 */
+    }
+    return 0;
+}
+```
+
+Every function that can fail returns a `nepdate_status` and writes its result through a pointer,
+which it leaves unchanged on error. `nepdate_status_name` turns a status into its name for logs.
+
+**Arithmetic and fiscal year.** `nepdate_add_days`, `nepdate_add_months` and `nepdate_add_years`
+take `NEPDATE_CLAMP` or `NEPDATE_OVERFLOW` for a day past the end of the month. `nepdate_diff`
+returns whole years, months and days, and `nepdate_diff_days` the day count.
+`nepdate_fiscal_year_of`, the quarter functions and `nepdate_fiscal_year_label` (`2082/83`) cover
+the fiscal year.
+
+**Formatting.** `nepdate_format`, `nepdate_format_short` and `nepdate_format_long` write into the
+caller's buffer with `snprintf` rules: they return the length the full text needs and truncate
+safely. `NEPDATE_NEPALI` gives Devanagari digits and Nepali names.
+
+**Time.** `nepdate_today_nepal(unix_seconds)` gives the BS date in Nepal for a Unix time you pass
+in, and `nepdate_from_unix` takes any fixed UTC offset. `nepdate_from_tm` and `nepdate_to_tm` bridge
+to `struct tm` when the build has it.
+
+## Parsing
+
+```c
+#include <nepdate.h>
+#include <stdio.h>
+#include <string.h>
+
+int main(void) {
+    const char *strict = "2081/04/15";
+    const char *lenient = "2081 Shrawan 15";
+    nepdate_date a;
+    nepdate_date b;
+    char text[32];
+    if (nepdate_parse(strict, strlen(strict), &a) == NEPDATE_OK &&
+        nepdate_parse_lenient(lenient, strlen(lenient), &b) == NEPDATE_OK) {
+        nepdate_format(a, NULL, NEPDATE_ENGLISH, text, sizeof text);
+        printf("%s\n", text); /* 2081/04/15 */
+        nepdate_format(b, NULL, NEPDATE_ENGLISH, text, sizeof text);
+        printf("%s\n", text); /* 2081/04/15 */
+    }
+    return 0;
+}
+```
+
+Both parsers read at most the length they are given and need no terminator, so a slice of a larger
+buffer works.
+
+## Tithi, holidays and events
+
+```c
+#include <nepdate.h>
+#include <nepdate_patro.h>
+#include <stdio.h>
+
+int main(void) {
+    nepdate_date date;
+    nepdate_patro_day_info info;
+    if (nepdate_from_bs(2081, 4, 15, &date) != NEPDATE_OK ||
+        nepdate_patro_info(date, &info) != NEPDATE_OK) {
+        return 1;
+    }
+    if (info.has_tithi) {
+        printf("%.*s\n", (int)info.tithi.en_length, info.tithi.en); /* Dashami */
+    }
+    printf("holiday: %d\n", info.is_public_holiday ? 1 : 0);
+    nepdate_patro_name events[8];
+    const size_t count = nepdate_patro_events(date, events, 8);
+    for (size_t i = 0; i < count && i < 8; i++) {
+        printf("%.*s\n", (int)events[i].en_length, events[i].en);
+    }
+    return 0;
+}
+```
+
+Names are UTF-8 bytes with a length, not NUL-terminated strings. A day outside BS 2077-01-01 to
+2084-08-20 has no tithi, no holiday and no events.
+
+## Speed
+
+On the same laptop as the other ports, C converts BS to AD in about 4.9 ns and AD to BS in about
+6 ns, around three times faster than C# NepDate. The Rust port is faster on every operation, so the
+other ports keep their own code instead of calling into C. The numbers and how they were measured
+are on the [performance page](/docs/project/performance/).
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Every public name, with signatures | [docs/API.md](https://github.com/sanamhub/nepdate-c/blob/main/docs/API.md) |
+| Benchmarks with Rust, C++ and C# | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-c/blob/main/docs/benchmarks.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-c/blob/main/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-c](https://github.com/sanamhub/nepdate-c) |

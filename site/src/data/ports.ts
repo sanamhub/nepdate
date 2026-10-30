@@ -195,6 +195,25 @@ const auto d = nepdate::make_date(2081, 4, 15).value();
 const auto ad = d.to_year_month_day();    // 2024-07-30
 std::cout << nepdate::to_string(d);       // 2081/04/15`,
   },
+  {
+    id: "c",
+    name: "C",
+    lang: "c",
+    repo: "nepdate-c",
+    core: "nepdate-c::nepdate",
+    patro: "nepdate-c::patro",
+    install: `FetchContent_Declare(nepdate-c GIT_REPOSITORY https://github.com/sanamhub/nepdate-c.git GIT_TAG v${VERSION})`,
+    patroInstall: "target_link_libraries(app PRIVATE nepdate-c::patro)",
+    installLang: "cmake",
+    registry: { label: "Releases", href: `${gh("nepdate-c")}/releases` },
+    api: { label: "API.md", href: `${gh("nepdate-c")}/blob/main/docs/API.md` },
+    sample: `#include <nepdate.h>
+
+nepdate_date d;
+nepdate_ymd ad;
+nepdate_from_bs(2081, 4, 15, &d);
+nepdate_to_ad(d, &ad);                   // 2024-07-30`,
+  },
 ];
 
 /** The ports built in this family, without upstream C# NepDate. */
