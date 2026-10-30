@@ -78,6 +78,8 @@ jobs:
             echo "Hub commits since \`${old:0:7}\`:"
             echo
             if [[ "$old" =~ ^[0-9a-f]{40}$ ]]; then
+              # \(..) is jq's string interpolation, not a shell expansion
+              # shellcheck disable=SC2016
               gh api "repos/sanamhub/nepdate/compare/$old...$new" \
                 --jq '.commits[] | "- [`\(.sha[0:7])`](\(.html_url)) \(.commit.message | split("\n")[0])"'
             else
