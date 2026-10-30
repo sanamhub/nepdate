@@ -1,0 +1,301 @@
+---
+// MitiBar's own page. The hero is the bar itself, written with the visitor's date by the same
+// rules as the app (scripts/mitibar-bar.ts), shown large and at real size, with the app's presets
+// to switch between. The screenshots below are the app's own snapshots (`--snapshot`), so they
+// change only when the app does.
+import { NepaliDate, toNepaliDigits } from "nepdate-core";
+import Landing from "../layouts/Landing.astro";
+import "../styles/mitibar.css";
+// The shared section styles (sections, bands, panels, tabs), linked after the hero as on the home page.
+import sectionsCss from "../styles/landing-sections.css?url";
+import appIcon from "../assets/mitibar-icon.png";
+import { line, presets } from "../scripts/mitibar-bar";
+import { MITIBAR_REPO, MITIBAR_VERSION, PATRO } from "../data/ports";
+import {
+  BENCHMARKS,
+  NEPDATE_WIDGET,
+  NEPDATE_WIDGET_REPO,
+  SBOM,
+  SHA256SUMS,
+  numbers,
+  platforms,
+} from "../data/mitibar";
+
+const today = NepaliDate.today();
+const preset = presets[0];
+const top = line(preset.top, today, null, "en");
+const bottom = line(preset.bottom, today, null, "en");
+
+const shots = [
+  {
+    id: "popup",
+    title: "The month, one click away",
+    text: "Click the tray icon or the bar, or press Win+Shift+N. Each day shows its tithi; public holidays are in red and the next one is named at the bottom.",
+    alt: "The MitiBar month window: a Bikram Sambat month grid with tithi under each day and today marked.",
+  },
+  {
+    id: "converter",
+    title: "BS and AD, both ways",
+    text: "Type a date in either calendar and get the other, or count the days between two dates. Separators appear as you type.",
+    alt: "The MitiBar converter: a BS date typed on one side and its AD date on the other.",
+  },
+  {
+    id: "settings",
+    title: "Two lines, your way",
+    text: "Pick what each line shows from weekday, BS and AD dates, time, tithi and holiday, make either line bold, or start from a preset.",
+    alt: "MitiBar settings: the top and bottom line cards with their fields and the presets.",
+  },
+];
+
+const description =
+  "MitiBar is a small Nepali date widget for Windows, macOS and Linux. Today's Bikram Sambat date stays on your screen, and the month with tithi and holidays is one click away. Open source, no network access.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "MitiBar",
+  applicationCategory: "UtilitiesApplication",
+  operatingSystem: "Windows, macOS, Linux",
+  softwareVersion: MITIBAR_VERSION,
+  downloadUrl: `${MITIBAR_REPO}/releases`,
+  license: "https://opensource.org/licenses/MIT",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description,
+};
+---
+
+<Landing title="MitiBar: the Nepali date on your desktop" description={description} jsonLd={jsonLd}>
+  <section class="mb-hero" aria-labelledby="mb-title">
+    <div class="wrap mb-hero-grid">
+      <div class="mb-copy">
+        <p class="mb-brand">
+          <img src={appIcon.src} width="40" height="40" alt="" />
+          <span>MitiBar</span>
+        </p>
+        <h1 id="mb-title">Today's Nepali date, always in sight.</h1>
+        <p class="lede">
+          MitiBar keeps the Bikram Sambat date on your desktop and the month a click away. It is small, starts at once,
+          and never goes online.
+        </p>
+        <div class="actions">
+          <a class="button primary" href="#download" data-download>Download MitiBar</a>
+          <a class="button" href={MITIBAR_REPO}>Source on GitHub</a>
+        </div>
+        <p class="mb-meta">Free and open source. Windows, macOS and Linux. Version {MITIBAR_VERSION}.</p>
+      </div>
+
+      <figure class="mb-stage" data-bar-root>
+        <div class="mb-desk" aria-hidden="true">
+          <div class="mb-bar is-large" data-bar>
+            <span class:list={["mb-line", { bold: preset.topBold }]} data-line="top">{top}</span>
+            <span class:list={["mb-line", { bold: preset.bottomBold }]} data-line="bottom">{bottom}</span>
+          </div>
+          <div class="mb-taskbar">
+            <span class="mb-app"></span>
+            <span class="mb-app"></span>
+            <span class="mb-app"></span>
+            <span class="mb-tray">
+              <span class="mb-tray-day" data-tray-day>{toNepaliDigits(today.day)}</span>
+            </span>
+          </div>
+        </div>
+        <figcaption class="mb-controls">
+          <div class="mb-segment" role="radiogroup" aria-label="Preset">
+            {
+              presets.map((p, i) => (
+                <button type="button" role="radio" aria-checked={i === 0 ? "true" : "false"} data-preset={p.id}>
+                  {p.name}
+                </button>
+              ))
+            }
+          </div>
+          <div class="mb-segment" role="radiogroup" aria-label="Language">
+            <button type="button" role="radio" aria-checked="true" data-lang="en">English</button>
+            <button type="button" role="radio" aria-checked="false" data-lang="ne" lang="ne">नेपाली</button>
+          </div>
+          <p class="mb-real">
+            <span>Shown at twice its size. At real size:</span>
+            <span class="mb-bar" data-bar aria-hidden="true">
+              <span class:list={["mb-line", { bold: preset.topBold }]} data-line="top">{top}</span>
+              <span class:list={["mb-line", { bold: preset.bottomBold }]} data-line="bottom">{bottom}</span>
+            </span>
+          </p>
+          <p class="visually-hidden" aria-live="polite" data-bar-text>{`${top}. ${bottom}.`}</p>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <link rel="stylesheet" href={sectionsCss} />
+
+  <section class="section mb-where" aria-labelledby="where-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="where-title">Where the date sits</h2>
+      </div>
+      <dl class="mb-places">
+        <div>
+          <dt>Windows</dt>
+          <dd>
+            A small bar above the taskbar, wherever you drag it, and today's day on the tray icon. The bar hides while a
+            full-screen app is in front.
+          </dd>
+        </div>
+        <div>
+          <dt>macOS</dt>
+          <dd>Today's day in the menu bar. Click it for the month.</dd>
+        </div>
+        <div>
+          <dt>Linux</dt>
+          <dd>Today's day in the system tray, on desktops that show tray icons. Click it for the month.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section band" aria-labelledby="shots-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="shots-title">Everything is one click from the date</h2>
+      </div>
+      <div class="mb-shots">
+        {
+          shots.map((shot) => (
+            <figure class="mb-shot">
+              <div class="mb-shot-frame">
+                <img class="light-only" src={`/mitibar/${shot.id}-light.png`} alt={shot.alt} loading="lazy" decoding="async" />
+                <img class="dark-only" src={`/mitibar/${shot.id}-dark.png`} alt={shot.alt} loading="lazy" decoding="async" />
+              </div>
+              <figcaption>
+                <h3>{shot.title}</h3>
+                <p>{shot.text}</p>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="small-title">
+    <div class="wrap mb-small">
+      <div class="section-head">
+        <h2 id="small-title">Small on purpose</h2>
+        <p>
+          MitiBar does one thing: the date. It is written in Rust with the Slint toolkit and draws its own windows, so it
+          needs no browser engine and no runtime to install.
+        </p>
+      </div>
+      <dl class="mb-numbers">
+        <div>
+          <dt>{numbers.binaryMb} MB</dt>
+          <dd>The whole Windows app, one file.</dd>
+        </div>
+        <div>
+          <dt>{numbers.startMs} ms</dt>
+          <dd>From launch to the date in the tray.</dd>
+        </div>
+        <div>
+          <dt>{numbers.privateMb} MB</dt>
+          <dd>Memory of its own while it waits.</dd>
+        </div>
+        <div>
+          <dt>0</dt>
+          <dd>Network connections. No account, no ads, no tracking.</dd>
+        </div>
+      </dl>
+      <p class="mb-fine">
+        Measured on {numbers.machine}. The method and every run are in the <a href={BENCHMARKS}>benchmark notes</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="section band" id="download" aria-labelledby="download-title">
+    <div class="wrap mb-download">
+      <div class="section-head">
+        <h2 id="download-title">Download</h2>
+        <p>Version {MITIBAR_VERSION}. Every file is built from the tagged source by the release workflow on GitHub.</p>
+      </div>
+      <div class="panel mb-get" data-tabs>
+        <div class="tabs" role="tablist" aria-label="Download for">
+          {
+            platforms.map((p, i) => (
+              <button
+                type="button"
+                role="tab"
+                id={`tab-${p.id}`}
+                aria-controls={`panel-${p.id}`}
+                aria-selected={i === 0 ? "true" : "false"}
+                tabindex={i === 0 ? 0 : -1}
+                data-os={p.id}
+              >
+                {p.name}
+              </button>
+            ))
+          }
+        </div>
+        {
+          platforms.map((p, i) => (
+            <div role="tabpanel" id={`panel-${p.id}`} aria-labelledby={`tab-${p.id}`} hidden={i !== 0}>
+              <ul class="mb-files">
+                {p.files.map((f) => (
+                  <li>
+                    <a href={f.url}>{f.label}</a>
+                    <span>{f.note}</span>
+                  </li>
+                ))}
+              </ul>
+              <p class="mb-verify">
+                Check a file against <a href={SHA256SUMS}>SHA256SUMS</a>: <code>{p.verify}</code>
+              </p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="mb-trust">
+        <h3 id="code-signing-policy">Code signing policy</h3>
+        <p>
+          Windows releases will be signed with free code signing provided by{" "}
+          <a href="https://about.signpath.io">SignPath.io</a>, with a certificate issued by the{" "}
+          <a href="https://signpath.org">SignPath Foundation</a>. Until the certificate is issued, Windows may say the
+          publisher is unknown; check the file against SHA256SUMS before you run it. The macOS build is not notarized
+          yet: open it the first time with Control-click, then Open.
+        </p>
+        <p>
+          Committer, reviewer and approver: <a href="https://github.com/sanamhub">sanamhub</a>. Each signing request is
+          approved by hand, for a release built from a tagged commit.
+        </p>
+        <p>
+          Privacy: MitiBar makes no network connections and sends nothing to any other computer. It keeps a settings file
+          and a log on your own machine. The list of everything inside each build is in its{" "}
+          <a href={SBOM.url}>software bill of materials</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section mb-more" aria-labelledby="more-title">
+    <div class="wrap mb-more-grid">
+      <div>
+        <h2 id="more-title">Want more than the date?</h2>
+        <p>
+          MitiBar stays small on purpose. If you want a whole toolbox on your Windows taskbar, try{" "}
+          <a href={NEPDATE_WIDGET}>NepDate Widget</a> by Raju Prasai, who wrote the original NepDate library. Next to its
+          calendar and converter it has an EMI calculator, Preeti to Unicode, notes and reminders, a QR tool, network
+          tools and more. It is open source too, <a href={NEPDATE_WIDGET_REPO}>on GitHub</a>.
+        </p>
+      </div>
+      <div>
+        <h2>Need the calendar in your own code?</h2>
+        <p>
+          MitiBar is built on the <a href="/">NepDate libraries</a>, which convert dates the same way in nine languages.
+          The full calendar, with every month's holidays, is on <a href={PATRO}>Patro</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Landing>
+
+<script>
+  import "../scripts/mitibar";
+</script>

@@ -155,12 +155,12 @@ dd code {
   background: var(--nd-sunken);
   text-decoration: none;
 }
-.site-header nav a:is([href="/#languages"], [href="/#performance"], [href="/#mitibar"]) {
+.site-header nav a:is([href="/#languages"], [href="/#performance"], [href="/mitibar/"]) {
   display: none;
 }
 /* MitiBar has its own hero button and section, so a phone's header keeps room for the name. */
 @media (min-width: 30rem) {
-  .site-header nav a[href="/#mitibar"] {
+  .site-header nav a[href="/mitibar/"] {
     display: inline-block;
   }
 }
