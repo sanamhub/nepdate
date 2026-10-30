@@ -11,7 +11,7 @@ repository. Immutable once accepted; supersede with a new ADR.
 | [0004](0004-patro-in-a-separate-package.md) | Patro (tithi, holidays, events) in a separate package | Accepted |
 | [0005](0005-website-on-nepdate-com.md) | The website on nepdate.com, built from site/ in the hub | Accepted |
 | [0006](0006-patro-site.md) | patro.nepdate.com, a calendar site built from patro/ in the hub | Proposed (amends 0005 decision 3) |
-| [0007](0007-one-version-line-for-every-sdk.md) | One version line for every NepDate SDK | Proposed |
+| [0007](0007-one-version-line-for-every-sdk.md) | One version line for every NepDate SDK | Accepted |
 
 New ADR: copy the shape of 0001 (Status, Date, Approved by, Context, Decision, Consequences,
 Alternatives considered) as `NNNN-kebab-title.md`.

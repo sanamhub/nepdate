@@ -1,8 +1,8 @@
 # ADR-0007: One version line for every NepDate SDK
 
-- **Status:** proposed
+- **Status:** accepted
 - **Date:** 2026-10-30
-- **Approved by:** pending (Sanam)
+- **Approved by:** Sanam
 
 ## Context
 
