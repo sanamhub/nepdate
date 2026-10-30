@@ -56,11 +56,14 @@ export const SBOM = file(`MitiBar-${MITIBAR_VERSION}.cdx.json`);
 export const BENCHMARKS = `${MITIBAR_REPO}/blob/main/docs/benchmarks-widget.md`;
 export const SIGNING_POLICY = `${MITIBAR_REPO}#code-signing-policy`;
 
-/** Measured on 2026-10-19 on one Windows 11 laptop (Core i5-12500H); see BENCHMARKS. */
+/**
+ * Measured on one Windows 11 laptop (Core i5-12500H); see BENCHMARKS. The binary and idle memory
+ * are from 2026-10-30, in MiB; the start time is from 2026-10-19.
+ */
 export const numbers = {
-  binaryMb: "11.6",
+  binaryMb: "11.0",
   startMs: "68",
-  privateMb: "34",
+  privateMb: "33",
   machine: "a Windows 11 laptop with a Core i5-12500H",
 };
 
