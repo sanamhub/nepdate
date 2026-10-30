@@ -6,13 +6,16 @@ tool. The only network call here is the NuGet version lookup.
     py tools/upstream_sync.py code-changed --repo <NepDate clone> --previous <sha> --out code.json
     py tools/upstream_sync.py nuget --out nuget.json
     py tools/upstream_sync.py report --results <dir> --root . --out <dir> [--outcome name=status]...
-    py tools/upstream_sync.py outputs --results <dir>/results.json
-    py tools/upstream_sync.py apply --artifact <dir> --root .
+    py tools/upstream_sync.py apply --artifact <dir> --root . [--github-output <file>]
     py tools/upstream_sync.py issue --title <title> --body-file <file>
+    py tools/upstream_sync.py issues --artifact <dir>
 
 `report` reads the log each check wrote plus the JSON from `code-changed` and `nuget`, and writes
 report.md, results.json, pr-title.txt, pr-body.md and one body file per issue. The publish job only
-applies the artifact and calls `issue`, so it reads nothing from the NepDate clone.
+applies the artifact and calls `issues`, so it reads nothing from the NepDate clone. The check job
+builds NepDate's code, so `issues` trusts no line of issues.tsv: a title must be one of TITLES and
+a body must be one of the artifact's own issue/<n>.md files, and `apply` writes the PR title
+only when it has the shape `report` gives it.
 
 Issue bodies never carry "days left", a timestamp or a run link: a daily run must produce the same
 body for the same finding, or the issue would collect one comment per day.
@@ -462,12 +465,23 @@ def stage(out: Path, root: Path = ROOT) -> None:
 
 # --------------------------------------------------------------------------- publish
 
-def apply_artifact(artifact: Path, root: Path) -> int:
+PR_TITLE = re.compile(r'chore\(data\): sync from NepDate [0-9a-f]{7,40}')
+
+
+def apply_artifact(artifact: Path, root: Path, github_output: Path | None = None) -> int:
+    """Copy the artifact's data into a checkout and write the step outputs the PR step reads."""
     artifact, root = Path(artifact), Path(root)
     results = read_json(artifact / 'results.json', {})
+    outputs = 'data_changed=false\n'
     if not results.get('data_changed'):
         print('the artifact holds no data change, nothing to apply')
+        if github_output:
+            write_outputs(github_output, outputs)
         return 0
+    title = str((results.get('pr') or {}).get('title', ''))
+    if not PR_TITLE.fullmatch(title):
+        print(f'FAIL: the pull request title {title[:80]!r} is not one report writes')
+        return 1
     for name in ('data', VECTORS):
         source = artifact / name
         if not source.is_dir():
@@ -477,7 +491,14 @@ def apply_artifact(artifact: Path, root: Path) -> int:
         shutil.rmtree(target, ignore_errors=True)
         shutil.copytree(source, target)
         print(f'applied {name}')
+    if github_output:
+        write_outputs(github_output, f'data_changed=true\ntitle={title}\n')
     return 0
+
+
+def write_outputs(path: Path, text: str) -> None:
+    with Path(path).open('a', encoding='utf-8', newline='\n') as handle:
+        handle.write(text)
 
 
 def same_body(before: str, after: str) -> bool:
@@ -518,14 +539,42 @@ def report_issue(title: str, body_file: Path, run=gh, assignee: str = '') -> str
     return 'opened'
 
 
-def print_outputs(results_path: Path) -> int:
-    results = read_json(results_path, None)
-    if results is None:
-        print(f'FAIL: {results_path} is missing or not JSON', file=sys.stderr)
+ISSUE_BODY = re.compile(r'issue/[0-9]+\.md')
+
+
+def artifact_issues(artifact: Path) -> list[tuple[str, Path]]:
+    """The (title, body file) rows of the artifact's issues.tsv; raises ValueError on a bad row."""
+    artifact = Path(artifact).resolve()
+    try:
+        text = (artifact / 'issues.tsv').read_text(encoding='utf-8')
+    except OSError:
+        return []
+    rows = []
+    for number, line in enumerate(text.splitlines(), 1):
+        if not line.strip():
+            continue
+        title, _, body = line.partition('\t')
+        if title not in TITLES.values():
+            raise ValueError(f'issues.tsv line {number}: unknown title {title[:80]!r}')
+        if not ISSUE_BODY.fullmatch(body):
+            raise ValueError(f'issues.tsv line {number}: body {body[:80]!r} is not issue/<n>.md')
+        path = artifact / body
+        if not path.is_file() or path.is_symlink():
+            raise ValueError(f'issues.tsv line {number}: {body} is missing from the artifact')
+        rows.append((title, path))
+    return rows
+
+
+def report_issues(artifact: Path, run=gh, assignee: str = '') -> int:
+    try:
+        rows = artifact_issues(artifact)
+    except ValueError as error:
+        print(f'FAIL: {error}', file=sys.stderr)
         return 1
-    print(f'data_changed={str(bool(results.get("data_changed"))).lower()}')
-    print(f'title={results.get("pr", {}).get("title", "")}')
-    print(f'short={(results.get("upstream") or {}).get("short", "")}')
+    if not rows:
+        print('no issue to report')
+    for title, body in rows:
+        report_issue(title, body, run, assignee)
     return 0
 
 
@@ -557,17 +606,21 @@ def main(argv=None) -> int:
     rep.add_argument('--outcome', action='append', default=[], metavar='NAME=STATUS',
                      help='a check step outcome, repeatable')
 
-    out = sub.add_parser('outputs', help='print the GitHub Actions step outputs')
-    out.add_argument('--results', type=Path, required=True, help='the results.json from report')
-
     apply = sub.add_parser('apply', help="copy the artifact's data/ and spec/vectors/ into a checkout")
     apply.add_argument('--artifact', type=Path, required=True)
     apply.add_argument('--root', type=Path, default=Path('.'))
+    apply.add_argument('--github-output', type=Path,
+                       default=Path(os.environ['GITHUB_OUTPUT']) if os.environ.get('GITHUB_OUTPUT') else None,
+                       help='append data_changed and title here (default: $GITHUB_OUTPUT)')
 
     issue = sub.add_parser('issue', help='open or comment on one labelled issue')
     issue.add_argument('--title', required=True)
     issue.add_argument('--body-file', type=Path, required=True)
     issue.add_argument('--assignee', default=os.environ.get('SYNC_ASSIGNEE', ''))
+
+    issues = sub.add_parser('issues', help="report every issue the artifact's issues.tsv lists")
+    issues.add_argument('--artifact', type=Path, required=True)
+    issues.add_argument('--assignee', default=os.environ.get('SYNC_ASSIGNEE', ''))
 
     args = parser.parse_args(argv)
     if args.command == 'code-changed':
@@ -597,13 +650,13 @@ def main(argv=None) -> int:
             print(f'{row["name"]}: {row["result"]} {row["detail"]}'.rstrip())
         print(f'report: {args.out / "report.md"}')
         return 0
-    if args.command == 'outputs':
-        return print_outputs(args.results)
     if args.command == 'apply':
-        return apply_artifact(args.artifact, args.root)
+        return apply_artifact(args.artifact, args.root, args.github_output)
     if args.command == 'issue':
         report_issue(args.title, args.body_file, assignee=args.assignee)
         return 0
+    if args.command == 'issues':
+        return report_issues(args.artifact, assignee=args.assignee)
     return 1
 
 

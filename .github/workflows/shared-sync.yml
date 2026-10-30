@@ -158,5 +158,5 @@ jobs:
           title: "chore(shared): sync from nepdate ${{ needs.prepare.outputs.short }}"
           body-path: ${{ runner.temp }}/in/body.md
           labels: shared-sync
-          assignees: ${{ vars.SYNC_ASSIGNEE || github.repository_owner }}
+          assignees: ${{ vars.SYNC_ASSIGNEE }}
           delete-branch: true

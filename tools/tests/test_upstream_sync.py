@@ -243,16 +243,6 @@ class ReportTest(unittest.TestCase):
         for issue in report['issues']:
             self.assertNotIn(str(self.root), read(self.out / issue['body']))
 
-    def test_outputs_prints_the_step_outputs(self):
-        self.import_data()
-        self.report()
-        out = io.StringIO()
-        with contextlib.redirect_stdout(out):
-            self.assertEqual(upstream_sync.main(['outputs', '--results', str(self.out / 'results.json')]), 0)
-        self.assertIn('data_changed=true', out.getvalue())
-        self.assertIn('title=chore(data): sync from NepDate c6fff4f', out.getvalue())
-        self.assertIn('short=c6fff4f', out.getvalue())
-
     def test_apply_copies_the_artifact_into_the_checkout(self):
         self.import_data()
         self.report()
@@ -260,6 +250,51 @@ class ReportTest(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(upstream_sync.apply_artifact(self.out, target), 0)
         self.assertIn('New Year 2084', read(target / 'data/patro/2084.json'))
+
+    def test_apply_writes_the_step_outputs(self):
+        self.import_data()
+        self.report()
+        target = scratch_root(self, 'data', 'spec')
+        outputs = temp_dir(self) / 'github-output'
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(upstream_sync.apply_artifact(self.out, target, outputs), 0)
+        self.assertEqual(read(outputs), 'data_changed=true\ntitle=chore(data): sync from NepDate c6fff4f\n')
+
+    def test_apply_refuses_a_title_report_did_not_write(self):
+        self.import_data()
+        self.report()
+        results = json.loads(read(self.out / 'results.json'))
+        results['pr']['title'] = 'chore(data): sync\nother=1'
+        write(self.out / 'results.json', json.dumps(results))
+        target = scratch_root(self, 'data', 'spec')
+        outputs = temp_dir(self) / 'github-output'
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(upstream_sync.apply_artifact(self.out, target, outputs), 1)
+        self.assertFalse(outputs.exists())
+
+    def test_issues_reports_every_listed_issue(self):
+        self.report(outcomes={'status': 'failure'}, today=date(2026, 10, 30))
+        fake = FakeGh()
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(upstream_sync.report_issues(self.out, fake), 0)
+        created = [call for call in fake.calls if call[:2] == ('issue', 'create')]
+        self.assertEqual([call[call.index('--title') + 1] for call in created],
+                         ['Upstream NepDate changed outside the data', 'Data running out'])
+
+    def test_issues_refuses_a_title_it_does_not_know(self):
+        write(self.out / 'issue/1.md', 'text\n')
+        write(self.out / 'issues.tsv', '@everyone look here\tissue/1.md\n')
+        fake = FakeGh()
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(upstream_sync.report_issues(self.out, fake), 1)
+        self.assertEqual(fake.calls, [])
+
+    def test_issues_refuses_a_body_outside_the_artifact(self):
+        write(self.out / 'issues.tsv', 'Data running out\t../../etc/passwd\n')
+        fake = FakeGh()
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(upstream_sync.report_issues(self.out, fake), 1)
+        self.assertEqual(fake.calls, [])
 
     def test_apply_does_nothing_without_a_data_change(self):
         self.report(outcomes={'status': 'success'})

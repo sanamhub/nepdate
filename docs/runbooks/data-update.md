@@ -30,7 +30,7 @@ and the public NuGet feed.
 
 Runs every day at 03:15 UTC and on demand (*Actions → upstream-sync → Run workflow*). A run
 clones NepDate with blob filtering, imports the data, and records five checks, each reported to
-the assignee (`vars.SYNC_ASSIGNEE`, default the repository owner):
+the assignee in `vars.SYNC_ASSIGNEE`, or to nobody when it is not set:
 
 | Check | When it fires | What you get |
 |---|---|---|
@@ -49,7 +49,9 @@ Everything a run learns leaves the check job as one artifact: `data/`, `spec/vec
 with every result, `results.json`, the PR body and one file per issue, kept 7 days. The second job
 downloads that artifact, applies the data and opens the PR and the issues. It never checks out
 the NepDate clone and runs nothing from it, so a commit message or a file name from upstream can
-only ever appear as text.
+only ever appear as text. Because the check job builds NepDate's code, the second job also treats
+the artifact as untrusted: it takes the PR title only in the form `chore(data): sync from NepDate
+<sha>`, and opens issues only under the three titles above with the artifact's own body files.
 
 Issues are labelled `upstream-sync` and assigned like the PR. A check that fires again comments
 on its open issue only when the body would change, so it adds nothing on a day that repeats
@@ -116,11 +118,15 @@ token:
 3. On each spoke: the same variable and secret on its own `sync` environment, limited to `main`,
    and the label `shared-sync`.
 4. Optional, on either: variable `SYNC_ASSIGNEE` set to a GitHub username. Without it the PRs and
-   the issues go to the repository owner, which only works while the owner is a user.
+   the issues have no assignee. It cannot default to the repository owner: the owner is the
+   `sanamhub` organization, and GitHub only assigns users.
 
 Workflows ask for tokens scoped to their own repository (`repositories:` input), but the key
 itself can mint a token for any repository the App is installed on: if one repository's secrets
 leak, revoke the key in the App settings and create a new one for all repositories.
 
-Without the app the workflows still run with `GITHUB_TOKEN`. Their PR body then asks you to
-close and reopen the PR once so CI starts. Issues are opened either way.
+Without the app the workflows fall back to `GITHUB_TOKEN`, which can open a PR only when the
+repository allows it (*Settings → Actions → General → Allow GitHub Actions to create and approve
+pull requests*); otherwise the PR step fails with "GitHub Actions is not permitted to create or
+approve pull requests". With that setting on, the PR body asks you to close and reopen the PR once
+so CI starts. Issues are opened either way. The App is the intended setup.

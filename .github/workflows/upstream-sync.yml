@@ -21,9 +21,6 @@ jobs:
   check:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    outputs:
-      data_changed: ${{ steps.results.outputs.data_changed }}
-      title: ${{ steps.results.outputs.title }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -124,12 +121,6 @@ jobs:
             --outcome "import=$IMPORT_OUTCOME" --outcome "vectors=$VECTORS_OUTCOME" \
             --outcome "verify=$VERIFY_OUTCOME" --outcome "sanity=$SANITY_OUTCOME" \
             --outcome "exhaustive=$EXHAUSTIVE_OUTCOME" --outcome "status=$STATUS_OUTCOME"
-      - name: Read the step outputs
-        id: results
-        if: always()
-        run: |
-          set -euo pipefail
-          python tools/upstream_sync.py outputs --results "$RUNNER_TEMP/out/results.json" >> "$GITHUB_OUTPUT"
       - name: Upload the data, the vectors and the report
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -168,22 +159,19 @@ jobs:
         with:
           name: upstream-sync
           path: ${{ runner.temp }}/in
+      # The check job built NepDate's code, so the artifact is read as untrusted: apply checks the PR
+      # title before it becomes an output, and issues accepts only the titles and body files the
+      # tool writes.
       - name: Apply the artifact
+        id: apply
         run: python tools/upstream_sync.py apply --artifact "$RUNNER_TEMP/in" --root .
       - name: Report to the issues
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
-          SYNC_ASSIGNEE: ${{ vars.SYNC_ASSIGNEE || github.repository_owner }}
-        run: |
-          set -euo pipefail
-          report() {
-            python tools/upstream_sync.py issue --title "$1" --body-file "$2"
-          }
-          while IFS=$'\t' read -r title body; do
-            report "$title" "$RUNNER_TEMP/in/$body"
-          done < "$RUNNER_TEMP/in/issues.tsv"
+          SYNC_ASSIGNEE: ${{ vars.SYNC_ASSIGNEE }}
+        run: python tools/upstream_sync.py issues --artifact "$RUNNER_TEMP/in"
       - name: Note how the pull request was opened
-        if: needs.check.outputs.data_changed == 'true'
+        if: steps.apply.outputs.data_changed == 'true'
         env:
           NO_APP: ${{ vars.SYNC_APP_ID == '' }}
         run: |
@@ -193,13 +181,14 @@ jobs:
               >> "$RUNNER_TEMP/in/pr-body.md"
           fi
       - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
-        if: needs.check.outputs.data_changed == 'true'
+        if: steps.apply.outputs.data_changed == 'true'
         with:
           token: ${{ steps.app-token.outputs.token || github.token }}
           branch: bot/upstream-sync
           base: main
           delete-branch: true
-          title: ${{ needs.check.outputs.title }}
+          commit-message: ${{ steps.apply.outputs.title }}
+          title: ${{ steps.apply.outputs.title }}
           body-path: ${{ runner.temp }}/in/pr-body.md
           labels: upstream-sync
-          assignees: ${{ vars.SYNC_ASSIGNEE || github.repository_owner }}
+          assignees: ${{ vars.SYNC_ASSIGNEE }}
