@@ -33,8 +33,10 @@ Set `NEPDATE_BUILD_PATRO` to `OFF` before `FetchContent_MakeAvailable` if you ne
 
 Each [GitHub release](https://github.com/sanamhub/nepdate-cpp/releases) also has a source archive
 with `SHA256SUMS`, `SHA512SUMS` and a provenance attestation; its notes show the same
-`FetchContent_Declare` with the archive URL and `URL_HASH`. The vcpkg and Conan Center submissions
-are prepared but not merged upstream yet; the overlay ports in the repository work until then.
+`FetchContent_Declare` with the archive URL and `URL_HASH`. Packages for
+[Conan Center](https://github.com/conan-io/conan-center-index/pull/31247) and
+[xmake-repo](https://github.com/xmake-io/xmake-repo/pull/11133) are submitted and waiting for
+review; the vcpkg overlay port in the repository works until a registry has it.
 
 | Compiler | Minimum, proved by CI |
 |---|---|

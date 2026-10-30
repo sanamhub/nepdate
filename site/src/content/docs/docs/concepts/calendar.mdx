@@ -53,6 +53,8 @@ doesn't change the answer:
 
 - TypeScript: `NepaliDate.today(timeZone = "Asia/Kathmandu")`.
 - C++: `today(utc_offset)`, with +05:45 by default.
+- C: `nepdate_today_nepal(unix_seconds)`, or `nepdate_from_unix` with any fixed offset. The caller
+  passes the time, so the core never reads a clock.
 - Python: `NepaliDate.today(tz=None)`, with `Asia/Kathmandu` when no zone is given. On Windows it
   needs the `tzdata` package for the zone database.
 

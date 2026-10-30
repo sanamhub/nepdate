@@ -11,7 +11,7 @@ port also measures every other Bikram Sambat library it could find in its langua
 machine and the same dates.
 
 <p>
-  In all seven languages, every port is faster than all {competitorCount} other libraries on both
+  In all {benchmarks.length} languages, every port is faster than all {competitorCount} other libraries on both
   conversions. None of those libraries gives the same answer as the hub's data on all 64 dates;
   each report lists where they differ.
 </p>
@@ -86,7 +86,7 @@ Time per call for B1 to B8. Lower is better. B8 builds a whole month grid with t
 </table>
 
 C# NepDate 2.0.7 on .NET 10 is the reference ([its report](https://github.com/sanamhub/nepdate/blob/main/docs/benchmarks/dotnet.md)).
-The conversions, arithmetic and patro lookups allocate nothing in Rust, C++, Go and Swift.
+The conversions, arithmetic and patro lookups allocate nothing in Rust, C++, C, Go and Swift.
 
 ## Reading the numbers
 
