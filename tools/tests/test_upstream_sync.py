@@ -116,6 +116,7 @@ class ReportTest(unittest.TestCase):
 
     def setUp(self):
         self.root = scratch_root(self, 'data', 'spec')
+        self.set_2084_new_year('New Year 2083')
         git(self.root, 'init', '-q', '-b', 'main')
         git(self.root, 'add', '-A')
         git(self.root, 'commit', '-q', '-m', 'hub')
@@ -132,11 +133,15 @@ class ReportTest(unittest.TestCase):
         write(self.results / 'nuget.json',
               json.dumps({'pinned': '2.0.7', 'latest': '2.0.7', 'newer': False, 'error': None}))
 
-    def import_data(self):
+    def set_2084_new_year(self, name):
         path = self.root / 'data/patro/2084.json'
         document = json.loads(read(path))
-        document['days']['2084-01-01']['events'][0]['en'] = 'New Year 2084'
+        document['days']['2084-01-01']['events'][0]['en'] = name
         write(path, json.dumps(document, ensure_ascii=False, indent=2) + '\n')
+        return path
+
+    def import_data(self):
+        path = self.set_2084_new_year('New Year 2084')
         write(self.root / 'data/UPSTREAM', 'c6fff4f2f60ac01e31c086568320649627422ba1\n')
         write(self.root / 'data/NOTICE', 'extracted from NepDate\n')
         return path
