@@ -14,7 +14,15 @@ npm ci
 npm run dev      # http://localhost:4321
 npm run check    # types, and the data tests in src/lib/patro.test.ts
 npm run build    # dist/, about 6,300 pages
+npm run lighthouse  # Lighthouse on the built pages, phone and desktop (needs Chrome)
 ```
+
+The pull request check runs `npm run lighthouse` too: every category must stay at 100 and
+performance at 95 or more (the median of three runs), and the scores go in a comment on the pull
+request. Two choices keep performance at 100. The NepDate fonts never hold up a first visit: it
+uses the system's Devanagari font and fetches the fonts into the cache once the page is idle, for
+every later visit. The app's code loads after the first paint, because the built page already
+shows the month.
 
 ## Layout
 

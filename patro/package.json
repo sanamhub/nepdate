@@ -11,7 +11,8 @@
     "build": "astro build",
     "check": "astro check && node --test",
     "preview": "astro preview",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "lighthouse": "node scripts/lighthouse.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",
@@ -23,6 +24,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
+    "chrome-launcher": "1.2.2",
+    "lighthouse": "13.5.0",
     "typescript": "6.0.3",
     "wrangler": "4.151.1"
   },
