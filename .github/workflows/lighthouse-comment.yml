@@ -12,8 +12,8 @@ on:
         required: true
         type: string
 
-permissions:
-  contents: read
+# No top-level permissions: a called workflow may not ask for more than its caller's job grants,
+# and the callers grant only pull-requests: write.
 
 jobs:
   comment:
