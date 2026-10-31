@@ -92,6 +92,9 @@ function cellLabel(d: Day, lang: Lang, isToday: boolean): string {
     .join(", ");
 }
 
+/** How many of a day's events a wide cell names: two lines read at a glance and leave room. */
+const CELL_EVENTS = 2;
+
 export interface MonthOptions {
   /** Today's AD date "2026-10-31", to ring today; null when rendered at build time. */
   todayAd: string | null;
@@ -112,13 +115,21 @@ export function monthGrid(year: number, m: number, lang: Lang, { todayAd }: Mont
     const cls = ["cell", d.holiday && "holiday", d.weekday === 6 && "sat", isToday && "today", d.events.length > 0 && "has-events"]
       .filter(Boolean)
       .join(" ");
-    const event = d.events[0];
+    // A wide cell names up to two events and a phone's narrow cell one; each counts the rest
+    // (the CSS shows the count that fits). The card has them all.
+    const shown = d.events.slice(0, CELL_EVENTS);
+    const moreWide = d.events.length - shown.length;
+    const moreNarrow = d.events.length - 1;
     cells.push(
       `<div role="gridcell"><button type="button" class="${cls}" data-bs="${d.iso}" data-ad="${ad}" tabindex="-1"${isToday ? ' aria-current="date"' : ""} aria-label="${esc(cellLabel(d, lang, isToday))}">` +
         `<span class="cell-bs">${num(d.date.day, lang)}</span>` +
         `<span class="cell-ad">${d.ad.day === 1 ? `<span class="ad-m">${adMonth(d.ad.month)} </span>` : ""}${num(d.ad.day, lang)}</span>` +
+        (shown.length
+          ? `<span class="cell-events">${shown.map((e) => `<span>${esc(named(e, lang))}</span>`).join("")}</span>` +
+            (moreWide > 0 ? `<span class="cell-more wide">+${num(moreWide, lang)}</span>` : "") +
+            (moreNarrow > 0 ? `<span class="cell-more narrow">+${num(moreNarrow, lang)}</span>` : "")
+          : "") +
         (d.tithi ? `<span class="cell-tithi">${esc(shortTithi(d.tithi, lang))}</span>` : "") +
-        (event ? `<span class="cell-event">${esc(named(event, lang))}</span>` : "") +
         (d.tithi && (d.tithi.number === 15 || d.tithi.number === 8) ? moon(d.tithi) : "") +
         `</button></div>`,
     );

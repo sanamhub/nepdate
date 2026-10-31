@@ -77,3 +77,12 @@ test("the month details list every day", () => {
 test("text from the data is escaped", () => {
   assert.equal(esc(`<b>"Tom" & 'Jerry'</b>`), "&lt;b&gt;&quot;Tom&quot; &amp; &#39;Jerry&#39;&lt;/b&gt;");
 });
+
+test("a cell names two events and counts the rest for wide and narrow cells", () => {
+  // Kartik 22, 2083 has six events.
+  const html = monthGrid(2083, 7, "en", { todayAd: null });
+  const cell = html.slice(html.indexOf('data-bs="2083-07-22"'), html.indexOf('data-bs="2083-07-23"'));
+  assert.equal(count(cell.slice(cell.indexOf("cell-events")), "<span>"), 2);
+  assert.match(cell, /class="cell-more wide">\+4</);
+  assert.match(cell, /class="cell-more narrow">\+5</);
+});
