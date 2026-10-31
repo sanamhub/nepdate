@@ -2,14 +2,16 @@ name: site
 
 # nepdate.com (ADR-0005). Cloudflare Workers Builds deploys it; this workflow is the gate a pull
 # request must pass first: types, versions only in ports.ts, a build with every internal link
-# checked, and no high or critical advisory in the dependencies.
+# checked, no high or critical advisory in the dependencies, and Lighthouse on the built pages
+# (web/lighthouse.mjs: every category at 100, performance at 95 or more, on a phone and a
+# desktop). On a pull request the Lighthouse scores also go in one comment, updated on each push.
 
 on:
   pull_request:
-    paths: ["site/**", "web/**", ".github/workflows/site.yml"]
+    paths: ["site/**", "web/**", ".github/workflows/site.yml", ".github/workflows/lighthouse-comment.yml"]
   push:
     branches: [main]
-    paths: ["site/**", "web/**", ".github/workflows/site.yml"]
+    paths: ["site/**", "web/**", ".github/workflows/site.yml", ".github/workflows/lighthouse-comment.yml"]
 
 permissions:
   contents: read
@@ -25,7 +27,7 @@ defaults:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -39,3 +41,22 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm run check
       - run: npm run build
+      - run: npm run lighthouse
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: nepdate.com-lighthouse
+          path: site/lighthouse/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # The Lighthouse table as a pull request comment (lighthouse-comment.yml). Pull requests from
+  # forks get the job summary only.
+  lighthouse-comment:
+    needs: build
+    if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+    permissions:
+      pull-requests: write
+    uses: ./.github/workflows/lighthouse-comment.yml
+    with:
+      site: nepdate.com

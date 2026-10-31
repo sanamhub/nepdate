@@ -2,7 +2,7 @@ name: patro
 
 # patro.nepdate.com (ADR-0006). Cloudflare Workers Builds deploys it; this workflow is the gate a
 # pull request must pass first: types, the data tests, a full build of every page, no high or
-# critical advisory in the dependencies, and Lighthouse on the built pages (scripts/lighthouse.mjs:
+# critical advisory in the dependencies, and Lighthouse on the built pages (web/lighthouse.mjs:
 # every category at 100, performance at 95 or more, on a phone and a desktop). On a pull request
 # the Lighthouse scores also go in one comment, updated on each push. It also runs when a file
 # patro/ borrows from site/ or web/ changes.
@@ -18,6 +18,7 @@ on:
       - "site/public/favicon.svg"
       - "site/public/footer-skyline.svg"
       - ".github/workflows/patro.yml"
+      - ".github/workflows/lighthouse-comment.yml"
   push:
     branches: [main]
     paths:
@@ -29,6 +30,7 @@ on:
       - "site/public/favicon.svg"
       - "site/public/footer-skyline.svg"
       - ".github/workflows/patro.yml"
+      - ".github/workflows/lighthouse-comment.yml"
 
 permissions:
   contents: read
@@ -67,31 +69,13 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
-  # The Lighthouse table as a pull request comment. A job of its own, so the build never holds a
-  # token that can write; pull requests from forks get the job summary only.
+  # The Lighthouse table as a pull request comment (lighthouse-comment.yml). Pull requests from
+  # forks get the job summary only.
   lighthouse-comment:
     needs: build
     if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
     permissions:
       pull-requests: write
-    steps:
-      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        continue-on-error: true
-        with:
-          name: patro-lighthouse
-          path: lighthouse
-      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        with:
-          script: |
-            const { existsSync, readFileSync } = await import("node:fs");
-            if (!existsSync("lighthouse/summary.md")) return core.notice("No Lighthouse summary: the build stopped before it.");
-            const body = readFileSync("lighthouse/summary.md", "utf8");
-            const marker = "<!-- patro-lighthouse -->";
-            const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
-            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number, per_page: 100 });
-            const mine = comments.find((c) => c.user?.type === "Bot" && c.body?.startsWith(marker));
-            if (mine) await github.rest.issues.updateComment({ owner, repo, comment_id: mine.id, body });
-            else await github.rest.issues.createComment({ owner, repo, issue_number, body });
+    uses: ./.github/workflows/lighthouse-comment.yml
+    with:
+      site: patro

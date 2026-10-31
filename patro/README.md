@@ -21,7 +21,7 @@ The pull request check runs `npm run lighthouse` too: every category must stay a
 performance at 95 or more (the median of three runs), and the scores go in a comment on the pull
 request. Two choices keep performance at 100. The NepDate fonts never hold up a first visit: it
 uses the system's Devanagari font and fetches the fonts into the cache once the page is idle, for
-every later visit. The app's code loads after the first paint, because the built page already
+every later visit (`web/FontLoader.astro`, shared with nepdate.com). The app's code loads after the first paint, because the built page already
 shows the month.
 
 ## Layout

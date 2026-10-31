@@ -30,18 +30,24 @@ const bottom = line(preset.bottom, today, null, "en");
 const shots = [
   {
     id: "popup",
+    width: 360,
+    height: 520,
     title: "The month, one click away",
     text: "Click the tray icon or the bar, or press Win+Shift+N. Each day shows its tithi; public holidays are in red and the next one is named at the bottom.",
     alt: "The MitiBar month window: a Bikram Sambat month grid with tithi under each day and today marked.",
   },
   {
     id: "converter",
+    width: 360,
+    height: 520,
     title: "BS and AD, both ways",
     text: "Type a date in either calendar and get the other, or count the days between two dates. Separators appear as you type, and Copy puts the result on the clipboard.",
     alt: "The MitiBar converter: a BS date typed in, its AD date as the result, and a Copy button beside each form.",
   },
   {
     id: "settings",
+    width: 420,
+    height: 680,
     title: "Two lines, your way",
     text: "Pick what each line shows from weekday, BS and AD dates, time, tithi and holiday, make either line bold, swap the two with one button, or start from a preset.",
     alt: "MitiBar settings: the top and bottom line cards with a swap button between them, and the presets.",
@@ -164,8 +170,8 @@ const jsonLd = {
           shots.map((shot) => (
             <figure class="mb-shot">
               <div class="mb-shot-frame">
-                <img class="light-only" src={`/mitibar/${shot.id}-light.png`} alt={shot.alt} loading="lazy" decoding="async" />
-                <img class="dark-only" src={`/mitibar/${shot.id}-dark.png`} alt={shot.alt} loading="lazy" decoding="async" />
+                <img class="light-only" src={`/mitibar/${shot.id}-light.png`} alt={shot.alt} width={shot.width} height={shot.height} loading="lazy" decoding="async" />
+                <img class="dark-only" src={`/mitibar/${shot.id}-dark.png`} alt={shot.alt} width={shot.width} height={shot.height} loading="lazy" decoding="async" />
               </div>
               <figcaption>
                 <h3>{shot.title}</h3>

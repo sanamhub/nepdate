@@ -65,14 +65,6 @@ p a {
 .skip:focus {
   top: 0.75rem;
 }
-/* Until the NepDate fonts are in the cache (the .wf class, set in layouts/Patro.astro), the system's
-   own Devanagari and Latin faces. Nothing names the web fonts, so the browser doesn't fetch them
-   for the page. */
-:root:not(.wf) {
-  --nd-font-noto-deva:
-    "Nirmala UI", "Kohinoor Devanagari", "Noto Sans Devanagari UI", "Noto Sans Devanagari", Mangal, sans-serif;
-  --nd-font-noto: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
-}
 [hidden] {
   display: none !important;
 }
