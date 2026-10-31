@@ -64,7 +64,7 @@ async function audit(url, preset) {
     );
     return { lhr, html: report[1] };
   } finally {
-    await chrome.kill();
+    chrome.kill();
   }
 }
 
