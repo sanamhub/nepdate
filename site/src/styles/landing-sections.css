@@ -978,6 +978,11 @@
 .popup-grid .h {
   color: var(--nd-sindoor);
 }
+/* In the dark theme the sindoor is a step lighter here, as on patro.nepdate.com, so today's red
+   numeral keeps 4.5:1 on its tinted tile. */
+:root[data-theme="dark"] .popup-grid {
+  --nd-sindoor: #ea6b6b;
+}
 /* Today as the app draws it: an inset tile with a soft sindoor fill and border. */
 .popup-grid .t {
   border-radius: 0.4em;

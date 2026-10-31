@@ -14,7 +14,13 @@ npm ci
 npm run dev      # http://localhost:4321
 npm run check    # types, and no version typed outside src/data/ports.ts
 npm run build    # dist/, with every internal link checked
+npm run lighthouse  # Lighthouse on the built pages, phone and desktop (needs Chrome)
 ```
+
+The pull request check runs `npm run lighthouse` too, on the home page, the MitiBar page and two
+docs pages: every category must stay at 100 and performance at 95 or more (the median of three
+runs), and the scores go in a comment on the pull request. The fonts never hold up a first visit
+(`web/FontLoader.astro`), which is what keeps performance at 100 on a phone.
 
 ## Layout
 

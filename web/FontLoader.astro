@@ -1,0 +1,77 @@
+---
+// How both websites load the NepDate fonts (ADR-0006). The fonts (up to about 160 KB) never hold
+// up a first visit: it paints with the system's fonts, and once the page is idle the NepDate fonts
+// are fetched into the cache without being applied, so the page is never laid out again. Every
+// later visit adds .wf before the first paint and uses them from the start. Put it after the
+// page's <Font> tags, none of which preloads.
+interface Props {
+  /** The localStorage key that marks the fonts as cached on this origin. */
+  storageKey: string;
+}
+const { storageKey } = Astro.props;
+---
+
+<script is:inline define:vars={{ storageKey }}>
+  (() => {
+    const root = document.documentElement;
+    let seen = false;
+    try {
+      seen = localStorage.getItem(storageKey) === "1";
+    } catch {}
+    if (seen) return root.classList.add("wf");
+    const fetchFonts = () => {
+      const faces = [];
+      document.fonts.forEach((face) => faces.push(face.load()));
+      Promise.all(faces).then(
+        () => {
+          try {
+            localStorage.setItem(storageKey, "1");
+          } catch {}
+        },
+        () => {},
+      );
+    };
+    // After both the load and the first paint, when the page is idle.
+    let waiting = 2;
+    const ready = () => {
+      if (--waiting) return;
+      if (window.requestIdleCallback) requestIdleCallback(fetchFonts, { timeout: 4000 });
+      else setTimeout(fetchFonts, 2000);
+    };
+    // A page that doesn't paint (a background tab) counts as painted two seconds after load.
+    let painted = false;
+    const paint = () => {
+      if (painted) return;
+      painted = true;
+      ready();
+    };
+    addEventListener(
+      "load",
+      () => {
+        ready();
+        setTimeout(paint, 2000);
+      },
+      { once: true },
+    );
+    try {
+      new PerformanceObserver((list, observer) => {
+        if (!list.getEntriesByName("first-contentful-paint").length) return;
+        observer.disconnect();
+        paint();
+      }).observe({ type: "paint", buffered: true });
+    } catch {
+      paint();
+    }
+  })();
+</script>
+
+<style is:global>
+  /* Until the fonts are cached, the system's faces. Nothing names the web fonts, so the browser
+     doesn't fetch them for the page. */
+  :root:not(.wf) {
+    --nd-font-noto-deva:
+      "Nirmala UI", "Kohinoor Devanagari", "Noto Sans Devanagari UI", "Noto Sans Devanagari", Mangal, sans-serif;
+    --nd-font-noto: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+    --nd-font-jetbrains: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+</style>
