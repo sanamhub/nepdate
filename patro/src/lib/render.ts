@@ -77,18 +77,19 @@ export function adSpan(days: Day[], lang: Lang): string {
     : `${adMonth(a.month)} ${num(a.year, lang)}–${adMonth(b.month)} ${num(b.year, lang)}`;
 }
 
-/** The accessible name of a day cell: everything the cell shows, in words. */
-function cellLabel(d: Day, lang: Lang, isToday: boolean): string {
+/** What a day cell says to a screen reader after its number: the weekday, month and year, the AD
+ *  date, and whether it is today or a holiday. The cell's visible text stays part of its name. */
+export function cellContext(d: Day, lang: Lang, isToday: boolean): string {
   const t = T[lang];
   return [
-    isToday ? t.today : "",
-    `${weekday(d.weekday, lang)}, ${bsLong(d, lang)}`,
+    "",
+    weekday(d.weekday, lang),
+    `${month(d.date.month, lang)} ${num(d.date.year, lang)}`,
     adLong(d, lang),
-    d.tithi ? named(d.tithi, lang) : "",
     d.holiday ? t.holiday : "",
-    ...d.events.map((e) => named(e, lang)),
+    isToday ? t.today : "",
   ]
-    .filter(Boolean)
+    .filter((part, i) => i === 0 || part)
     .join(", ");
 }
 
@@ -121,8 +122,9 @@ export function monthGrid(year: number, m: number, lang: Lang, { todayAd }: Mont
     const moreWide = d.events.length - shown.length;
     const moreNarrow = d.events.length - 1;
     cells.push(
-      `<div role="gridcell"><button type="button" class="${cls}" data-bs="${d.iso}" data-ad="${ad}" tabindex="-1"${isToday ? ' aria-current="date"' : ""} aria-label="${esc(cellLabel(d, lang, isToday))}">` +
+      `<div role="gridcell"><button type="button" class="${cls}" data-bs="${d.iso}" data-ad="${ad}" tabindex="-1"${isToday ? ' aria-current="date"' : ""}>` +
         `<span class="cell-bs">${num(d.date.day, lang)}</span>` +
+        `<span class="visually-hidden">${esc(cellContext(d, lang, isToday))}</span>` +
         `<span class="cell-ad">${d.ad.day === 1 ? `<span class="ad-m">${adMonth(d.ad.month)} </span>` : ""}${num(d.ad.day, lang)}</span>` +
         (shown.length
           ? `<span class="cell-events">${shown.map((e) => `<span>${esc(named(e, lang))}</span>`).join("")}</span>` +
@@ -265,8 +267,9 @@ export function monthDetails(year: number, m: number, lang: Lang, { todayAd }: M
       const cls = ["row", d.holiday && "holiday", d.weekday === 6 && "sat", isToday && "today"].filter(Boolean).join(" ");
       return (
         `<li class="${cls}"${isToday ? ' aria-current="date"' : ""}>` +
-        `<button type="button" class="row-date" data-bs="${d.iso}" aria-label="${esc(`${weekday(d.weekday, lang)}, ${bsLong(d, lang)}`)}">` +
-        `<b>${num(d.date.day, lang)}</b><span>${esc(weekdayShort(d.weekday, lang))}</span></button>` +
+        `<button type="button" class="row-date" data-bs="${d.iso}">` +
+        `<b>${num(d.date.day, lang)}</b><span>${esc(weekdayShort(d.weekday, lang))}</span>` +
+        `<span class="visually-hidden">, ${esc(bsLong(d, lang))}</span></button>` +
         `<span class="row-ad">${adMonth(d.ad.month)} ${num(d.ad.day, lang)}</span>` +
         `<span class="row-tithi">${d.tithi ? `${moon(d.tithi)}${esc(named(d.tithi, lang))}` : ""}</span>` +
         `<span class="row-events">${d.holiday ? `<span class="tag">${t.holiday}</span>` : ""}${d.events.map((e) => esc(named(e, lang))).join(", ")}</span>` +

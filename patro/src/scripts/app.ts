@@ -8,6 +8,7 @@ import { FIRST_YEAR, LAST_YEAR, day, monthDays, monthPath, pad } from "../lib/pa
 import {
   adSpan,
   bsLong,
+  cellContext,
   dayCard,
   dayCardLinks,
   decadeStart,
@@ -65,6 +66,8 @@ function start(app: HTMLElement) {
     }
   })();
   const home = app.dataset.home !== undefined;
+  /** What the page was built with: its month, in Nepali, and the build day as today. */
+  const built = { year: Number(app.dataset.year), month: Number(app.dataset.month), today: app.dataset.builtToday };
   const state = {
     lang: (stored === "en" ? "en" : "ne") as Lang,
     level: "month" as Level,
@@ -166,11 +169,15 @@ function start(app: HTMLElement) {
       node.setAttribute("aria-label", strings[node.dataset.tLabel as string]);
     for (const node of document.querySelectorAll<HTMLInputElement>("[data-t-placeholder]"))
       node.placeholder = strings[node.dataset.tPlaceholder as string];
-    for (const b of document.querySelectorAll<HTMLButtonElement>("[data-lang]"))
+    for (const b of document.querySelectorAll<HTMLButtonElement>("button[data-lang]"))
       b.setAttribute("aria-pressed", String(b.dataset.lang === state.lang));
   }
 
-  const clockFormat = { ne: new Intl.DateTimeFormat("ne-NP", { timeZone: "Asia/Kathmandu", hour: "numeric", minute: "2-digit" }), en: new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kathmandu", hour: "numeric", minute: "2-digit" }) };
+  const clockOptions = { timeZone: "Asia/Kathmandu", hour: "numeric", minute: "2-digit" } as const;
+  const clockFormat = {
+    ne: new Intl.DateTimeFormat("ne", { ...clockOptions, numberingSystem: "deva" }),
+    en: new Intl.DateTimeFormat("en-US", clockOptions),
+  };
   function tick() {
     el.clock.textContent = clockFormat[state.lang].format(new Date());
     const now = day(NepaliDate.today());
@@ -399,7 +406,7 @@ function start(app: HTMLElement) {
     }
   });
 
-  for (const b of document.querySelectorAll<HTMLButtonElement>("[data-lang]")) {
+  for (const b of document.querySelectorAll<HTMLButtonElement>("button[data-lang]")) {
     b.addEventListener("click", () => setLang(b.dataset.lang === "en" ? "en" : "ne"));
   }
 
@@ -591,10 +598,42 @@ function start(app: HTMLElement) {
   }
 
   // Start: the stored language, today in Nepal, and the clock each minute.
+  // The built page shows the details only without JavaScript.
+  el.detailsView.hidden = true;
   el.detailsView.removeAttribute("data-initial");
   root.classList.remove("lang-pending");
-  renderChrome();
-  renderToday();
-  render();
+  if (state.lang === "ne" && state.year === built.year && state.month === built.month) {
+    // The page was built with this month in Nepali, so it stays as it is: redrawing it would cost a
+    // phone a second layout before anything else. Only today may have moved since the build.
+    if (today.iso !== built.today) {
+      moveTodayRing();
+      renderToday();
+    } else tick();
+    el.todayBtn.hidden = state.year === today.date.year && state.month === today.date.month;
+    placeCursor();
+  } else {
+    renderChrome();
+    renderToday();
+    render();
+  }
   setInterval(tick, 30_000);
+
+  /** Rings today on the built grid instead of the build day. */
+  function moveTodayRing() {
+    for (const cell of el.grid.querySelectorAll<HTMLElement>(".cell.today")) {
+      cell.classList.remove("today");
+      cell.removeAttribute("aria-current");
+      setContext(cell, day(NepaliDate.parse(cell.dataset.bs as string)), false);
+    }
+    const cell = cellFor(today.iso);
+    if (!cell) return;
+    cell.classList.add("today");
+    cell.setAttribute("aria-current", "date");
+    setContext(cell, today, true);
+  }
+
+  function setContext(cell: HTMLElement, d: ReturnType<typeof day>, isToday: boolean) {
+    const context = cell.querySelector(".visually-hidden");
+    if (context) context.textContent = cellContext(d, state.lang, isToday);
+  }
 }

@@ -226,7 +226,7 @@ const jsonLd = {
         <div class="langs">
           {
             ports.map((port, i) => (
-              <article
+              <div
                 class="lang"
                 role="tabpanel"
                 id={`install-${port.id}`}
@@ -284,7 +284,7 @@ const jsonLd = {
                     Source<span class="visually-hidden"> of {port.name}</span>
                   </a>
                 </div>
-              </article>
+              </div>
             ))
           }
         </div>

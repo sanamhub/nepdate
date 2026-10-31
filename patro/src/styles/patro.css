@@ -65,6 +65,14 @@ p a {
 .skip:focus {
   top: 0.75rem;
 }
+/* Until the NepDate fonts are in the cache (the .wf class, set in layouts/Patro.astro), the system's
+   own Devanagari and Latin faces. Nothing names the web fonts, so the browser doesn't fetch them
+   for the page. */
+:root:not(.wf) {
+  --nd-font-noto-deva:
+    "Nirmala UI", "Kohinoor Devanagari", "Noto Sans Devanagari UI", "Noto Sans Devanagari", Mangal, sans-serif;
+  --nd-font-noto: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+}
 [hidden] {
   display: none !important;
 }
@@ -494,10 +502,19 @@ p a {
   pointer-events: none;
 }
 @media (max-width: 40rem) {
-  .bar-sub,
-  .bar-tools .pill[data-goto] span,
-  .bar-tools .seg span {
+  .bar-sub {
     display: none;
+  }
+  /* Icon-only on a phone; the label stays as the button's name for screen readers. */
+  .bar-tools .pill[data-goto] span,
+  .bar-tools .seg span,
+  .lang span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
   .bar {
     flex-wrap: nowrap;
@@ -576,6 +593,7 @@ p a {
   border-radius: var(--nd-radius-l);
   background: var(--nd-hairline);
   overflow: hidden;
+  container: month / size;
 }
 .grid [role="row"] {
   display: contents;
@@ -595,7 +613,9 @@ p a {
   color: var(--nd-sindoor);
 }
 .grid [role="gridcell"] {
-  container-type: size;
+  /* The smaller side of a day cell, worked out from the grid's size (seven columns, at most six
+     weeks under a 2.2rem weekday row), so the type scales with the cell. */
+  --u: min(100cqw / 7, (100cqh - 2.2rem) / 6);
   min-width: 0;
   background: var(--nd-raised);
 }
@@ -612,7 +632,7 @@ p a {
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  padding: clamp(0.3rem, 6cqmin, 0.7rem);
+  padding: clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem);
   border: 0;
   background: none;
   color: var(--nd-ink);
@@ -634,17 +654,17 @@ p a {
   background: var(--nd-slate-soft);
 }
 .cell-bs {
-  font-size: clamp(1.05rem, 30cqmin, 2.4rem);
+  font-size: clamp(1.05rem, calc(var(--u) * 0.3), 2.4rem);
   font-weight: 650;
   line-height: 1.05;
 }
 .cell-ad {
   position: absolute;
-  top: clamp(0.3rem, 6cqmin, 0.7rem);
-  right: clamp(0.3rem, 6cqmin, 0.7rem);
+  top: clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem);
+  right: clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem);
   color: var(--nd-ink-muted);
   font-family: var(--nd-font-noto), sans-serif;
-  font-size: clamp(0.62rem, 11cqmin, 0.85rem);
+  font-size: clamp(0.62rem, calc(var(--u) * 0.11), 0.85rem);
   font-variant-numeric: tabular-nums;
 }
 /* The day's events under its number, each on its own line, as many lines as the cell has room
@@ -658,7 +678,7 @@ p a {
   margin-top: 0.3rem;
   overflow: hidden;
   color: var(--nd-ink);
-  font-size: clamp(0.58rem, 9.5cqmin, 0.8rem);
+  font-size: clamp(0.58rem, calc(var(--u) * 0.095), 0.8rem);
   line-height: 1.25;
   overflow-wrap: break-word;
 }
@@ -670,20 +690,20 @@ p a {
 }
 .cell-more {
   color: var(--nd-ink-muted);
-  font-size: clamp(0.55rem, 8.5cqmin, 0.72rem);
+  font-size: clamp(0.55rem, calc(var(--u) * 0.085), 0.72rem);
   line-height: 1.2;
 }
 .cell-more.narrow {
   display: none;
 }
-@container (min-height: 6.5rem) {
+@container month (min-height: 41rem) {
   .cell-events {
     -webkit-line-clamp: 3;
     line-clamp: 3;
   }
 }
-@container (min-width: 6rem) {
-  /* Wide enough for a name on one line: one line per event. */
+@container month (min-width: 42rem) {
+  /* Cells over 6rem wide have room for a name on one line: one line per event. */
   .cell-events span {
     white-space: nowrap;
     overflow: hidden;
@@ -695,31 +715,32 @@ p a {
   margin-top: auto;
   padding-top: 0.15rem;
   color: var(--nd-ink-muted);
-  font-size: clamp(0.58rem, 9.5cqmin, 0.8rem);
+  font-size: clamp(0.58rem, calc(var(--u) * 0.095), 0.8rem);
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* A cell too small to name its events marks them with a marigold dot under the AD day. */
+/* A cell too small to name its events (under 3.6rem high) marks them with a marigold dot under
+   the AD day. */
 .has-events::after {
   content: "";
   display: none;
   position: absolute;
-  top: calc(clamp(0.3rem, 6cqmin, 0.7rem) + 1.15rem);
-  right: clamp(0.3rem, 6cqmin, 0.7rem);
+  top: calc(clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem) + 1.15rem);
+  right: clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem);
   width: 0.4rem;
   height: 0.4rem;
   border-radius: 50%;
   background: var(--nd-marigold);
 }
 .cell .moon {
-  --size: clamp(0.45rem, 9cqmin, 0.7rem);
+  --size: clamp(0.45rem, calc(var(--u) * 0.09), 0.7rem);
   position: absolute;
-  right: clamp(0.3rem, 6cqmin, 0.7rem);
-  bottom: clamp(0.35rem, 6cqmin, 0.75rem);
+  right: clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem);
+  bottom: clamp(0.35rem, calc(var(--u) * 0.06), 0.75rem);
 }
-@container (max-height: 3.6rem) {
+@container month (max-height: 24rem) {
   .cell-tithi,
   .cell-events,
   .cell-more {
@@ -729,8 +750,9 @@ p a {
     display: block;
   }
 }
-/* A phone's narrow cell: no AD month name and no moon; an English tithi may break at a syllable. */
-@container (max-width: 4.5rem) {
+/* A phone's narrow cell (under 4.5rem): no AD month name and no moon; an English tithi may break
+   at a syllable. */
+@container month (max-width: 31.5rem) {
   .ad-m,
   .cell .moon {
     display: none;
@@ -766,6 +788,12 @@ p a {
 }
 .cell.holiday {
   background: color-mix(in srgb, var(--nd-sindoor) 6%, transparent);
+}
+/* In the dark theme the patro's sindoor is a step lighter, so red numerals and names keep 4.5:1
+   on the tinted holiday and today cells. */
+:root[data-theme="dark"] .app,
+:root[data-theme="dark"] .pop {
+  --nd-sindoor: #ea6b6b;
 }
 /* Today: MitiBar's sindoor tile. */
 .cell.today {
@@ -1480,8 +1508,7 @@ p a {
   border-radius: 2px;
 }
 @media (max-width: 40rem) {
-  .brand-en,
-  .lang span {
+  .brand-en {
     display: none;
   }
   .lang button {

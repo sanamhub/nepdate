@@ -6,7 +6,7 @@
 // lib/render.ts, so the built page and the live one are the same markup.
 import { NepaliDate } from "nepdate-core";
 import { T } from "../lib/i18n";
-import { day, monthDays } from "../lib/patro";
+import { day, monthDays, pad } from "../lib/patro";
 import { adSpan, dayCard, monthDetails, monthGrid, monthTitle, moonBand, upcomingList } from "../lib/render";
 
 interface Props {
@@ -19,18 +19,20 @@ const { year, month, home = false } = Astro.props;
 const t = T.ne;
 const today = day(NepaliDate.today());
 const viewIsToday = today.date.year === year && today.date.month === month;
-const options = { todayAd: null };
+// Today as of the build, so a visit on the build day needs no redraw (scripts/app.ts).
+const options = { todayAd: `${today.ad.year}-${pad(today.ad.month)}-${pad(today.ad.day)}` };
 ---
 
-<div class="app" data-app data-year={year} data-month={month} data-home={home ? "" : undefined}>
+<div class="app" data-app data-year={year} data-month={month} data-built-today={today.iso} data-home={home ? "" : undefined}>
   <div class="bar">
     <div class="bar-nav">
       <button type="button" class="icon-btn" data-step="-1" data-t-label="prevMonth" aria-label={t.prevMonth}>
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M14.5 6 8.5 12l6 6" /></svg>
       </button>
       <h1 class="title">
-        <button type="button" class="title-btn" data-zoom-out data-t-label="zoomOut" aria-label={t.zoomOut}>
+        <button type="button" class="title-btn" data-zoom-out>
           <span data-title>{monthTitle(year, month, "ne")}</span>
+          <span class="visually-hidden">, <span data-t="zoomOut">{t.zoomOut}</span></span>
           <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
         </button>
       </h1>
@@ -125,5 +127,11 @@ const options = { todayAd: null };
 </dialog>
 
 <script>
-  import "../scripts/app";
+  // The app (about 40 KB, most of it the patro data) is fetched after the first paint: the built
+  // page already shows the month, so the paint never waits for it. A reader who chose English
+  // waits for the app to show it in English, so it starts at once.
+  import { afterFirstPaint } from "../scripts/after-paint";
+  const start = () => void import("../scripts/app");
+  if (document.documentElement.classList.contains("lang-pending")) start();
+  else afterFirstPaint(start);
 </script>
