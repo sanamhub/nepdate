@@ -301,7 +301,7 @@ def render_pr_body(report: dict) -> str:
     upstream = report['upstream']
     lines = [f'Syncs `data/` with [RajuPrasai/NepDate@{upstream["short"]}]'
              f'(https://github.com/RajuPrasai/NepDate/commit/{upstream["head"]}) and regenerates '
-             '`spec/vectors/month-boundaries.csv`.', '',
+             '`spec/vectors/`.', '',
              f'Upstream commits since `{upstream["previous"][:7]}`:', '']
     lines += [bullet(commit['short'], commit['subject']) for commit in upstream['commits']] or ['- none']
     lines += ['', 'Data changes:', '']

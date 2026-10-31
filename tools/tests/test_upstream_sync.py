@@ -164,6 +164,7 @@ class ReportTest(unittest.TestCase):
         self.assertIn('data/patro/2084.json', report['changed_paths'])
         self.assertTrue((self.out / 'data/patro/2084.json').exists())
         self.assertTrue((self.out / upstream_sync.VECTORS / 'month-boundaries.csv').exists())
+        self.assertTrue((self.out / upstream_sync.VECTORS / 'patro-summary.json').exists())
 
     def test_upstream_and_notice_alone_make_no_pull_request(self):
         write(self.root / 'data/UPSTREAM', 'c6fff4f2f60ac01e31c086568320649627422ba1\n')

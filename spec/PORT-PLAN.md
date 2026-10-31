@@ -71,7 +71,9 @@ marker that names it.
   If the clock is outside the supported range (before AD 1844-04-11 or after 2143-04-15), "today"
   returns the out-of-range error where the port's "today" can fail, and otherwise returns `MIN` or
   `MAX`, documented on the function.
-- AC: T = 2190, H = 294, E = 1671; every PATRO §4 anchor; coverage 2077-01-01..2084-08-20; the core
+- AC: the tables report the `tithi_days`, `holidays` and `event_days` of
+  `spec/vectors/patro-summary.json`, and their coverage is its `first_day` to `last_day`; every
+  PATRO §4 anchor; the core
   package's manifest has no dependency on `nepdate-patro`, and its built artefact doesn't contain
   the string `World Day Against Human Trafficking` (CI checks it; the artefact is the release binary
   of a small program that uses only the core for Rust, Go and Swift, the core jar for Kotlin, the
