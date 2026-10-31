@@ -6,9 +6,9 @@ Built from the [NepDate](https://nepdate.com/) libraries. Dates cover BS 1901 to
 
 ## Pages
 
-- [This month](https://patro.nepdate.com/): the current month in Nepal
+- [This month](https://patro.nepdate.com/): the current month in Nepal, with today's tithi and events and the coming public holidays; in Nepali, or English when the reader picks it
 - [A year, BS 2083](https://patro.nepdate.com/2083/): its twelve months and public holidays; any year from 1901 to 2199 at `/YYYY/`
-- [A month, Kartik 2083](https://patro.nepdate.com/2083/07/): every day with its AD date, tithi, holidays and events; any month at `/YYYY/MM/`
+- [A month, Kartik 2083](https://patro.nepdate.com/2083/07/): every day with its AD date, tithi, holidays and events, as a grid and as a list; any month at `/YYYY/MM/`
 - [A day, Kartik 22, 2083](https://patro.nepdate.com/2083/07/22/): tithi, paksha, holiday, events and the next public holiday; days the patro covers at `/YYYY/MM/DD/`
 - [Public holidays of 2083 as iCalendar](https://patro.nepdate.com/2083/holidays.ics): add them to a calendar app; one file per year with holidays
 

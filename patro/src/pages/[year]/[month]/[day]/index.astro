@@ -2,7 +2,6 @@
 // A page for every day the patro has data for: the date as a calendar leaf, then its tithi,
 // paksha, public holiday and events, with the next public holiday after it.
 import Patro from "../../../../layouts/Patro.astro";
-import Moon from "../../../../components/Moon.astro";
 import {
   PAKSHA_NAMES,
   WEEKDAYS,
@@ -17,6 +16,7 @@ import {
   pad,
   type Day,
 } from "../../../../lib/patro";
+import { moon } from "../../../../lib/render";
 
 export function getStaticPaths() {
   const days = coveredDays();
@@ -69,7 +69,7 @@ const description = [
           <span class="visually-hidden" lang="en"> ({enLong})</span>
         </h1>
         <p class="leaf-ad" lang="en">{enLong} BS is {adLong(d)}</p>
-        {d.tithi && <Moon tithi={d.tithi} />}
+        {d.tithi && <Fragment set:html={moon(d.tithi)} />}
       </article>
 
       <dl class="facts">

@@ -1,0 +1,137 @@
+---
+// The patro itself: a month that fills the screen, with today and the coming holidays beside it.
+// Every page with a month (home and /YYYY/MM/) renders it in Nepali when it is built;
+// scripts/app.ts then takes over in the browser: today in Nepal, the stored language, the day
+// cards, the year and decade zoom, the details view and go to date. All views come from
+// lib/render.ts, so the built page and the live one are the same markup.
+import { NepaliDate } from "nepdate-core";
+import { T } from "../lib/i18n";
+import { day, monthDays, pad } from "../lib/patro";
+import { adSpan, dayCard, monthDetails, monthGrid, monthTitle, moonBand, upcomingList } from "../lib/render";
+
+interface Props {
+  year: number;
+  month: number;
+  /** The home page: it follows today in Nepal instead of showing a fixed month. */
+  home?: boolean;
+}
+const { year, month, home = false } = Astro.props;
+const t = T.ne;
+const today = day(NepaliDate.today());
+const viewIsToday = today.date.year === year && today.date.month === month;
+// Today as of the build, so a visit on the build day needs no redraw (scripts/app.ts).
+const options = { todayAd: `${today.ad.year}-${pad(today.ad.month)}-${pad(today.ad.day)}` };
+---
+
+<div class="app" data-app data-year={year} data-month={month} data-built-today={today.iso} data-home={home ? "" : undefined}>
+  <div class="bar">
+    <div class="bar-nav">
+      <button type="button" class="icon-btn" data-step="-1" data-t-label="prevMonth" aria-label={t.prevMonth}>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M14.5 6 8.5 12l6 6" /></svg>
+      </button>
+      <h1 class="title">
+        <button type="button" class="title-btn" data-zoom-out>
+          <span data-title>{monthTitle(year, month, "ne")}</span>
+          <span class="visually-hidden">, <span data-t="zoomOut">{t.zoomOut}</span></span>
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
+        </button>
+      </h1>
+      <button type="button" class="icon-btn" data-step="1" data-t-label="nextMonth" aria-label={t.nextMonth}>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m9.5 6 6 6-6 6" /></svg>
+      </button>
+      <span class="bar-sub" data-sub>{adSpan(monthDays(year, month), "ne")}</span>
+    </div>
+    <div class="bar-tools">
+      <button type="button" class="pill" data-today data-t="today" hidden={viewIsToday}>{t.today}</button>
+      <button type="button" class="pill" data-goto aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"
+          ><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg
+        >
+        <span data-t="goTo">{t.goTo}</span>
+      </button>
+      <div class="seg" role="group" data-t-label="view" aria-label={t.view}>
+        <button type="button" data-show="month" aria-pressed="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"
+            ><rect x="3.5" y="5" width="17" height="15" rx="2.5"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg
+          >
+          <span data-t="calendar">{t.calendar}</span>
+        </button>
+        <button type="button" data-show="details" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"></path></svg>
+          <span data-t="details">{t.details}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage" data-stage>
+    <div class="view view-month" data-view="month">
+      <ol class="moons" data-moons aria-hidden="true" set:html={moonBand(year, month, "ne")} />
+      <div class="grid" role="grid" aria-labelledby="month-title" data-grid set:html={monthGrid(year, month, "ne", options)} />
+      <p class="visually-hidden" id="month-title" data-grid-label>{monthTitle(year, month, "ne")}. {t.saturdayNote}</p>
+    </div>
+    <div class="view view-zoom" data-view="zoom" hidden>
+      <div class="tiles" data-tiles></div>
+    </div>
+    <div class="view view-details" data-view="details" data-initial>
+      <div class="details" data-details set:html={monthDetails(year, month, "ne", options)} />
+    </div>
+  </div>
+
+  <aside class="rail" aria-labelledby="today-title">
+    <section class="today-card" data-go-today>
+      <h2 id="today-title" class="rail-title" data-t="today">{t.today}</h2>
+      <div class="card-body" data-today-card set:html={dayCard(today, "ne", null)} />
+      <p class="clock"><span data-t="nowInNepal">{t.nowInNepal}</span> <b data-clock></b></p>
+    </section>
+    <section class="upcoming" aria-labelledby="upcoming-title">
+      <h2 id="upcoming-title" class="rail-title" data-t="upcoming">{t.upcoming}</h2>
+      <ol data-upcoming set:html={upcomingList(today, "ne")} />
+    </section>
+  </aside>
+</div>
+
+<div class="pop" data-pop role="dialog" aria-modal="false" aria-labelledby="pop-title" hidden>
+  <button type="button" class="icon-btn pop-close" data-pop-close data-t-label="close" aria-label={t.close}>
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m6.5 6.5 11 11m0-11-11 11"></path></svg>
+  </button>
+  <h2 id="pop-title" class="visually-hidden" data-pop-title></h2>
+  <div class="card-body" data-pop-body></div>
+  <div class="pop-links" data-pop-links></div>
+</div>
+
+<dialog class="goto" data-goto-dialog aria-labelledby="goto-title">
+  <form method="dialog" data-goto-form novalidate>
+    <h2 id="goto-title" data-t="goTo">{t.goTo}</h2>
+    <fieldset class="seg">
+      <legend class="visually-hidden" data-t="goTo">{t.goTo}</legend>
+      <label><input type="radio" name="cal" value="bs" checked /><span data-t="goBs">{t.goBs}</span></label>
+      <label><input type="radio" name="cal" value="ad" /><span data-t="goAd">{t.goAd}</span></label>
+    </fieldset>
+    <input
+      type="text"
+      name="date"
+      inputmode="numeric"
+      autocomplete="off"
+      spellcheck="false"
+      aria-describedby="goto-error"
+      data-t-placeholder="goToHint"
+      placeholder={t.goToHint}
+    />
+    <p class="goto-error" id="goto-error" data-goto-error aria-live="polite"></p>
+    <div class="goto-actions">
+      <button type="button" class="pill" value="cancel" data-goto-cancel data-t="close">{t.close}</button>
+      <button type="submit" class="pill primary" value="go" data-t="go">{t.go}</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  // The app (about 40 KB, most of it the patro data) is fetched after the first paint: the built
+  // page already shows the month, so the paint never waits for it. A reader who chose English
+  // waits for the app to show it in English, so it starts at once.
+  import { afterFirstPaint } from "../scripts/after-paint";
+  const start = () => void import("../scripts/app");
+  if (document.documentElement.classList.contains("lang-pending")) start();
+  else afterFirstPaint(start);
+</script>

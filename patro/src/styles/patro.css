@@ -65,6 +65,17 @@ p a {
 .skip:focus {
   top: 0.75rem;
 }
+/* Until the NepDate fonts are in the cache (the .wf class, set in layouts/Patro.astro), the system's
+   own Devanagari and Latin faces. Nothing names the web fonts, so the browser doesn't fetch them
+   for the page. */
+:root:not(.wf) {
+  --nd-font-noto-deva:
+    "Nirmala UI", "Kohinoor Devanagari", "Noto Sans Devanagari UI", "Noto Sans Devanagari", Mangal, sans-serif;
+  --nd-font-noto: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+}
+[hidden] {
+  display: none !important;
+}
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -144,20 +155,10 @@ p a {
   display: none;
 }
 
-/* Month page */
+/* The year page's heading, shared with its navigation. */
 
 .month {
   padding-block: clamp(1.5rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem);
-}
-.month-grid-wrap {
-  display: grid;
-  gap: 2.5rem;
-}
-@media (min-width: 64rem) {
-  .month-grid-wrap {
-    grid-template-columns: minmax(0, 1fr) 20rem;
-    align-items: start;
-  }
 }
 .month-head {
   display: flex;
@@ -201,29 +202,8 @@ p a {
   text-decoration: none;
 }
 
-/* The moon band: one moon per day of the month, in the grid's order of days. */
-.moons {
-  display: flex;
-  justify-content: space-between;
-  gap: 2px;
-  margin: 0 0 1rem;
-  padding: 0.6rem 0.75rem;
-  list-style: none;
-  border: 1px solid var(--nd-hairline);
-  border-radius: var(--nd-radius-pill);
-  background: var(--nd-raised);
-}
-.moons li {
-  display: grid;
-  place-items: center;
-}
-.moons .moon {
-  --size: clamp(0.5rem, 1.6vw, 0.95rem);
-}
-
-/* A moon drawn from its tithi: --lit is the lit share of the disc, waxing on the right. The lit
-   half is one pseudo-element; an ellipse whose width follows the phase either covers part of it
-   (crescent) or adds to it (gibbous). */
+/* A moon drawn from its tithi: the lit half is one pseudo-element, waxing on the right; an ellipse
+   whose width follows the phase either covers part of it (crescent) or adds to it (gibbous). */
 .moon {
   --size: 0.7rem;
   /* Opaque, so the shadow ellipse hides the lit half where it overlaps it. */
@@ -271,130 +251,1305 @@ p a {
   background: var(--light);
 }
 .moon.new::before,
-.moon.new::after {
+.moon.new::after,
+.moon:not(.waxing, .waning)::before,
+.moon:not(.waxing, .waning)::after {
   display: none;
 }
 
-/* The grid. A real table: a screen reader reads a week as a row. */
-.patro {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
-  border: 1px solid var(--nd-hairline);
+/* The patro app (components/App.astro): the month fills the screen under the header, today's
+   panel on the right from 64rem. On a phone the panel follows the month, its top showing. */
+
+.is-app {
+  --header-h: calc(3.5rem + 1px);
+}
+.lang-pending .app {
+  visibility: hidden;
+  /* If the app never runs, the Nepali page shows anyway. */
+  animation: reveal 0s 1.2s forwards;
+}
+@keyframes reveal {
+  to {
+    visibility: visible;
+  }
+}
+.header-row.wide {
+  padding-inline: var(--nd-gutter);
+  max-width: 96rem;
+  margin-inline: auto;
+}
+.is-app .header-row {
+  height: 3.5rem;
+}
+.app {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.75rem 1.75rem;
+  max-width: 96rem;
+  margin-inline: auto;
+  padding: 0.75rem var(--nd-gutter) 1.25rem;
+}
+.stage {
+  position: relative;
+  /* Below 64rem today's card sits over the bar; the month takes the rest of the screen. */
+  height: calc(100dvh - var(--header-h) - 13.25rem);
+  min-height: 22rem;
+}
+@media (max-width: 63.99rem) {
+  .app {
+    grid-template-areas: "today" "bar" "stage" "upcoming";
+    grid-template-rows: auto;
+    gap: 0.6rem;
+    padding-top: 0.6rem;
+  }
+  .app > .rail {
+    display: contents;
+  }
+  .today-card {
+    grid-area: today;
+  }
+  .bar {
+    grid-area: bar;
+  }
+  .stage {
+    grid-area: stage;
+  }
+  .upcoming {
+    grid-area: upcoming;
+    margin-top: 0.75rem;
+  }
+}
+@media (min-width: 64rem) {
+  .app {
+    grid-template-columns: minmax(0, 1fr) 19.5rem;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: calc(100dvh - var(--header-h));
+    min-height: 36rem;
+    padding-bottom: 1.25rem;
+  }
+  .stage {
+    height: auto;
+    min-height: 0;
+  }
+  .rail {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+:root:not(.js) .app {
+  height: auto;
+}
+:root:not(.js) .stage {
+  height: auto;
+}
+
+/* The bar over the month: arrows around the title (the zoom button), then the tools. */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  min-height: 2.75rem;
+}
+.bar-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.title {
+  margin: 0;
+  font-size: clamp(1.35rem, 1rem + 1.2vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+.title-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: var(--nd-radius-m);
+  background: none;
+  color: var(--nd-ink);
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.title-btn:hover:not(:disabled) {
+  border-color: var(--nd-hairline);
   background: var(--nd-raised);
 }
-.patro caption {
-  caption-side: bottom;
-  padding-top: 0.75rem;
-  color: var(--nd-ink-muted);
-  font-size: var(--nd-step--1);
-  text-align: left;
+.title-btn:disabled {
+  cursor: default;
 }
-.patro th {
-  padding: 0.55rem 0.25rem;
-  border: 1px solid var(--nd-hairline);
+.title-btn:disabled svg {
+  display: none;
+}
+.title-btn svg,
+.icon-btn svg,
+.pill svg,
+.seg svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+.title-btn svg {
+  color: var(--nd-ink-muted);
+}
+.bar-sub {
+  margin-left: 0.5rem;
+  color: var(--nd-ink-muted);
+  font-family: var(--nd-font-noto), sans-serif;
+  font-size: 0.925rem;
+  white-space: nowrap;
+}
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--nd-radius-m);
+  background: none;
+  color: var(--nd-ink);
+  cursor: pointer;
+}
+.icon-btn:hover:not(:disabled) {
   background: var(--nd-sunken);
-  font-size: 0.85rem;
-  font-weight: 600;
 }
-.patro th .en {
-  display: block;
-  color: var(--nd-ink-muted);
-  font-size: 0.7rem;
-  font-weight: 500;
+.icon-btn:disabled {
+  color: var(--nd-hairline);
+  cursor: default;
 }
-.patro th:last-child {
+.bar-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.5rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-raised);
+  color: var(--nd-ink);
+  font: inherit;
+  font-size: 0.925rem;
+  font-weight: 550;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pill:hover {
+  border-color: var(--nd-ink-muted);
+}
+.pill[data-today] {
+  border-color: color-mix(in srgb, var(--nd-sindoor) 45%, var(--nd-hairline));
   color: var(--nd-sindoor);
 }
-.patro td {
-  height: clamp(4.25rem, 11vw, 7.25rem);
-  padding: 0;
-  border: 1px solid var(--nd-hairline);
-  vertical-align: top;
+.pill.primary {
+  border-color: var(--nd-ink);
+  background: var(--nd-ink);
+  color: var(--nd-surface);
 }
-.patro td:last-child {
-  background: color-mix(in srgb, var(--nd-sindoor) 4%, transparent);
+/* A two-way switch: the calendar or the details, BS or AD. */
+.seg {
+  display: inline-flex;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-sunken);
+}
+.seg button,
+.seg label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: calc(2.5rem - 8px);
+  padding: 0 0.8rem;
+  border: 0;
+  border-radius: var(--nd-radius-pill);
+  background: none;
+  color: var(--nd-ink-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 550;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.seg [aria-pressed="true"],
+.seg label:has(:checked) {
+  background: var(--nd-raised);
+  color: var(--nd-ink);
+  box-shadow: 0 1px 2px rgb(33 28 23 / 0.12);
+}
+.seg label:has(:focus-visible) {
+  outline: 2px solid var(--nd-slate);
+}
+.seg input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+@media (max-width: 40rem) {
+  .bar-sub {
+    display: none;
+  }
+  /* Icon-only on a phone; the label stays as the button's name for screen readers. */
+  .bar-tools .pill[data-goto] span,
+  .bar-tools .seg span,
+  .lang span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .bar {
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+  .title-btn {
+    padding-inline: 0.35rem;
+  }
+  .bar-nav .icon-btn {
+    width: 2.25rem;
+  }
+  .bar-tools {
+    gap: 0.35rem;
+  }
+  .bar-tools .pill[data-today] {
+    display: none;
+  }
+  .seg button {
+    padding: 0 0.6rem;
+  }
+  .bar-tools .pill[data-goto] {
+    width: 2.5rem;
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+/* The views. Each fills the stage; the details and zoom views scroll inside it. */
+.view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.view[hidden],
+.js .view[data-initial] {
+  display: none;
+}
+
+/* The moon band: one moon per day, in the order of the days. */
+.moons {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+  margin: 0;
+  padding: 0.4rem 0.9rem;
+  list-style: none;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-raised);
+}
+.moons:empty {
+  display: none;
+}
+.moons li {
+  display: grid;
+  place-items: center;
+}
+.moons .moon {
+  --size: clamp(0.45rem, 1.1vw, 0.8rem);
+}
+
+/* The month grid. A 1px gap over the hairline colour draws the rules; the rows share the height. */
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-rows: auto;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 1px;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-hairline);
+  overflow: hidden;
+  container: month / size;
+}
+.grid [role="row"] {
+  display: contents;
+}
+.wd {
+  padding: 0.45rem 0.5rem;
+  background: var(--nd-sunken);
+  color: var(--nd-ink-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+.wd abbr {
+  text-decoration: none;
+}
+.wd.sat {
+  color: var(--nd-sindoor);
+}
+.grid [role="gridcell"] {
+  /* The smaller side of a day cell, worked out from the grid's size (seven columns, at most six
+     weeks under a 2.2rem weekday row), so the type scales with the cell. */
+  --u: min(100cqw / 7, (100cqh - 2.2rem) / 6);
+  min-width: 0;
+  background: var(--nd-raised);
+}
+.grid [role="gridcell"]:nth-child(7) {
+  background: color-mix(in srgb, var(--nd-sindoor) 3%, var(--nd-raised));
+}
+.grid .blank {
+  background: var(--nd-sunken);
 }
 .cell {
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
   height: 100%;
-  padding: clamp(0.3rem, 1vw, 0.55rem);
+  padding: clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem);
+  border: 0;
+  background: none;
   color: var(--nd-ink);
-  text-decoration: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
   transition: background-color 0.12s ease;
 }
-a.cell:hover {
+.cell:hover {
   background: var(--nd-sunken);
-  text-decoration: none;
+}
+.cell:focus-visible {
+  outline: 2px solid var(--nd-ink);
+  outline-offset: -3px;
+  border-radius: var(--nd-radius-s);
+}
+.cell.open {
+  background: var(--nd-slate-soft);
 }
 .cell-bs {
-  font-size: clamp(1.15rem, 3.4vw, 1.9rem);
+  font-size: clamp(1.05rem, calc(var(--u) * 0.3), 2.4rem);
   font-weight: 650;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 .cell-ad {
   position: absolute;
-  top: clamp(0.3rem, 1vw, 0.55rem);
-  right: clamp(0.3rem, 1vw, 0.55rem);
+  top: clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem);
+  right: clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem);
   color: var(--nd-ink-muted);
   font-family: var(--nd-font-noto), sans-serif;
-  font-size: clamp(0.62rem, 1.6vw, 0.8rem);
+  font-size: clamp(0.62rem, calc(var(--u) * 0.11), 0.85rem);
   font-variant-numeric: tabular-nums;
 }
-.cell-tithi {
-  margin-top: auto;
+/* The day's events under its number, each on its own line, as many lines as the cell has room
+   for; the tithi sits at the foot. */
+.cell-events {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  max-width: 100%;
+  margin-top: 0.3rem;
+  overflow: hidden;
+  color: var(--nd-ink);
+  font-size: clamp(0.58rem, calc(var(--u) * 0.095), 0.8rem);
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+.cell-events span {
+  display: block;
+}
+.cell-events span + span {
+  margin-top: 0.1rem;
+}
+.cell-more {
   color: var(--nd-ink-muted);
-  font-size: clamp(0.58rem, 1.5vw, 0.75rem);
+  font-size: clamp(0.55rem, calc(var(--u) * 0.085), 0.72rem);
+  line-height: 1.2;
+}
+.cell-more.narrow {
+  display: none;
+}
+@container month (min-height: 41rem) {
+  .cell-events {
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+}
+@container month (min-width: 42rem) {
+  /* Cells over 6rem wide have room for a name on one line: one line per event. */
+  .cell-events span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+.cell-tithi {
+  max-width: 100%;
+  margin-top: auto;
+  padding-top: 0.15rem;
+  color: var(--nd-ink-muted);
+  font-size: clamp(0.58rem, calc(var(--u) * 0.095), 0.8rem);
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.cell-event {
-  color: var(--nd-ink);
-  font-size: clamp(0.58rem, 1.5vw, 0.75rem);
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* A cell too small to name its events (under 3.6rem high) marks them with a marigold dot under
+   the AD day. */
+.has-events::after {
+  content: "";
+  display: none;
+  position: absolute;
+  top: calc(clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem) + 1.15rem);
+  right: clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem);
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--nd-marigold);
 }
 .cell .moon {
-  --size: 0.55rem;
+  --size: clamp(0.45rem, calc(var(--u) * 0.09), 0.7rem);
   position: absolute;
-  bottom: clamp(0.35rem, 1vw, 0.6rem);
-  right: clamp(0.3rem, 1vw, 0.55rem);
+  right: clamp(0.3rem, calc(var(--u) * 0.06), 0.7rem);
+  bottom: clamp(0.35rem, calc(var(--u) * 0.06), 0.75rem);
 }
-td:last-child .cell-bs,
+@container month (max-height: 24rem) {
+  .cell-tithi,
+  .cell-events,
+  .cell-more {
+    display: none;
+  }
+  .has-events::after {
+    display: block;
+  }
+}
+/* A phone's narrow cell (under 4.5rem): no AD month name and no moon; an English tithi may break
+   at a syllable. */
+@container month (max-width: 31.5rem) {
+  .ad-m,
+  .cell .moon {
+    display: none;
+  }
+  .cell-events {
+    font-size: 0.6rem;
+    line-height: 1.2;
+  }
+  .cell-events span + span,
+  .cell-more.wide {
+    display: none;
+  }
+  .cell-more.narrow {
+    display: block;
+  }
+  .cell-tithi {
+    font-size: 0.6rem;
+    line-height: 1.15;
+  }
+}
+:root[data-lang="en"] .cell-tithi {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+  hyphens: manual;
+}
+.cell.sat .cell-bs,
 .cell.holiday .cell-bs,
-.cell.holiday .cell-event {
+.cell.holiday .cell-events {
   color: var(--nd-sindoor);
 }
+.cell.holiday {
+  background: color-mix(in srgb, var(--nd-sindoor) 6%, transparent);
+}
+/* In the dark theme the patro's sindoor is a step lighter, so red numerals and names keep 4.5:1
+   on the tinted holiday and today cells. */
+:root[data-theme="dark"] .app,
+:root[data-theme="dark"] .pop {
+  --nd-sindoor: #ea6b6b;
+}
+/* Today: MitiBar's sindoor tile. */
 .cell.today {
+  background: color-mix(in srgb, var(--nd-sindoor) 13%, var(--nd-raised));
   box-shadow: inset 0 0 0 2px var(--nd-sindoor);
 }
 .cell.today .cell-bs {
   color: var(--nd-sindoor);
+  font-weight: 750;
+}
+
+/* The zoom views: twelve months of a year, or twelve years around a decade. */
+.tiles {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: minmax(4.5rem, 1fr);
+  gap: 0.6rem;
+  overflow: auto;
+}
+@media (min-width: 40rem) {
+  .tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.5rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
+  color: var(--nd-ink);
+  font: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+.tile:hover {
+  background: var(--nd-sunken);
+}
+.tile.blank {
+  visibility: hidden;
+}
+.tile-name {
+  font-size: clamp(1.05rem, 0.8rem + 1vw, 1.6rem);
+  font-weight: 650;
+}
+.tile-sub {
+  color: var(--nd-ink-muted);
+  font-family: var(--nd-font-noto), sans-serif;
+  font-size: 0.85rem;
+}
+.tile-note {
+  color: var(--nd-sindoor);
+  font-size: 0.8rem;
+}
+.tile.edge .tile-name {
+  color: var(--nd-ink-muted);
+}
+.tile.viewed {
+  border-color: var(--nd-ink-muted);
+  box-shadow: inset 0 0 0 1px var(--nd-ink-muted);
+}
+.tile.today {
+  border-color: var(--nd-sindoor);
+  background: color-mix(in srgb, var(--nd-sindoor) 13%, var(--nd-raised));
+  box-shadow: inset 0 0 0 1px var(--nd-sindoor);
+}
+.tile.today .tile-name {
+  color: var(--nd-sindoor);
+}
+
+/* The details view: every day of the month in a list, the holidays beside it. */
+.details {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+@media (min-width: 52rem) {
+  .details {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+  }
+}
+.agenda {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
+  overscroll-behavior: contain;
+}
+.agenda ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.agenda .row {
+  display: grid;
+  grid-template-columns: 3.5rem 4.25rem minmax(0, 9rem) minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 1rem 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--nd-hairline);
+  font-size: 0.925rem;
+}
+.agenda .row:last-child {
+  border-bottom: 0;
+}
+.row-date {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.25rem 0.4rem;
+  border: 0;
+  border-radius: var(--nd-radius-s);
+  background: none;
+  color: var(--nd-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.row-date:hover,
+.row-date.open {
+  background: var(--nd-slate-soft);
+}
+.row-date b {
+  font-size: 1.15rem;
+  min-width: 1.6rem;
+  text-align: right;
+}
+.row-date span {
+  color: var(--nd-ink-muted);
+  font-size: 0.8rem;
+}
+.row-ad {
+  color: var(--nd-ink-muted);
+  font-family: var(--nd-font-noto), sans-serif;
+  font-size: 0.85rem;
+}
+.row-tithi {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--nd-ink-muted);
+}
+.row-events {
+  min-width: 0;
+}
+.row.sat .row-date b,
+.row.holiday .row-date b {
+  color: var(--nd-sindoor);
+}
+.row.today {
+  background: color-mix(in srgb, var(--nd-sindoor) 9%, var(--nd-raised));
+}
+.tag {
+  display: inline-block;
+  margin-right: 0.4rem;
+  padding: 0 0.5rem;
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-sindoor);
+  color: var(--nd-on-sindoor);
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 @media (max-width: 40rem) {
-  .cell-event,
-  .cell-ad .ad-month {
+  .agenda .row {
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+    gap: 0.1rem 0.6rem;
+  }
+  .row-date {
+    grid-row: span 3;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .row-ad,
+  .row-tithi,
+  .row-events {
+    grid-column: 2;
+  }
+  .row-tithi:empty,
+  .row-events:empty {
     display: none;
   }
-  .patro th .en {
+}
+.agenda-side h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+}
+.hol-list {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+}
+.hol-list li {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 0.5rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--nd-hairline);
+}
+.hol-list .when {
+  color: var(--nd-sindoor);
+  font-weight: 650;
+}
+.hol-list small {
+  display: block;
+  color: var(--nd-ink-muted);
+  font-family: var(--nd-font-noto), sans-serif;
+  font-weight: 500;
+}
+.detail-links {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+.quiet {
+  margin: 0.75rem 0 0;
+  color: var(--nd-ink-muted);
+  font-size: 0.9rem;
+}
+
+/* Today's panel: the day as a calendar leaf, then the coming holidays. */
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+}
+.rail-title {
+  margin: 0 0 0.6rem;
+  color: var(--nd-ink-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+/* Today's card is the page's one highlighted object: a sindoor edge and a warm tint. A click on it
+   brings the month back to today. */
+.today-card {
+  position: relative;
+  padding: 1rem 1.1rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--nd-sindoor) 35%, var(--nd-hairline));
+  border-top: 4px solid var(--nd-sindoor);
+  border-radius: var(--nd-radius-l);
+  background: linear-gradient(color-mix(in srgb, var(--nd-sindoor) 7%, var(--nd-raised)), var(--nd-raised) 70%);
+  box-shadow: var(--nd-shadow);
+  cursor: pointer;
+}
+.today-card:hover {
+  border-color: color-mix(in srgb, var(--nd-sindoor) 60%, var(--nd-hairline));
+  border-top-color: var(--nd-sindoor);
+}
+.today-card .rail-title {
+  color: var(--nd-sindoor);
+}
+/* Below 64rem the card is short: today's date, its tithi and its first event on one line, the
+   clock beside the heading. */
+@media (max-width: 63.99rem) {
+  .today-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    padding: 0.6rem 0.9rem 0.65rem;
+  }
+  .today-card .rail-title {
+    margin: 0;
+  }
+  .today-card .clock {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 0.8rem;
+  }
+  .today-card .card-body {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.15rem 0.6rem;
+  }
+  .today-card .dc-leaf {
+    flex: 1 1 100%;
+    gap: 0.75rem;
+  }
+  .today-card .dc-day {
+    font-size: 2.6rem;
+  }
+  .today-card .dc-text {
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 0.45rem;
+  }
+  .today-card .dc-ad {
+    flex-basis: 100%;
+  }
+  .today-card .dc-leaf .moon {
+    --size: 1.5rem;
+    top: 50%;
+    translate: 0 -50%;
+  }
+  .today-card .badge {
+    margin: 0;
+  }
+  .today-card .dc-facts {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    gap: 0.6rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .today-card .dc-fact {
+    display: block;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .today-card .dc-fact dt,
+  .today-card .dc-fact .sub,
+  .today-card .events li + li,
+  .today-card .quiet {
     display: none;
+  }
+  .today-card .dc-fact dd,
+  .today-card .events,
+  .today-card .events li {
+    display: inline;
+  }
+}
+.dc-leaf {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding-right: 2.5rem;
+}
+.dc-day {
+  font-size: 3.4rem;
+  font-weight: 750;
+  line-height: 1;
+}
+.dc-leaf.sat .dc-day,
+.dc-leaf.holiday .dc-day {
+  color: var(--nd-sindoor);
+}
+.dc-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+.dc-weekday {
+  font-weight: 650;
+}
+.dc-month {
+  font-weight: 550;
+}
+.dc-ad {
+  color: var(--nd-ink-muted);
+  font-family: var(--nd-font-noto), sans-serif;
+  font-size: 0.875rem;
+}
+.dc-leaf .moon {
+  --size: 1.75rem;
+  position: absolute;
+  top: 0.15rem;
+  right: 0;
+}
+.badge {
+  display: inline-block;
+  margin: 0.75rem 0 0;
+  padding: 0.1rem 0.65rem;
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-sindoor);
+  color: var(--nd-on-sindoor);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.dc-facts {
+  margin: 0.8rem 0 0;
+  padding: 0;
+}
+.dc-fact {
+  display: grid;
+  grid-template-columns: 4.75rem minmax(0, 1fr);
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--nd-hairline);
+  font-size: 0.925rem;
+}
+.dc-fact dt {
+  color: var(--nd-ink-muted);
+  font-size: 0.85rem;
+}
+.dc-fact dd {
+  margin: 0;
+}
+.sub {
+  display: block;
+  color: var(--nd-ink-muted);
+  font-family: var(--nd-font-noto), sans-serif;
+  font-size: 0.8rem;
+}
+.events {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.events li + li {
+  margin-top: 0.35rem;
+}
+.rel {
+  margin: 0.6rem 0 0;
+  color: var(--nd-slate);
+  font-size: 0.875rem;
+  font-weight: 550;
+}
+.clock {
+  margin: 0.6rem 0 0;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--nd-hairline);
+  color: var(--nd-ink-muted);
+  font-size: 0.85rem;
+}
+.clock b {
+  color: var(--nd-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.upcoming {
+  min-height: 0;
+  overflow: auto;
+}
+.upcoming ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.up {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0 0.75rem;
+  width: 100%;
+  padding: 0.5rem 0.5rem;
+  border: 0;
+  border-radius: var(--nd-radius-m);
+  background: none;
+  color: var(--nd-ink);
+  font: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+}
+.up:hover {
+  background: var(--nd-raised);
+}
+.up-date {
+  grid-row: span 2;
+  color: var(--nd-sindoor);
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+.up-date b {
+  display: block;
+  font-size: 1.35rem;
+}
+.up-name {
+  font-weight: 550;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.up-rel {
+  color: var(--nd-ink-muted);
+  font-size: 0.8rem;
+}
+
+/* The day card: beside the day on a wide screen, a sheet from the bottom on a phone. */
+.pop {
+  position: fixed;
+  z-index: 30;
+  width: min(21rem, calc(100vw - 1rem));
+  max-height: calc(100dvh - 1rem);
+  overflow: auto;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
+  box-shadow: var(--nd-shadow);
+  animation: pop-in 0.14s ease-out;
+}
+.pop[hidden] {
+  display: none;
+}
+.pop-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: none;
+}
+.pop.pinned .pop-close,
+.pop.sheet .pop-close {
+  display: inline-grid;
+}
+.pop.pinned .dc-leaf,
+.pop.sheet .dc-leaf {
+  padding-right: 4.75rem;
+}
+.pop.pinned .dc-leaf .moon,
+.pop.sheet .dc-leaf .moon {
+  right: 2.6rem;
+}
+.pop-links:empty {
+  display: none;
+}
+.pop-links {
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--nd-hairline);
+  font-size: 0.875rem;
+}
+.pop.sheet {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: auto;
+  width: 100%;
+  max-height: 80dvh;
+  padding: 1.25rem var(--nd-gutter) calc(1.25rem + env(safe-area-inset-bottom));
+  border-radius: var(--nd-radius-l) var(--nd-radius-l) 0 0;
+  border-bottom: 0;
+  /* A scrim over the page behind the sheet. */
+  box-shadow: 0 0 0 100vmax rgb(22 18 14 / 0.4);
+  animation: sheet-in 0.2s ease-out;
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
   }
 }
 
-/* The month's side: its holidays and events in full. */
+/* Go to date. */
+.goto {
+  width: min(24rem, calc(100vw - 2rem));
+  padding: 1.25rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
+  color: var(--nd-ink);
+  box-shadow: var(--nd-shadow);
+}
+.goto::backdrop {
+  background: rgb(22 18 14 / 0.35);
+}
+.goto h2 {
+  margin: 0 0 0.9rem;
+  font-size: 1.15rem;
+}
+.goto form {
+  display: grid;
+  gap: 0.75rem;
+}
+.goto .seg {
+  justify-self: start;
+}
+.goto input[type="text"] {
+  height: 2.75rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  background: var(--nd-surface);
+  color: var(--nd-ink);
+  font: inherit;
+  font-size: 1.05rem;
+}
+.goto input[type="text"]:focus {
+  outline: 2px solid var(--nd-slate);
+  outline-offset: 0;
+  border-color: transparent;
+}
+.goto-error {
+  min-height: 1.2em;
+  margin: 0;
+  color: var(--nd-sindoor);
+  font-size: 0.875rem;
+}
+.goto-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Motion that answers the visitor: a new month slides in from the side it came from, a zoom
+   grows or shrinks into place. */
+.anim-next {
+  animation: from-right 0.22s ease-out;
+}
+.anim-prev {
+  animation: from-left 0.22s ease-out;
+}
+.anim-out {
+  animation: zoom-from-big 0.24s ease-out;
+}
+.anim-in {
+  animation: zoom-from-small 0.24s ease-out;
+}
+@keyframes from-right {
+  from {
+    opacity: 0;
+    transform: translateX(1.25rem);
+  }
+}
+@keyframes from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-1.25rem);
+  }
+}
+@keyframes zoom-from-big {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+}
+@keyframes zoom-from-small {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+/* The header's tools: powered by NepDate, the language and the theme. */
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.powered {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.25rem;
+  padding: 0 0.8rem 0 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--nd-slate) 30%, transparent);
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-slate-soft);
+  color: var(--nd-ink);
+  font-family: var(--nd-font-noto), sans-serif;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.powered:hover {
+  border-color: var(--nd-slate);
+  text-decoration: none;
+}
+.powered-by {
+  color: var(--nd-ink-muted);
+}
+.powered b {
+  font-weight: 650;
+}
+.lang {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-sunken);
+}
+.lang button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: calc(2.25rem - 8px);
+  padding: 0 0.65rem;
+  border: 0;
+  border-radius: var(--nd-radius-pill);
+  background: none;
+  color: var(--nd-ink-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 550;
+  cursor: pointer;
+}
+.lang [aria-pressed="true"] {
+  background: var(--nd-raised);
+  color: var(--nd-ink);
+  box-shadow: 0 1px 2px rgb(33 28 23 / 0.12);
+}
+.lang [aria-pressed="false"] .flag {
+  opacity: 0.6;
+}
+.flag {
+  flex: none;
+  border-radius: 2px;
+}
+@media (max-width: 40rem) {
+  .brand-en {
+    display: none;
+  }
+  .lang button {
+    padding: 0 0.55rem;
+  }
+  .powered {
+    padding: 0 0.6rem;
+    font-size: 0.75rem;
+  }
+  .header-tools {
+    gap: 0.3rem;
+  }
+}
+@media (max-width: 40rem) {
+  .powered {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    column-gap: 0.3rem;
+    align-items: center;
+    line-height: 1.05;
+  }
+  .powered img {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+  .powered-by {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 0.62rem;
+  }
+  .powered b {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+/* Lists on the year page. */
 .side h2 {
   margin: 0 0 0.75rem;
   font-size: 1.05rem;
   font-weight: 650;
-}
-.side h2 + .list {
-  margin-bottom: 2rem;
 }
 .list {
   list-style: none;
