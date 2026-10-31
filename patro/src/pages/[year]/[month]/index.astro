@@ -1,7 +1,7 @@
 ---
 // A page for every BS month from 1901 to 2199.
 import Patro from "../../../layouts/Patro.astro";
-import MonthView from "../../../components/MonthView.astro";
+import App from "../../../components/App.astro";
 import { FIRST_YEAR, LAST_YEAR, adSpan, monthDays, monthEn, monthNe, ne, pad } from "../../../lib/patro";
 
 export function getStaticPaths() {
@@ -20,12 +20,6 @@ const title = `${monthNe(month)} ${ne(year)} | ${monthEn(month)} ${year} Nepali 
 const description = `${monthEn(month)} ${year} (${monthNe(month)} ${ne(year)}) BS, ${adSpan(days)}: the Nepali calendar with tithi${holidays ? `, ${holidays} public holiday${holidays === 1 ? "" : "s"}` : ""} and events.`;
 ---
 
-<Patro title={title} description={description}>
-  <div class="month wrap">
-    <MonthView year={year} month={month} />
-  </div>
+<Patro title={title} description={description} app>
+  <App year={year} month={month} />
 </Patro>
-
-<script>
-  import "../../../scripts/today";
-</script>
