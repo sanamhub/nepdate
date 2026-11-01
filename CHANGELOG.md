@@ -39,6 +39,10 @@ no releases; ports pin a commit in `shared/VERSION` (ADR-0001). Format:
   registry check from the public GitHub API and writes the status file and a Markdown table, and
   `.github/workflows/package-status.yml` runs it after the last port's weekly check. A check with
   no scheduled run is "not checked", never passing.
+- `spec/versions.json` holds the `MAJOR.MINOR` line every SDK shares and each port's released
+  version. `tools/version_line.py` validates the file and checks one port's version, and
+  `shared-check` runs that check when a port passes `sdk` and `version` (ADR-0007). The site reads
+  the versions from the file, and `docs/runbooks/release-minor.md` is the release-day checklist.
 
 ### Changed
 

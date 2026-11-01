@@ -79,7 +79,9 @@ Runs every Tuesday and on demand in each port. It downloads the hub's `main`, re
 `shared/`, writes the commit to `shared/VERSION`, runs the port's generator, and opens or
 updates one PR on branch `bot/shared-sync`, assigned like the hub's. The PR body lists the hub
 commits since the previous `VERSION`. After merge, release a **patch** version of that port
-(data change, no API change).
+(data change, no API change). A data change is a patch in every port, so after each port releases,
+update its entry in `spec/versions.json`; the line itself does not move. `docs/runbooks/release-minor.md`
+covers a minor release.
 
 The workflow runs the port's generator in a job without secrets or write permission and hands a
 patch to a second job that opens the PR. For a spoke without a GitHub remote, or to test by hand,
