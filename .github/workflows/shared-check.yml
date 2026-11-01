@@ -1,16 +1,43 @@
 # Reusable: fails when a spoke's shared/ differs from the hub at the commit in shared/VERSION
-# (ADR-0001 decision 3). Call it from the spoke's CI, pinned to a full hub commit SHA:
+# (ADR-0001 decision 3) and, when sdk and version are set, when the spoke's own version is on
+# another MAJOR.MINOR line (ADR-0007 decision 3). Call it from the spoke's CI, pinned to a full hub
+# commit SHA. Read the version in an earlier job so it comes from the port's manifest:
 #
-#   shared-check:
-#     permissions:
-#       contents: read
-#     uses: sanamhub/nepdate/.github/workflows/shared-check.yml@<sha> # main 2026-10-09
+#   jobs:
+#     version:
+#       runs-on: ubuntu-24.04
+#       outputs:
+#         version: ${{ steps.read.outputs.version }}
+#       steps:
+#         - uses: actions/checkout@<sha> # v7.0.1
+#           with:
+#             persist-credentials: false
+#         - id: read
+#           run: echo "version=$(scripts/version.sh)" >> "$GITHUB_OUTPUT"
+#     shared-check:
+#       needs: version
+#       permissions:
+#         contents: read
+#       uses: sanamhub/nepdate/.github/workflows/shared-check.yml@<sha> # main 2026-10-31
+#       with:
+#         sdk: rust
+#         version: ${{ needs.version.outputs.version }}
 #
-# Local equivalent: py ../nepdate/tools/shared_sync.py . --check
+# Without sdk and version the job compares shared/ only, so a caller pinned to an older hub commit
+# keeps working. Local equivalent: py ../nepdate/tools/shared_sync.py . --check
 name: shared-check
 
 on:
   workflow_call:
+    inputs:
+      sdk:
+        description: SDK name in the hub's spec/versions.json, for example rust. Set it with version.
+        type: string
+        default: ""
+      version:
+        description: The spoke's own version, in SemVer or the PyPI spelling. Set it with sdk.
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -46,3 +73,15 @@ jobs:
             exit 1
           fi
           echo "shared/ matches sanamhub/nepdate@$version"
+      - name: Check the version against the hub's line
+        if: inputs.sdk != '' || inputs.version != ''
+        env:
+          SDK: ${{ inputs.sdk }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ -z "$SDK" ] || [ -z "$VERSION" ]; then
+            echo "::error::set both sdk and version, or neither"
+            exit 1
+          fi
+          python3 "$RUNNER_TEMP/hub/tools/version_line.py" --sdk "$SDK" --version "$VERSION"
