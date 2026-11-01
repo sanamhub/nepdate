@@ -11,7 +11,7 @@ import MonthLengths from "../components/landing/MonthLengths.astro";
 import LangIcon from "../components/landing/LangIcon.astro";
 import { downloads, formatCount } from "../data/downloads";
 import { competitorCount, formatNs, languages, nearest } from "../data/benchmarks";
-import { DATA_ERROR_FORM, HUB, MITIBAR_RELEASE, MITIBAR_VERSION, PATRO, VERSION, ports, repoUrl } from "../data/ports";
+import { DATA_ERROR_FORM, HUB, MITIBAR_RELEASE, MITIBAR_VERSION, PATRO, ports, repoUrl, versionLine } from "../data/ports";
 
 // Rendered at build time so the page reads right without JavaScript; the script in
 // scripts/landing.ts replaces it with the visitor's own "today in Nepal" on load.
@@ -201,7 +201,7 @@ const jsonLd = {
       <div class="section-head">
         <h2 id="languages-title">Supported languages</h2>
         <p>
-          Each language has two packages on one version, now <code>{VERSION}</code>: the core for conversion,
+          Each language has two packages on one version line, now <code>{versionLine}</code>: the core for conversion,
           arithmetic, formatting and parsing, and the patro for tithi, public holidays and events. Take only the core
           and no almanac data ships with your app. C# NepDate is one package with its own versions.
         </p>

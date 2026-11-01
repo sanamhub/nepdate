@@ -4,7 +4,7 @@ description: Install and use the nepdate and nepdate-patro crates.
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { VERSION } from "../../../data/ports";
+import { versions } from "../../../data/ports";
 
 `nepdate` converts between BS and AD, formats and parses Nepali dates, does date arithmetic and
 fiscal years. `nepdate-patro` adds tithi, public holidays and events. The core is `no_std` with no
@@ -20,8 +20,8 @@ This is the first public pre-release. The API may still change before 0.1.0.
   lang="toml"
   title="Cargo.toml"
   code={`[dependencies]
-nepdate = "=${VERSION}"
-nepdate-patro = "=${VERSION}"   # only if you need tithi, holidays or events`}
+nepdate = "=${versions.rust}"
+nepdate-patro = "=${versions.rust}"   # only if you need tithi, holidays or events`}
 />
 
 Cargo never picks a pre-release for a plain `"0.1"` requirement, so the beta is pinned exactly.
