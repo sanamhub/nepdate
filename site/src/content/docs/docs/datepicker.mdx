@@ -5,7 +5,7 @@ description: A Bikram Sambat date picker for any web page, as web components tha
 
 import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
 import DatepickerDemo from "../../../components/DatepickerDemo.astro";
-import { VERSION } from "../../../data/ports";
+import { DATEPICKER_VERSION } from "../../../data/ports";
 
 [`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker) is a BS date picker for the
 web, built on [`nepdate-core`](/docs/typescript/). It is two custom elements, so it works without a
@@ -34,8 +34,8 @@ both elements, so the page needs nothing else:
 
 <Code
   lang="html"
-  code={`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nepdate-datepicker@${VERSION}/dist/theme.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/nepdate-datepicker@${VERSION}/dist/nepdate-datepicker.js"></script>
+  code={`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nepdate-datepicker@${DATEPICKER_VERSION}/dist/theme.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/nepdate-datepicker@${DATEPICKER_VERSION}/dist/nepdate-datepicker.js"></script>
 
 <form>
   <label for="dob">Date of birth (BS)</label>

@@ -4,7 +4,7 @@ description: Add io.github.sanamhub:nepdate and nepdate-patro from Maven Central
 ---
 
 import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
-import { VERSION } from "../../../data/ports";
+import { versions } from "../../../data/ports";
 
 Bikram Sambat for Kotlin, Java and Android. Neither `java.time`, ThreeTen-Extra, ICU4J nor
 `android.icu` has a Bikram Sambat calendar.
@@ -28,8 +28,8 @@ This is the first public pre-release. The API may still change before 0.1.0.
       lang="kotlin"
       title="build.gradle.kts"
       code={`dependencies {
-    implementation("io.github.sanamhub:nepdate:${VERSION}")
-    implementation("io.github.sanamhub:nepdate-patro:${VERSION}") // only for tithi, holidays, events
+    implementation("io.github.sanamhub:nepdate:${versions.kotlin}")
+    implementation("io.github.sanamhub:nepdate-patro:${versions.kotlin}") // only for tithi, holidays, events
 }`}
     />
   </TabItem>
@@ -40,7 +40,7 @@ This is the first public pre-release. The API may still change before 0.1.0.
       code={`<dependency>
   <groupId>io.github.sanamhub</groupId>
   <artifactId>nepdate</artifactId>
-  <version>${VERSION}</version>
+  <version>${versions.kotlin}</version>
 </dependency>`}
     />
   </TabItem>

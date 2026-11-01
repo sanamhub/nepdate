@@ -5,7 +5,7 @@ import { defineConfig, fontProviders } from "astro/config";
 import starlightLinksValidator from "starlight-links-validator";
 import starlightLlmsTxt from "starlight-llms-txt";
 import { fontsFor } from "./fonts.mjs";
-import { VERSION, ports } from "./src/data/ports";
+import { versionLine, ports } from "./src/data/ports";
 
 export default defineConfig({
   site: "https://nepdate.com",
@@ -115,7 +115,7 @@ export default defineConfig({
           description:
             "Bikram Sambat (Nepali calendar) date libraries for C#, Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C with the same behaviour in every language, built from one shared dataset and spec.",
           details: [
-            `Every port converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to 2143-04-15). Each ships a core package and a separate patro package (tithi, public holidays, events). Version ${VERSION} is a pre-release. C# NepDate is the original library, one package with its own versions.`,
+            `Every port converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to 2143-04-15). Each ships a core package and a separate patro package (tithi, public holidays, events). Every SDK shares the ${versionLine} version line and the current releases are pre-releases. C# NepDate is the original library, one package with its own versions.`,
             "",
             "Install the core:",
             "",

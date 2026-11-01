@@ -3,19 +3,26 @@ title: Versions and status
 description: Where every package stands, how versions work across the ports, and what pre-release means here.
 ---
 
-import { CSHARP_VERSION, MITIBAR_RELEASE, MITIBAR_VERSION, PYPI_VERSION, VERSION } from "../../../../data/ports";
+import { CSHARP_VERSION, MITIBAR_RELEASE, MITIBAR_VERSION, PYPI_VERSION, versionLine, versions } from "../../../../data/ports";
 
 <p>
-  Every port is at <code>{VERSION}</code>, the first public pre-release. The API can still change
-  before 0.1.0, and each release's changelog says what changed. MitiBar has its own
-  version line and is at <a href={MITIBAR_RELEASE}><code>{MITIBAR_VERSION}</code></a>. C# NepDate has its own versions and
-  is at <code>{CSHARP_VERSION}</code>.
+  Every SDK shares the <code>{versionLine}</code> line: a new minor releases all eight on the same
+  day, while a fix can ship as a patch of one port. The current releases are
+  <code>{versions.rust}</code> for Rust, <code>{versions.go}</code> for Go,
+  <code>{versions.typescript}</code> for TypeScript, <code>{PYPI_VERSION}</code> for Python,
+  <code>{versions.swift}</code> for Swift, <code>{versions.kotlin}</code> for Kotlin,
+  <code>{versions.cpp}</code> for C++ and <code>{versions.c}</code> for C. The API can still change
+  before 0.1.0, and each release's changelog says what changed. MitiBar has its own version line and
+  is at <a href={MITIBAR_RELEASE}><code>{MITIBAR_VERSION}</code></a>. C# NepDate has its own
+  versions and is at <code>{CSHARP_VERSION}</code>.
 </p>
 
 ## How versions work
 
-- Each port follows [Semantic Versioning](https://semver.org/) on its own schedule. The core and the
-  patro of one port always share a version and are released together.
+- Every SDK follows [Semantic Versioning](https://semver.org/) on one shared `MAJOR.MINOR` line, so
+  a user who picks one minor gets the same API in every language. A new minor releases every port
+  on one day; a patch is a fix in one port only. The core and the patro of one port always share a
+  version and are released together.
 - A data change, such as a new year's holidays, is a **patch** release of each port: no API change.
 - Pre-releases need asking for by name in most package managers: an exact pin in Cargo and SwiftPM,
   the `beta` tag on npm, and `--pre` with pip.

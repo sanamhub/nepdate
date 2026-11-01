@@ -4,7 +4,7 @@ description: Install and use the nepdate Go module and its patro package.
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { VERSION } from "../../../data/ports";
+import { versions } from "../../../data/ports";
 
 Package `nepdate`, module `github.com/sanamhub/nepdate-go`. The patro (tithi, public holidays and
 events) is the package `github.com/sanamhub/nepdate-go/patro` of the same module; the core never
@@ -21,7 +21,7 @@ This is the first public pre-release. The API may still change before 0.1.0.
 
 Go 1.24 or later.
 
-<Code lang="sh" code={`go get github.com/sanamhub/nepdate-go@v${VERSION}`} />
+<Code lang="sh" code={`go get github.com/sanamhub/nepdate-go@v${versions.go}`} />
 
 ```go
 import (

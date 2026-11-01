@@ -4,7 +4,7 @@ description: Install and use nepdate-core and nepdate-patro from npm, in Node, D
 ---
 
 import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
-import { VERSION } from "../../../data/ports";
+import { versions } from "../../../data/ports";
 
 Two npm packages, released together with the same version:
 
@@ -64,7 +64,7 @@ console.log(republicDay.long({ weekday: true })); // "Tuesday, Jestha 15, 2081"
 
 <Code
   lang="ts"
-  code={`import { NepaliDate } from "npm:nepdate-core@${VERSION}";
+  code={`import { NepaliDate } from "npm:nepdate-core@${versions.typescript}";
 
 console.log(NepaliDate.of(2081, 2, 15).toJSON()); // "2081-02-15"`}
 />
@@ -75,7 +75,7 @@ console.log(NepaliDate.of(2081, 2, 15).toJSON()); // "2081-02-15"`}
 <Code
   lang="html"
   code={`<script type="module">
-  import { NepaliDate } from "https://esm.sh/nepdate-core@${VERSION}";
+  import { NepaliDate } from "https://esm.sh/nepdate-core@${versions.typescript}";
   document.body.textContent = NepaliDate.of(2081, 2, 15).toJSON();
 </script>`}
 />

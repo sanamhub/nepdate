@@ -4,7 +4,7 @@ description: Use the header-only nepdate core and the nepdate-patro library from
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { VERSION } from "../../../data/ports";
+import { versions } from "../../../data/ports";
 
 Bikram Sambat dates for C++20. The core is header-only with no dependencies, the `to_chars` and
 parse paths allocate nothing, and conversion is `constexpr`, so it also runs at compile time.
@@ -24,7 +24,7 @@ C++ has no central registry, so pull the release tag with CMake `FetchContent`:
   code={`include(FetchContent)
 FetchContent_Declare(nepdate
     GIT_REPOSITORY https://github.com/sanamhub/nepdate-cpp.git
-    GIT_TAG v${VERSION})
+    GIT_TAG v${versions.cpp})
 FetchContent_MakeAvailable(nepdate)
 target_link_libraries(your_app PRIVATE nepdate::nepdate nepdate::patro)`}
 />

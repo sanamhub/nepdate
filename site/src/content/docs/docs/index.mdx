@@ -4,7 +4,7 @@ description: What NepDate is, which languages it covers, and how the libraries a
 ---
 
 import { LinkCard, CardGrid } from "@astrojs/starlight/components";
-import { VERSION } from "../../../data/ports";
+import { versionLine } from "../../../data/ports";
 
 NepDate is the Bikram Sambat calendar (BS, the official calendar of Nepal) as a family of libraries
 that behave the same in every language, and a few apps built on them.
@@ -16,7 +16,7 @@ vectors in each repository.
 
 ## The libraries
 
-Each language ships two packages with one version, now <code>{VERSION}</code>, a public pre-release:
+Each language ships two packages on one version line, now <code>{versionLine}</code>, a public pre-release:
 
 - **The core**: conversion, arithmetic, fiscal year, formatting and parsing. No dependencies and no
   almanac data.

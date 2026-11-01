@@ -8,10 +8,10 @@ name: site
 
 on:
   pull_request:
-    paths: ["site/**", "web/**", ".github/workflows/site.yml", ".github/workflows/lighthouse-comment.yml"]
+    paths: ["site/**", "web/**", "spec/versions.json", ".github/workflows/site.yml", ".github/workflows/lighthouse-comment.yml"]
   push:
     branches: [main]
-    paths: ["site/**", "web/**", ".github/workflows/site.yml", ".github/workflows/lighthouse-comment.yml"]
+    paths: ["site/**", "web/**", "spec/versions.json", ".github/workflows/site.yml", ".github/workflows/lighthouse-comment.yml"]
 
 permissions:
   contents: read

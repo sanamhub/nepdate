@@ -4,7 +4,7 @@ description: Add the NepDate and NepDatePatro products with Swift Package Manage
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { VERSION } from "../../../data/ports";
+import { versions } from "../../../data/ports";
 
 One SwiftPM package with two products: `NepDate` (conversion, formatting, parsing, arithmetic,
 fiscal year) and `NepDatePatro` (tithi, public holidays and events for BS 2077-01-01 to
@@ -28,7 +28,7 @@ Nepal's solar Bikram Sambat, and its months don't match. Apple has no Nepali cal
 
 Add the package to `Package.swift`. SwiftPM only picks a pre-release when the requirement names one:
 
-<Code lang="swift" code={`.package(url: "https://github.com/sanamhub/nepdate-swift", exact: "${VERSION}")`} />
+<Code lang="swift" code={`.package(url: "https://github.com/sanamhub/nepdate-swift", exact: "${versions.swift}")`} />
 
 Then depend on `NepDate`, and on `NepDatePatro` as well for tithi, holidays and events:
 

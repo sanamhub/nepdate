@@ -1,12 +1,30 @@
 // The one place the site names a version, a package or an install line. Pages import these
 // instead of typing them, and scripts/check-versions.mjs fails the build when a page types a
-// version itself. Every install line and snippet below is copied from the port's README or built
-// only from names in its docs/API.md.
+// version itself. Versions come from the hub's spec/versions.json (ADR-0007), so a patch release
+// of one port shows correctly without a second edit here. Every install line and snippet below is
+// copied from the port's README or built only from names in its docs/API.md.
 
-/** The version every port shipped as its first public pre-release. */
-export const VERSION = "0.1.0-beta.1";
-/** The same version as PyPI spells it (PEP 440). */
-export const PYPI_VERSION = "0.1.0b1";
+import versionsJson from "../../../spec/versions.json";
+
+/** The MAJOR.MINOR line every SDK shares (ADR-0007 decision 1). */
+export const versionLine: string = versionsJson.line;
+/** Each SDK's latest released version, in the order spec/versions.json lists them. */
+export const versions = versionsJson.sdks;
+export type Sdk = keyof typeof versions;
+/**
+ * The same version as PyPI spells it (PEP 440): 0.1.0-beta.1 is 0.1.0b1, 0.1.0-rc.1 is 0.1.0rc1.
+ * This is the site's copy of the mapping in tools/version_line.py.
+ */
+export const PYPI_VERSION = pep440(versions.python);
+
+function pep440(version: string): string {
+  const found = /^(.*)-(beta|rc)\.(\d+)$/.exec(version);
+  if (!found) return version;
+  return `${found[1]}${found[2] === "beta" ? "b" : "rc"}${found[3]}`;
+}
+
+/** The date picker is a UI component outside the SDK line and keeps its own version (ADR-0007 decision 6). */
+export const DATEPICKER_VERSION = "0.1.0-beta.1";
 /** MitiBar's release, tagged in its own repository (it has its own version line). */
 export const MITIBAR_VERSION = "1.0.0";
 /** C# NepDate, the original library the ports are checked against (hub ADR-0003). */
@@ -74,8 +92,8 @@ Console.WriteLine(date.ToLongDateString());`,
     repo: "nepdate-rust",
     core: "nepdate",
     patro: "nepdate-patro",
-    install: `cargo add nepdate@=${VERSION}`,
-    patroInstall: `cargo add nepdate-patro@=${VERSION}`,
+    install: `cargo add nepdate@=${versions.rust}`,
+    patroInstall: `cargo add nepdate-patro@=${versions.rust}`,
     installLang: "sh",
     registry: { label: "crates.io", href: "https://crates.io/crates/nepdate" },
     api: { label: "docs.rs", href: "https://docs.rs/nepdate" },
@@ -93,7 +111,7 @@ println!("{}", date.long(LongDate::default(), Lang::En));`,
     repo: "nepdate-go",
     core: "github.com/sanamhub/nepdate-go",
     patro: "github.com/sanamhub/nepdate-go/patro",
-    install: `go get github.com/sanamhub/nepdate-go@v${VERSION}`,
+    install: `go get github.com/sanamhub/nepdate-go@v${versions.go}`,
     patroInstall: `import "github.com/sanamhub/nepdate-go/patro"`,
     installLang: "sh",
     registry: { label: "pkg.go.dev", href: "https://pkg.go.dev/github.com/sanamhub/nepdate-go" },
@@ -151,7 +169,7 @@ date.long()     # 'Shrawan 15, 2081'`,
     repo: "nepdate-swift",
     core: "NepDate",
     patro: "NepDatePatro",
-    install: `.package(url: "https://github.com/sanamhub/nepdate-swift", exact: "${VERSION}")`,
+    install: `.package(url: "https://github.com/sanamhub/nepdate-swift", exact: "${versions.swift}")`,
     patroInstall: `.product(name: "NepDatePatro", package: "nepdate-swift")`,
     installLang: "swift",
     registry: { label: "Swift Package Index", href: "https://swiftpackageindex.com/sanamhub/nepdate-swift" },
@@ -169,8 +187,8 @@ print(date.long())    // Shrawan 15, 2081`,
     repo: "nepdate-kotlin",
     core: "io.github.sanamhub:nepdate",
     patro: "io.github.sanamhub:nepdate-patro",
-    install: `implementation("io.github.sanamhub:nepdate:${VERSION}")`,
-    patroInstall: `implementation("io.github.sanamhub:nepdate-patro:${VERSION}")`,
+    install: `implementation("io.github.sanamhub:nepdate:${versions.kotlin}")`,
+    patroInstall: `implementation("io.github.sanamhub:nepdate-patro:${versions.kotlin}")`,
     installLang: "kotlin",
     registry: { label: "Maven Central", href: "https://central.sonatype.com/artifact/io.github.sanamhub/nepdate" },
     alsoFor: [
@@ -191,7 +209,7 @@ println(date.toLongString()) // Shrawan 15, 2081`,
     repo: "nepdate-cpp",
     core: "nepdate::nepdate",
     patro: "nepdate::patro",
-    install: `FetchContent_Declare(nepdate GIT_REPOSITORY https://github.com/sanamhub/nepdate-cpp.git GIT_TAG v${VERSION})`,
+    install: `FetchContent_Declare(nepdate GIT_REPOSITORY https://github.com/sanamhub/nepdate-cpp.git GIT_TAG v${versions.cpp})`,
     patroInstall: "target_link_libraries(app PRIVATE nepdate::patro)",
     installLang: "cmake",
     registry: { label: "Releases", href: `${gh("nepdate-cpp")}/releases` },
@@ -209,7 +227,7 @@ std::cout << nepdate::to_string(d);       // 2081/04/15`,
     repo: "nepdate-c",
     core: "nepdate-c::nepdate",
     patro: "nepdate-c::patro",
-    install: `FetchContent_Declare(nepdate-c GIT_REPOSITORY https://github.com/sanamhub/nepdate-c.git GIT_TAG v${VERSION})`,
+    install: `FetchContent_Declare(nepdate-c GIT_REPOSITORY https://github.com/sanamhub/nepdate-c.git GIT_TAG v${versions.c})`,
     patroInstall: "target_link_libraries(app PRIVATE nepdate-c::patro)",
     installLang: "cmake",
     registry: { label: "Releases", href: `${gh("nepdate-c")}/releases` },
