@@ -40,19 +40,27 @@ class FileTest(unittest.TestCase):
             ['rust', 'go', 'typescript', 'python', 'swift', 'kotlin', 'cpp', 'c'],
         )
 
-    def test_a_wrong_line_is_rejected(self):
-        with self.assertRaisesRegex(version_line.VersionError, 'rust.*not the hub line 0.2'):
-            version_line.validate(document(line='0.2'))
+    def test_entries_may_trail_a_line_that_moved_first(self):
+        version_line.validate(document(line='0.2'))
+        version_line.validate(document(line='1.0'))
+
+    def test_an_entry_ahead_of_the_line_is_rejected(self):
+        sdks = dict(DOCUMENT['sdks'], rust='0.2.0-beta.1')
+        with self.assertRaisesRegex(version_line.VersionError, 'rust 0.2.0-beta.1.*ahead of the hub line 0.1'):
+            version_line.validate(document(sdks=sdks))
+
+    def test_lines_compare_as_numbers(self):
+        sdks = dict(DOCUMENT['sdks'], c='0.9.0')
+        version_line.validate(document(line='0.10', sdks=sdks))
 
     def test_an_unknown_pre_release_is_rejected(self):
         sdks = dict(DOCUMENT['sdks'], rust='0.1.0-alpha.1')
         with self.assertRaisesRegex(version_line.VersionError, 'allowed pre-release'):
             version_line.validate(document(sdks=sdks))
 
-    def test_a_port_on_another_minor_is_rejected(self):
-        sdks = dict(DOCUMENT['sdks'], go='0.2.0-beta.1')
-        with self.assertRaisesRegex(version_line.VersionError, 'go 0.2.0-beta.1.*0.1'):
-            version_line.validate(document(sdks=sdks))
+    def test_a_port_behind_the_line_fails_its_own_check(self):
+        with self.assertRaisesRegex(version_line.VersionError, 'go 0.1.0-beta.1.*not the hub line 0.2'):
+            version_line.check_sdk(document(line='0.2'), 'go', '0.1.0-beta.1')
 
     def test_a_missing_file_is_reported(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -97,7 +105,7 @@ class CommandLineTest(unittest.TestCase):
     def test_check_accepts_the_hub_file(self):
         code, out, _ = self.run_tool('--check')
         self.assertEqual(code, 0)
-        self.assertIn('8 SDKs on 0.1', out)
+        self.assertIn('8 SDKs, line 0.1', out)
 
     def test_a_version_on_another_line_fails_with_a_clear_message(self):
         code, _, err = self.run_tool('--sdk', 'rust', '--version', '0.2.0-beta.1')

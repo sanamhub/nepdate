@@ -4,6 +4,10 @@ spec/versions.json records the current MAJOR.MINOR line and each SDK's latest re
 port passes its own version to the reusable shared-check workflow, which runs this tool, so a port
 cannot move to another minor by accident.
 
+On release day for a minor the hub moves the line first and each SDK entry follows once that port
+has released, so an entry may trail the line but never lead it. The site reads the entries, so
+it never names a version a registry does not serve yet.
+
     py tools/version_line.py --check
     py tools/version_line.py --sdk rust --version 0.1.0-beta.1
     py tools/version_line.py --sdk python --version 0.1.0b1
@@ -66,8 +70,8 @@ def pep440_spelling(version):
     return f'{core}{"b" if kind == "beta" else "rc"}{number}'
 
 
-def check_version(sdk, version, line):
-    """Validate one SDK version against the line and return its SemVer spelling."""
+def parse_version(sdk, version):
+    """The SemVer spelling of one SDK version and its (MAJOR, MINOR)."""
     if not isinstance(version, str):
         raise VersionError(f'{sdk}: the version must be a string')
     spelled = semver_spelling(sdk, version)
@@ -75,8 +79,18 @@ def check_version(sdk, version, line):
     if not found:
         raise VersionError(
             f'{sdk} {version}: not a SemVer version with an allowed pre-release (-beta.N or -rc.N)')
-    major, minor = found.group(1), found.group(2)
-    if f'{major}.{minor}' != line:
+    return spelled, (int(found.group(1)), int(found.group(2)))
+
+
+def line_parts(line):
+    major, minor = line.split('.')
+    return int(major), int(minor)
+
+
+def check_version(sdk, version, line):
+    """Check a port's own version is on the line and return its SemVer spelling."""
+    spelled, (major, minor) = parse_version(sdk, version)
+    if (major, minor) != line_parts(line):
         raise VersionError(f'{sdk} {version}: major.minor {major}.{minor} is not the hub line {line}')
     return spelled
 
@@ -96,7 +110,10 @@ def validate(document):
     for sdk, version in sdks.items():
         if not SDK.match(sdk):
             raise VersionError(f'{sdk!r}: not an SDK name')
-        check_version(sdk, version, line)
+        _, (major, minor) = parse_version(sdk, version)
+        if (major, minor) > line_parts(line):
+            raise VersionError(
+                f'{sdk} {version}: released on {major}.{minor}, ahead of the hub line {line}')
     return document
 
 
@@ -125,7 +142,12 @@ def main(argv=None):
         if args.check:
             if args.sdk or args.version:
                 raise VersionError('--check does not take --sdk or --version')
-            print(f'version-line: {len(document["sdks"])} SDKs on {document["line"]}, all valid')
+            line = document['line']
+            behind = [sdk for sdk, version in document['sdks'].items()
+                      if parse_version(sdk, version)[1] != line_parts(line)]
+            print(f'version-line: {len(document["sdks"])} SDKs, line {line}, all valid')
+            if behind:
+                print(f'version-line: not yet released on {line}: {", ".join(behind)}')
             return 0
         if not args.sdk or args.version is None:
             parser.error('--sdk and --version must be given together, or use --check')
