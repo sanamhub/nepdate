@@ -67,12 +67,25 @@ const callTime = (id: string) => formatNs(languages.find((b) => b.id === id)!.op
 // that library is within 1.5 times NepDate, the row says so and how many dates it gets wrong.
 const race = languages.map((port) => {
   const next = nearest(port);
+  if (next === null) {
+    return {
+      name: port.name,
+      ours: formatNs(port.ops[0]),
+      theirs: "",
+      rival: "",
+      wrong: 0,
+      times: "",
+      none: true,
+      width: "0",
+    };
+  }
   return {
     name: port.name,
     ours: formatNs(next.ours),
     theirs: formatNs(next.b1),
     rival: next.name,
     wrong: next.wrong,
+    none: false,
     times:
       next.times < 1.5
         ? "As fast"
@@ -166,9 +179,8 @@ const jsonLd = {
       <div class="hero-copy">
         <h1>Nepali dates in nanoseconds, the same in every language.</h1>
         <p class="lede">
-          Bikram Sambat for C#, Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C. Each port of the C# original is
-          faster than the other BS libraries we measured in its language, and all of them give the same day for any
-          date from BS 1901 to 2199.
+          Bikram Sambat for C#, Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C. Each port that has a mature
+          library to compare is faster than it, and all of them give the same day for any date from BS 1901 to 2199.
         </p>
         <div class="actions">
           <a class="button primary" href="/docs/quickstart/">Get started</a>
@@ -299,11 +311,12 @@ const jsonLd = {
   <section class="section band speed" id="performance" aria-labelledby="speed-title">
     <div class="wrap">
       <div class="section-head speed-head">
-        <h2 id="speed-title">The fastest right answer in every language</h2>
+        <h2 id="speed-title">Fast, and right, in every language</h2>
         <p>
-          BS to AD, time per call, against the fastest other Bikram Sambat library in each language. We timed{" "}
-          {competitorCount} other libraries. None of them agrees with the calendar data on all 64 dates, and in every
-          language NepDate is faster than all of them on both conversions.
+          BS to AD, time per call, against the fastest other Bikram Sambat library where a language
+          has a mature one. We timed {competitorCount} other libraries. None of them agrees with the
+          calendar data on all 64 dates, and in those languages NepDate is faster than all of them on
+          both conversions.
         </p>
       </div>
       <ol class="panel race">
@@ -317,11 +330,17 @@ const jsonLd = {
               </span>
               <span class="race-nums">
                 <strong>{row.ours}</strong>
-                <span class="race-vs"> against {row.theirs} for </span>
-                <code class="who">{row.rival}</code>
-                {row.wrong ? <span class="race-note">It is wrong on {row.wrong} of the 64 dates.</span> : null}
+                {row.none ? (
+                  <span class="race-vs"> no mature library to compare</span>
+                ) : (
+                  <>
+                    <span class="race-vs"> against {row.theirs} for </span>
+                    <code class="who">{row.rival}</code>
+                    {row.wrong ? <span class="race-note">It is wrong on {row.wrong} of the 64 dates.</span> : null}
+                  </>
+                )}
               </span>
-              <span class="race-times">{row.times}</span>
+              {row.none ? null : <span class="race-times">{row.times}</span>}
             </li>
           ))
         }

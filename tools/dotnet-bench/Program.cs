@@ -30,9 +30,12 @@ if (args.Length > 0 && args[0] == "--agrees")
 
 // spec/BENCHMARK.md §1: pin to logical CPU 2 (mask 0x4), a performance core on the reference machine.
 var affinity = (IntPtr)0x4;
+// The reference machine's Ultimate Performance scheme has this GUID. The generic
+// PowerPlan.UltimatePerformance GUID is not installed on every machine.
+var ultimate = new Guid("5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6");
 var config = DefaultConfig.Instance
-    .AddJob(Job.Default.WithRuntime(CoreRuntime.Core10_0).WithAffinity(affinity))
-    .AddJob(Job.Default.WithRuntime(CoreRuntime.Core80).WithAffinity(affinity))
+    .AddJob(Job.Default.WithRuntime(CoreRuntime.Core10_0).WithAffinity(affinity).WithPowerPlan(ultimate))
+    .AddJob(Job.Default.WithRuntime(CoreRuntime.Core80).WithAffinity(affinity).WithPowerPlan(ultimate))
     // NepaliCalendarBS ships a Debug build on nuget.org. That is the assembly its users get, so it
     // is measured as published instead of being refused by the optimizations check.
     .WithOptions(ConfigOptions.DisableOptimizationsValidator);
