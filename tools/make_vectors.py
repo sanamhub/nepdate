@@ -1,10 +1,13 @@
 """Regenerate the vector files under spec/vectors/ from data/ (ADR-0002, decision 7).
 
-Two files come out of the same pass over `data/`:
+Three files come out of the same pass over `data/`:
 
 - spec/vectors/month-boundaries.csv: one row for the first and one for the last day of every BS
   month: the BS date, its AD date, the weekday and the month length. 299 years x 12 months x 2 =
   7176 rows.
+- spec/vectors/year-length.tsv: the length of every BS year, 364 to 367 days. This is a reference
+  vector, not C# output: C# has no year-length API (D-12), so the value is summed from the month
+  lengths in data/ (spec/ALGORITHM.md section 7).
 - spec/vectors/patro-summary.json: the counts every port grows its patro tables from, so no port
   pins a number that a data update changes (spec/PATRO.md section 3).
 
@@ -21,6 +24,7 @@ sys.path.insert(0, str(ROOT / 'spec' / 'reference'))
 import nepcal  # noqa: E402
 
 VECTORS = 'spec/vectors/month-boundaries.csv'
+YEAR_LENGTH = 'spec/vectors/year-length.tsv'
 PATRO_SUMMARY = 'spec/vectors/patro-summary.json'
 PATRO_SCHEMA = 1
 
@@ -36,6 +40,20 @@ def render(root=ROOT):
                 ay, am, ad = cal.to_ad(y, m, d)
                 rows.append(f'{y:04}-{m:02}-{d:02},{ay:04}-{am:02}-{ad:02},'
                             f'{nepcal.WEEKDAYS[cal.weekday(y, m, d)]},{length}')
+    return '\n'.join(rows) + '\n'
+
+
+def render_year_length(root=ROOT):
+    """The TSV text for the length of every BS year, from data/ (a reference vector, D-12)."""
+    cal = nepcal.load(root)
+    rows = [
+        '# Reference vector from spec/ALGORITHM.md section 7, not C# output (D-12).',
+        '# C# has no year-length API; the value is the sum of the twelve month lengths in',
+        '# data/calendar/bs-calendar.json, the same table the month boundaries come from.',
+        'bs_year\tyear_length',
+    ]
+    for y in range(nepcal.MIN, nepcal.MAX + 1):
+        rows.append(f'{y}\t{cal.year_start[y - nepcal.MIN + 1] - cal.year_start[y - nepcal.MIN]}')
     return '\n'.join(rows) + '\n'
 
 
@@ -123,6 +141,8 @@ def detail(name, text):
     """What a log line says about a written or checked file."""
     if name == VECTORS:
         return f'{text.count(chr(10)) - 1} rows'
+    if name == YEAR_LENGTH:
+        return f'{text.count(chr(10)) - 4} years'
     try:
         return f'{json.loads(text)["names"]} name pairs'
     except (KeyError, TypeError, ValueError):
@@ -134,7 +154,8 @@ def main(argv=None, root=ROOT):
     parser.add_argument('--check', action='store_true',
                         help='exit 1 when a committed file differs instead of writing it')
     args = parser.parse_args(argv)
-    files = [(VECTORS, render(root)), (PATRO_SUMMARY, render_patro_summary(root))]
+    files = [(VECTORS, render(root)), (YEAR_LENGTH, render_year_length(root)),
+             (PATRO_SUMMARY, render_patro_summary(root))]
     if args.check:
         stale = False
         for name, text in files:
