@@ -8,7 +8,7 @@ The oracle is the C# code in `src/NepDate` at `origin/main`, not the C# README o
 comments. `PARITY.md` explains why. Where a comment disagrees with the code, this file follows
 the code and names the disagreement.
 
-The owner decided the twenty points below on 2026-11-02. The names in the tables are final for
+The twenty decisions at the end of this file were made on 2026-11-02. The names in the tables are final for
 this round. PHP and Dart are the next two ports; their columns are the same concepts in PSR-12
 and Effective Dart style, not a separate API.
 
@@ -575,7 +575,7 @@ NR14 are covered by the fiscal columns or the clock, so they are not in the list
 
 ## Decisions
 
-The owner decided these on 2026-11-02. There are no undecided rows.
+Made on 2026-11-02. There are no undecided rows.
 
 | ID | Decision |
 |---|---|
@@ -594,7 +594,7 @@ The owner decided these on 2026-11-02. There are no undecided rows.
 | O-13 | Yes. Swift adds `FormatStyle` and `Strideable`. |
 | O-14 | Yes. Kotlin overrides range `equals`, `hashCode` and `toString`. |
 | O-15 | Yes. TypeScript `equals` returns false for a foreign value. |
-| O-16 | Yes. Python adds `fromisoformat` and `isoformat(sep=...)`. |
+| O-16 | Yes. Python adds `fromisoformat`, matching `datetime.date`, whose `isoformat` takes no arguments. |
 | O-17 | Yes. C adds `NEPDATE_MIN` and `NEPDATE_MAX`. |
 | O-18 | Yes. C++ `result::value()` throws on error; this is a breaking change. |
 | O-19 | Yes. Go unifies the nil zone default between `Today` and `Time`. |
