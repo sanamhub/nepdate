@@ -83,8 +83,8 @@ def pattern(t,p,ne=False):
     out=[]; i=0
     while i<len(p):
         c=p[i]
-        if c=='\\':   # FORMATTING §5: escapes the next char; a trailing backslash writes nothing
-            out.append(p[i+1:i+2]); i+=2; continue
+        if c=='\\':   # FORMATTING §5: escapes the next char; a trailing backslash writes itself
+            out.append(p[i+1] if i + 1 < len(p) else '\\'); i+=2; continue
         if c=="'":
             j=p.find("'",i+1); j=len(p) if j<0 else j; out.append(p[i+1:j]); i=j+1; continue
         if c in 'yMd':
@@ -377,7 +377,9 @@ for r in tsv(G / 'format-matrix.tsv'):
     n += 1
 print('format matrix OK', n, 'rows (D-15)')
 
-# ranges.tsv (NR01-NR04, NR06, NR15-NR21, NR27, NR30; D-01).
+# ranges.tsv (NR01-NR04, NR06, NR15-NR21, NR27, NR30; D-01, D-16). D-16: IsAdjacentTo is
+# false when the day after this range would pass 2199-12-30, and Intersect of disjoint ranges
+# is none even when the receiver starts at 1901-01-01.
 n = 0
 for r in tsv(G / 'ranges.tsv'):
     operation = r['operation']
@@ -405,7 +407,11 @@ for r in tsv(G / 'ranges.tsv'):
             expected = 'true' if sa <= ts(*y) and sb >= ts(*x) else 'false'
         elif operation == 'is_adjacent_to':
             x, y = argument_range(r['argument'])
-            expected = 'true' if sb + 1 == ts(*x) or ts(*y) + 1 == sa else 'false'
+            # D-16: a day outside 1901-01-01..2199-12-30 is no adjacency, not an error.
+            after = sb + 1 if sb < MAX_S else None
+            before = sa - 1 if sa > 0 else None
+            expected = 'true' if (after is not None and after == ts(*x)) or \
+                (before is not None and before == ts(*y)) else 'false'
         elif operation == 'intersect':
             x, y = argument_range(r['argument'])
             sx, sy = ts(*x), ts(*y)
@@ -481,23 +487,22 @@ for r in tsv(G / 'range-factories.tsv'):
     n += 1
 print('range factories OK', n, 'rows')
 
-# range-splits.tsv (NR22, NR23). C# advances to the next month/quarter after the last piece,
-# so a piece in 2199-12 makes the call throw; those rows are ERR.
+# range-splits.tsv (NR22, NR23; D-16). A port never throws at the data end: every piece is
+# returned and the last one ends at the range end. C# advances to the next month or quarter
+# after the last piece and throws when that would pass 2199-12-30; those rows are D-16.
 n = 0
 for r in tsv(G / 'range-splits.tsv'):
     a, b = parse(r['start']), parse(r['end'])
     assert valid(*a) and valid(*b) and ts(*a) <= ts(*b), r
     sa, sb = ts(*a), ts(*b)
     pieces = []
-    failed = False
     s = sa
     if r['operation'] == 'split_by_month':
         while s <= sb:
             y, m, _ = fs(s)
             piece_end = min(ts(y, m, ml(y, m)), sb)
             pieces.append((fs(s), fs(piece_end)))
-            if (y, m) == (2199, 12):
-                failed = True
+            if piece_end >= sb:
                 break
             s = piece_end + 1
     elif r['operation'] == 'split_by_fiscal_quarter':
@@ -506,19 +511,19 @@ for r in tsv(G / 'range-splits.tsv'):
             end_month = 3 if m <= 3 else 6 if m <= 6 else 9 if m <= 9 else 12
             piece_end = min(ts(y, end_month, ml(y, end_month)), sb)
             pieces.append((fs(s), fs(piece_end)))
-            if y == 2199 and end_month == 12:
-                failed = True
+            if piece_end >= sb:
                 break
             s = ts(y + 1, 1, 1) if end_month == 12 else ts(y, end_month + 1, 1)
     else:
         raise AssertionError(r)
-    expected = 'ERR' if failed else range_list_text(pieces)
+    expected = range_list_text(pieces)
     assert r['result'] == expected, (r, expected)
     n += 1
 print('range splits OK', n, 'rows')
 
-# range-days.tsv (NR24-NR27). C# advances one day (or one interval) after the last item, so a
-# range that ends at 2199-12-30 throws; those rows are ERR.
+# range-days.tsv (NR24-NR27; D-16). A port never throws at the data end: every date up to and
+# including 2199-12-30 is returned. C# advances one day (or one interval) after the last item
+# and throws there; those rows are D-16. ERR is only a rejected argument, interval below 1.
 n = 0
 for r in tsv(G / 'range-days.tsv'):
     a, b = parse(r['start']), parse(r['end'])
@@ -534,32 +539,20 @@ for r in tsv(G / 'range-days.tsv'):
             s = sa
             while s <= sb:
                 items.append(fs(s))
-                if s + interval > MAX_S:
-                    failed = True
+                if s + interval > sb:
                     break
                 s += interval
     elif r['operation'] in ('working_days', 'weekend_days'):
         flag = r['argument'] == 'true'
-        s = sa
-        while s <= sb:
+        for s in range(sa, sb + 1):
             weekday = (s + 4) % 7
             if r['operation'] == 'working_days':
                 if weekday != 6 and (not flag or weekday != 0):
                     items.append(fs(s))
             elif weekday == 6 or (flag and weekday == 0):
                 items.append(fs(s))
-            if s == MAX_S:
-                failed = True
-                break
-            s += 1
     elif r['operation'] == 'enumerate':
-        s = sa
-        while s <= sb:
-            items.append(fs(s))
-            if s == MAX_S:
-                failed = True
-                break
-            s += 1
+        items = [fs(s) for s in range(sa, sb + 1)]
     else:
         raise AssertionError(r)
     expected = 'ERR' if failed else date_list_text(items)

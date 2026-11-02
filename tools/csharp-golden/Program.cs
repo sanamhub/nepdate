@@ -3,6 +3,10 @@
 // Output: tab-separated files (long dates contain commas). "ERR" marks an exception / false
 // TryParse. A line starting with '#' is a comment and is ignored by the readers.
 //
+// A row whose note is a D number holds the port's value, not the C# value. The D-16 rows first
+// prove that C# throws ArgumentOutOfRangeException at the data end, then write the port value,
+// so the C# error stays in the record.
+//
 // Targets net10.0 because the serialization rows need the System.Text.Json version the
 // NepDate package references.
 using System.Globalization;
@@ -49,6 +53,70 @@ static string DateList(IEnumerable<NepaliDate> items)
 }
 static string BoolText(bool value) => value ? "true" : "false";
 
+// ---- D-16: a valid range never throws at the data end ----------------------
+// C# advances one month, quarter or day past the last piece or date, and computes the day
+// after a range end in IsAdjacentTo, so a range that reaches 2199-12-30 throws
+// ArgumentOutOfRangeException. The port value is the last piece or date instead. Every D-16
+// row below proves the C# error first, so the evidence stays in the generated record.
+static void ProvesEndError(string what, Action call)
+{
+    try { call(); }
+    catch (ArgumentOutOfRangeException) { return; }
+    catch (Exception e) { throw new InvalidOperationException($"{what}: C# threw {e.GetType().Name}, expected ArgumentOutOfRangeException"); }
+    throw new InvalidOperationException($"{what}: C# did not throw at the data end");
+}
+static IEnumerable<NepaliDate> EveryDayUntil(NepaliDate start, NepaliDate end)
+{
+    for (var d = start; ; d = d.AddDays(1))
+    {
+        yield return d;
+        if (d >= end) yield break;
+    }
+}
+static IEnumerable<NepaliDate> IntervalDaysUntil(NepaliDate start, NepaliDate end, int interval)
+{
+    var d = start;
+    while (d <= end)
+    {
+        yield return d;
+        if ((end.EnglishDate - d.EnglishDate).Days < interval) yield break;
+        d = d.AddDays(interval);
+    }
+}
+static IEnumerable<NepaliDate> WorkingDaysUntil(NepaliDate start, NepaliDate end, bool excludeSunday)
+    => EveryDayUntil(start, end).Where(d => d.DayOfWeek != DayOfWeek.Saturday
+        && (!excludeSunday || d.DayOfWeek != DayOfWeek.Sunday));
+static IEnumerable<NepaliDate> WeekendDaysUntil(NepaliDate start, NepaliDate end, bool includeSunday)
+    => EveryDayUntil(start, end).Where(d => d.DayOfWeek == DayOfWeek.Saturday
+        || (includeSunday && d.DayOfWeek == DayOfWeek.Sunday));
+static List<NepaliDateRange> SplitByMonthUntil(NepaliDate start, NepaliDate end)
+{
+    var pieces = new List<NepaliDateRange>();
+    var s = start;
+    while (true)
+    {
+        var last = new NepaliDate(s.Year, s.Month, new NepaliDate(s.Year, s.Month, 1).MonthEndDay);
+        var pieceEnd = last < end ? last : end;
+        pieces.Add(new NepaliDateRange(s, pieceEnd));
+        if (pieceEnd >= end) return pieces;
+        s = pieceEnd.AddDays(1);
+    }
+}
+static List<NepaliDateRange> SplitByFiscalQuarterUntil(NepaliDate start, NepaliDate end)
+{
+    var pieces = new List<NepaliDateRange>();
+    var s = start;
+    while (true)
+    {
+        var endMonth = s.Month <= 3 ? 3 : s.Month <= 6 ? 6 : s.Month <= 9 ? 9 : 12;
+        var last = new NepaliDate(s.Year, endMonth, new NepaliDate(s.Year, endMonth, 1).MonthEndDay);
+        var pieceEnd = last < end ? last : end;
+        pieces.Add(new NepaliDateRange(s, pieceEnd));
+        if (pieceEnd >= end) return pieces;
+        s = pieceEnd.AddDays(1);
+    }
+}
+
 Write("dates.tsv",
     "bs\tad\tweekday\tday_of_year\tmonth_length\tto_string\tunicode\tlong_en\tlong_en_weekday\tlong_ne\tlong_ne_weekday\tdmy_dash_nopad\tfy_start\tfy_end\tquarter_start\tquarter_end",
     dates.Select(d => string.Join('\t',
@@ -83,8 +151,13 @@ Write("parse.tsv", "input\tstrict\tsmart",
         $"{s}\t{(NepaliDate.TryParse(s, out var a) ? Bs(a) : "ERR")}\t{(SmartDateParser.TryParse(s, out var b) ? Bs(b) : "ERR")}"));
 
 var formatPatterns = new[] { "yyyy-MM-dd", "M/d/yyyy", "yy", "yyyy'BS'", @"yyyy\M\M-\d\d", "MMM yyyy", "MMMM d, yyyy", "d", "D", "s", "dd.MM.yy" };
-Write("format-pattern.tsv", "bs\tpattern\tresult",
-    dates.Where((_, i) => i % 25 == 0).SelectMany(d => formatPatterns.Select(p => $"{Bs(d)}\t{p}\t{d.ToString(p, null)}")));
+var formatPatternRows = dates.Where((_, i) => i % 25 == 0)
+    .SelectMany(d => formatPatterns.Select(p => $"{Bs(d)}\t{p}\t{d.ToString(p, null)}"))
+    .ToList();
+// NF06: a backslash at the very end of a pattern is a literal backslash in C#. The row pins
+// that output so every port follows FORMATTING.md section 5.
+formatPatternRows.Add($"2081-04-15\t\\\t{P("2081-04-15").ToString("\\", null)}");
+Write("format-pattern.tsv", "bs\tpattern\tresult", formatPatternRows);
 
 // ---- day-diff.tsv (NA04, NA05; D-07) ---------------------------------------
 // C# Subtract and operator - both return this - other. The port's named days_until method
@@ -268,7 +341,7 @@ Write("format-pattern.tsv", "bs\tpattern\tresult",
         rows);
 }
 
-// ---- ranges.tsv (NR01-NR04, NR06, NR15-NR21, NR27, NR30) ------------------
+// ---- ranges.tsv (NR01-NR04, NR06, NR15-NR21, NR27, NR30; D-01, D-16) ------
 {
     var rows = new List<string>();
     void Construct(string start, string end)
@@ -289,6 +362,13 @@ Write("format-pattern.tsv", "bs\tpattern\tresult",
     {
         var range = new NepaliDateRange(P(start), P(end));
         rows.Add($"{start}\t{end}\t{operation}\t{argument}\t{Try(() => result(range))}\t{note}");
+    }
+    void RowAtEnd(string start, string end, string operation, string argument,
+        Func<NepaliDateRange, string> csharp, string portValue)
+    {
+        var range = new NepaliDateRange(P(start), P(end));
+        ProvesEndError($"{operation} {start}..{end}", () => _ = csharp(range));
+        rows.Add($"{start}\t{end}\t{operation}\t{argument}\t{portValue}\tD-16");
     }
     static NepaliDateRange Other(string argument)
     {
@@ -326,12 +406,16 @@ Write("format-pattern.tsv", "bs\tpattern\tresult",
     Row("2081-04-10", "2081-04-20", "is_adjacent_to", "2081-04-22..2081-04-25", r => BoolText(r.IsAdjacentTo(Other("2081-04-22..2081-04-25"))));
     Row("2081-04-10", "2081-04-20", "is_adjacent_to", "2081-04-15..2081-04-25", r => BoolText(r.IsAdjacentTo(Other("2081-04-15..2081-04-25"))));
     Row("2081-04-10", "2081-04-20", "is_adjacent_to", "2081-04-10..2081-04-20", r => BoolText(r.IsAdjacentTo(Other("2081-04-10..2081-04-20"))));
+    RowAtEnd("2199-12-25", "2199-12-30", "is_adjacent_to", "2081-04-10..2081-04-20",
+        r => BoolText(r.IsAdjacentTo(Other("2081-04-10..2081-04-20"))), "false");
 
     Row("2081-04-10", "2081-04-20", "intersect", "2081-04-15..2081-04-25", r => { var i = r.Intersect(Other("2081-04-15..2081-04-25")); return i.IsEmpty ? "none" : Range(i); });
     Row("2081-04-10", "2081-04-20", "intersect", "2081-04-12..2081-04-18", r => { var i = r.Intersect(Other("2081-04-12..2081-04-18")); return i.IsEmpty ? "none" : Range(i); });
     Row("2081-04-10", "2081-04-20", "intersect", "2081-04-10..2081-04-20", r => { var i = r.Intersect(Other("2081-04-10..2081-04-20")); return i.IsEmpty ? "none" : Range(i); });
     Row("2081-04-10", "2081-04-20", "intersect", "2081-04-21..2081-04-25", r => { var i = r.Intersect(Other("2081-04-21..2081-04-25")); return i.IsEmpty ? "none" : Range(i); }, "D-01");
     Row("2081-04-10", "2081-04-20", "intersect", "2081-05-01..2081-05-05", r => { var i = r.Intersect(Other("2081-05-01..2081-05-05")); return i.IsEmpty ? "none" : Range(i); }, "D-01");
+    RowAtEnd("1901-01-01", "1901-01-05", "intersect", "2081-04-10..2081-04-20",
+        r => { var i = r.Intersect(Other("2081-04-10..2081-04-20")); return i.IsEmpty ? "none" : Range(i); }, "none");
 
     Row("2081-04-10", "2081-04-20", "union", "2081-04-15..2081-04-25", r => Range(r.Union(Other("2081-04-15..2081-04-25"))));
     Row("2081-04-10", "2081-04-20", "union", "2081-04-21..2081-04-25", r => Range(r.Union(Other("2081-04-21..2081-04-25"))));
@@ -360,6 +444,9 @@ Write("format-pattern.tsv", "bs\tpattern\tresult",
         "# C# NepDateRange (NR01-NR04, NR06, NR15-NR21, NR27, NR30). Ranges are inclusive.\n" +
         "# D-01: a port has no empty range, so start > end is ERR and Intersect with no overlap is\n" +
         "# none; C# returns an empty range for both.\n" +
+        "# D-16: C# also throws ArgumentOutOfRangeException at the data end. IsAdjacentTo throws\n" +
+        "# when a range ends at 2199-12-30, and Intersect of disjoint ranges throws when the\n" +
+        "# receiver starts at 1901-01-01; those rows hold the port's value.\n" +
         "start\tend\toperation\targument\tresult\tnote",
         rows);
 }
@@ -409,7 +496,7 @@ Write("format-pattern.tsv", "bs\tpattern\tresult",
         rows);
 }
 
-// ---- range-splits.tsv (NR22, NR23) ----------------------------------------
+// ---- range-splits.tsv (NR22, NR23; D-16) ----------------------------------
 {
     var rows = new List<string>();
     void Split(string start, string end, string operation, Func<NepaliDateRange, IEnumerable<NepaliDateRange>> split, string note = "-")
@@ -417,24 +504,35 @@ Write("format-pattern.tsv", "bs\tpattern\tresult",
         var range = new NepaliDateRange(P(start), P(end));
         rows.Add($"{start}\t{end}\t{operation}\t{Try(() => RangeList(split(range)))}\t{note}");
     }
+    void SplitAtEnd(string start, string end, string operation,
+        Func<NepaliDateRange, IEnumerable<NepaliDateRange>> csharp,
+        Func<NepaliDate, NepaliDate, IEnumerable<NepaliDateRange>> port)
+    {
+        var a = P(start);
+        var b = P(end);
+        ProvesEndError($"{operation} {start}..{end}", () => csharp(new NepaliDateRange(a, b)).ToArray());
+        rows.Add($"{start}\t{end}\t{operation}\t{RangeList(port(a, b))}\tD-16");
+    }
     Split("2081-04-15", "2081-04-15", "split_by_month", r => r.SplitByMonth());
     Split("2081-04-30", "2081-06-02", "split_by_month", r => r.SplitByMonth());
     Split("2081-01-01", "2081-12-31", "split_by_month", r => r.SplitByMonth());
-    Split("2199-11-30", "2199-12-30", "split_by_month", r => r.SplitByMonth(), "C# data-end advance");
+    SplitAtEnd("2199-11-30", "2199-12-30", "split_by_month", r => r.SplitByMonth(), SplitByMonthUntil);
     Split("2081-03-30", "2081-07-02", "split_by_fiscal_quarter", r => r.SplitByFiscalQuarter());
     Split("2081-01-01", "2081-03-30", "split_by_fiscal_quarter", r => r.SplitByFiscalQuarter());
     Split("2080-10-01", "2081-01-31", "split_by_fiscal_quarter", r => r.SplitByFiscalQuarter());
     Split("2081-04-01", "2081-06-30", "split_by_fiscal_quarter", r => r.SplitByFiscalQuarter());
-    Split("2199-12-25", "2199-12-30", "split_by_fiscal_quarter", r => r.SplitByFiscalQuarter(), "C# data-end advance");
+    SplitAtEnd("2199-12-25", "2199-12-30", "split_by_fiscal_quarter", r => r.SplitByFiscalQuarter(), SplitByFiscalQuarterUntil);
     Write("range-splits.tsv",
         "# C# NepaliDateRange.SplitByMonth and SplitByFiscalQuarter (NR22, NR23). The first and\n" +
-        "# last piece are clipped to the range ends; a piece is written start..end. C# errors when\n" +
-        "# the next month or quarter would start after 2199-12-30, so the data-end rows are ERR.\n" +
+        "# last piece are clipped to the range ends; a piece is written start..end. C# advances to\n" +
+        "# the next month or quarter after the last piece and throws\n" +
+        "# ArgumentOutOfRangeException when that would pass 2199-12-30. The D-16 rows hold the\n" +
+        "# port's value: every piece, the last one ending at the range end.\n" +
         "start\tend\toperation\tresult\tnote",
         rows);
 }
 
-// ---- range-days.tsv (NR24-NR27) -------------------------------------------
+// ---- range-days.tsv (NR24-NR27; D-16) --------------------------------------
 {
     var rows = new List<string>();
     void Days(string start, string end, string operation, string argument,
@@ -442,6 +540,15 @@ Write("format-pattern.tsv", "bs\tpattern\tresult",
     {
         var range = new NepaliDateRange(P(start), P(end));
         rows.Add($"{start}\t{end}\t{operation}\t{argument}\t{Try(() => DateList(result(range)))}\t{note}");
+    }
+    void DaysAtEnd(string start, string end, string operation, string argument,
+        Func<NepaliDateRange, IEnumerable<NepaliDate>> csharp,
+        Func<NepaliDate, NepaliDate, IEnumerable<NepaliDate>> port)
+    {
+        var a = P(start);
+        var b = P(end);
+        ProvesEndError($"{operation} {start}..{end}", () => csharp(new NepaliDateRange(a, b)).ToArray());
+        rows.Add($"{start}\t{end}\t{operation}\t{argument}\t{DateList(port(a, b))}\tD-16");
     }
     Days("2081-04-10", "2081-04-20", "dates_with_interval", "1", r => r.DatesWithInterval(1));
     Days("2081-04-10", "2081-04-20", "dates_with_interval", "3", r => r.DatesWithInterval(3));
@@ -454,17 +561,18 @@ Write("format-pattern.tsv", "bs\tpattern\tresult",
     Days("2081-04-13", "2081-04-21", "weekend_days", "false", r => r.WeekendDays(false));
     Days("2081-04-15", "2081-04-15", "working_days", "false", r => r.WorkingDays());
     Days("2081-04-15", "2081-04-15", "weekend_days", "true", r => r.WeekendDays());
-    Days("2199-12-25", "2199-12-30", "working_days", "false", r => r.WorkingDays(), "C# data-end advance");
+    DaysAtEnd("2199-12-25", "2199-12-30", "working_days", "false", r => r.WorkingDays(), (a, b) => WorkingDaysUntil(a, b, false));
     Days("2081-04-10", "2081-04-12", "enumerate", "-", r => r);
     Days("1901-01-01", "1901-01-03", "enumerate", "-", r => r);
-    Days("2199-12-30", "2199-12-30", "enumerate", "-", r => r, "C# data-end advance");
-    Days("2199-12-30", "2199-12-30", "working_days", "false", r => r.WorkingDays(), "C# data-end advance");
-    Days("2199-12-30", "2199-12-30", "weekend_days", "true", r => r.WeekendDays(), "C# data-end advance");
-    Days("2199-12-30", "2199-12-30", "dates_with_interval", "1", r => r.DatesWithInterval(1), "C# data-end advance");
+    DaysAtEnd("2199-12-30", "2199-12-30", "enumerate", "-", r => r, (a, b) => EveryDayUntil(a, b));
+    DaysAtEnd("2199-12-30", "2199-12-30", "working_days", "false", r => r.WorkingDays(), (a, b) => WorkingDaysUntil(a, b, false));
+    DaysAtEnd("2199-12-30", "2199-12-30", "weekend_days", "true", r => r.WeekendDays(), (a, b) => WeekendDaysUntil(a, b, true));
+    DaysAtEnd("2199-12-30", "2199-12-30", "dates_with_interval", "1", r => r.DatesWithInterval(1), (a, b) => IntervalDaysUntil(a, b, 1));
     Write("range-days.tsv",
         "# C# NepaliDateRange day helpers (NR24-NR27). Every list is in date order; none is an\n" +
         "# empty result and ERR is a rejected argument (interval below 1). C# also advances one\n" +
-        "# day after the last item, so a range that ends at 2199-12-30 errors; those rows say so.\n" +
+        "# day after the last item and throws ArgumentOutOfRangeException at 2199-12-30. The D-16\n" +
+        "# rows hold the port's value: every date up to and including 2199-12-30.\n" +
         "start\tend\toperation\targument\tresult\tnote",
         rows);
 }

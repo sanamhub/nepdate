@@ -1,6 +1,9 @@
 # C# NepDateRange (NR01-NR04, NR06, NR15-NR21, NR27, NR30). Ranges are inclusive.
 # D-01: a port has no empty range, so start > end is ERR and Intersect with no overlap is
 # none; C# returns an empty range for both.
+# D-16: C# also throws ArgumentOutOfRangeException at the data end. IsAdjacentTo throws
+# when a range ends at 2199-12-30, and Intersect of disjoint ranges throws when the
+# receiver starts at 1901-01-01; those rows hold the port's value.
 start	end	operation	argument	result	note
 2081-04-10	2081-04-20	construct	-	2081-04-10..2081-04-20	-
 2081-04-15	2081-04-15	construct	-	2081-04-15..2081-04-15	-
@@ -30,11 +33,13 @@ start	end	operation	argument	result	note
 2081-04-10	2081-04-20	is_adjacent_to	2081-04-22..2081-04-25	false	-
 2081-04-10	2081-04-20	is_adjacent_to	2081-04-15..2081-04-25	false	-
 2081-04-10	2081-04-20	is_adjacent_to	2081-04-10..2081-04-20	false	-
+2199-12-25	2199-12-30	is_adjacent_to	2081-04-10..2081-04-20	false	D-16
 2081-04-10	2081-04-20	intersect	2081-04-15..2081-04-25	2081-04-15..2081-04-20	-
 2081-04-10	2081-04-20	intersect	2081-04-12..2081-04-18	2081-04-12..2081-04-18	-
 2081-04-10	2081-04-20	intersect	2081-04-10..2081-04-20	2081-04-10..2081-04-20	-
 2081-04-10	2081-04-20	intersect	2081-04-21..2081-04-25	none	D-01
 2081-04-10	2081-04-20	intersect	2081-05-01..2081-05-05	none	D-01
+1901-01-01	1901-01-05	intersect	2081-04-10..2081-04-20	none	D-16
 2081-04-10	2081-04-20	union	2081-04-15..2081-04-25	2081-04-10..2081-04-25	-
 2081-04-10	2081-04-20	union	2081-04-21..2081-04-25	2081-04-10..2081-04-25	-
 2081-04-10	2081-04-20	union	2081-05-01..2081-05-05	2081-04-10..2081-05-05	-
