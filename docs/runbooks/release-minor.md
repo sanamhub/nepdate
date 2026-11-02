@@ -38,11 +38,9 @@ For Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C, in any order:
       decision 3).
 - [ ] Run the port's full CI command until it passes, then merge the PR.
 - [ ] Release with the port's own release workflow, after its approval gate.
-- [ ] Tag and name the version as ADR-0007 decision 4 says. Go, TypeScript, Kotlin, C and C++ tags
+- [ ] Tag and name the version as ADR-0007 decision 4 says. Rust, Go, TypeScript, Kotlin, C and C++ tags
       start with `v` (`v0.2.0-beta.1`), the Swift package tag has no `v` (`0.2.0-beta.1`), and PyPI
-      receives the PEP 440 spelling (`0.2.0b1`). The Rust release workflow still listens for
-      `nepdate-v*`; ADR-0007 moves its next tags to the plain `v` prefix, so change that pattern
-      before the first `v` tag.
+      receives the PEP 440 spelling (`0.2.0b1`). Rust's older `nepdate-v*` tags stay as they are.
 - [ ] Once the release is on the registry, update that port's entry in `spec/versions.json` in a
       hub PR (several ports may share one PR). Merging it redeploys nepdate.com with the new
       install lines.
