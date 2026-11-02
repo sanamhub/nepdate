@@ -15,11 +15,23 @@ files from it in its own CI.
 | `csharp-golden/dates.tsv` | 1,018 | conversion, weekday, day of year, month length, every format, fiscal year and quarter |
 | `csharp-golden/add-days.tsv` | 9,162 | adding days |
 | `csharp-golden/add-months.tsv` | 10,180 | adding months, clamped and spilled |
-| `csharp-golden/format-pattern.tsv` | 451 | custom patterns |
+| `csharp-golden/format-pattern.tsv` | 452 | custom patterns, including a trailing backslash |
+| `csharp-golden/day-diff.tsv` | 16 | the day difference in both directions (D-07) |
+| `csharp-golden/ymd-int.tsv` | 14 | the `YYYYMMDD` integer both ways (D-11) |
+| `csharp-golden/bulk.tsv` | 6 | ordered bulk conversion, one bad input included |
+| `csharp-golden/serialization.tsv` | 11 | the native string hook, round trip and rejection |
+| `csharp-golden/format-matrix.tsv` | 102 | six orders, six separators and the short buffer |
+| `csharp-golden/ranges.tsv` | 54 | range containment, overlap and the set operations |
+| `csharp-golden/range-factories.tsv` | 27 | the range factories |
+| `csharp-golden/range-splits.tsv` | 9 | the month and fiscal-quarter splits |
+| `csharp-golden/range-days.tsv` | 18 | interval, working days, weekend days and iteration |
+| `csharp-golden/range-format.tsv` | 18 | the two range string forms |
+| `year-length.tsv` | 299 | the BS year length, 364 to 367 |
 | `parse.tsv` | | the strict and lenient parsers, errors included |
 
 The golden files are the recorded output of the published C# NepDate 2.0.7 package. Where C#'s
-documentation and its code disagree, the code is the reference.
+documentation and its code disagree, the code is the reference. `year-length.tsv` is the one
+reference vector: C# has no year-length API (D-12), so it is summed from the hub's month lengths.
 
 Beyond the vectors, every port runs an exhaustive round trip over all 109,212 days in the range.
 
@@ -27,7 +39,7 @@ Beyond the vectors, every port runs an exhaustive round trip over all 109,212 da
 
 A few rows differ from C# on purpose, for example the short names **Asa** and **Aso** that keep
 Ashad and Ashoj apart, or a lenient parser that refuses ambiguous input instead of guessing. Each
-difference has an id (D-01 to D-15) in
+difference has an id (D-01 to D-16) in
 [PARITY.md](https://github.com/sanamhub/nepdate/blob/main/spec/PARITY.md), and every port differs
 in the same way: a port skips a golden row only through a filter that names the deviation.
 

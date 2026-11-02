@@ -20,9 +20,31 @@ data, and documented APIs that don't exist. **Docs are never the oracle.**
 | `add-days.tsv` | 9162 | bs, days, result |
 | `add-months.tsv` | 10180 | bs, months, clamp, overflow (`awayFromMonthEnd: true`) |
 | `parse.tsv` | 42 | input, strict (`NepaliDate.TryParse`), smart (`SmartDateParser.TryParse`); for comparison only, not a test target (D-05, D-06; ports test `spec/vectors/parse.tsv`) |
-| `format-pattern.tsv` | 451 | bs, pattern, result (`ToString(string)`) |
+| `format-pattern.tsv` | 452 | bs, pattern, result (`ToString(string)`) |
+| `day-diff.tsv` | 16 | a, b, days_until (`b - a`, D-07), operator_minus (`a - b`) |
+| `ymd-int.tsv` | 14 | kind, input, ymd, result; the `YYYYMMDD` integer both ways (D-11) |
+| `bulk.tsv` | 6 | operation, input, output; the output is in input order (NC04-NC08) |
+| `serialization.tsv` | 11 | kind, input, json, result; the string hook round trip (D-01, D-11) |
+| `format-matrix.tsv` | 102 | kind, bs, order, separator, pad, lang, format, capacity, result (NF02, NF07; D-15) |
+| `ranges.tsv` | 54 | start, end, operation, argument, result (NR01-NR04, NR06, NR15-NR21, NR27, NR30; D-01, D-16) |
+| `range-factories.tsv` | 27 | factory, argument, result (NR07-NR11; D-01) |
+| `range-splits.tsv` | 9 | start, end, operation, result (NR22, NR23; D-16) |
+| `range-days.tsv` | 18 | start, end, operation, argument, result (NR24-NR27; D-16) |
+| `range-format.tsv` | 18 | start, end, kind, order, separator, lang, result (NR28, NR29; D-01, D-15) |
 
-`ERR` = exception or `false` from TryParse.
+`year-length.tsv` has 299 rows and is the one reference vector in this set: C# has no year-length
+API (D-12), so it lives at `spec/vectors/year-length.tsv` and is summed from the month lengths in
+`data/` by `tools/make_vectors.py`, not recorded from C#.
+
+`ERR` = exception or `false` from TryParse, or the port's refusal of an empty range. A line
+starting with `#` in a new vector file is a comment; the readers skip it. Fields are tab-separated;
+`serialization.tsv` holds literal JSON text, quotes included, so a reader must not use a
+quote-aware TSV mode.
+
+The new files carry a `note` column. A row whose note is a D number holds the port's expected
+value, not the raw C# value; a port that compares raw C# output skips that row by the note, the
+same way the existing readers skip the D-04 pattern rows. `year-length.tsv` has no note column
+because the whole file is the D-12 reference vector.
 
 Every port's test suite loads these files and matches every row, **except** rows affected by
 a deviation below. Those rows are skipped by an explicit filter with a comment naming the
@@ -46,6 +68,7 @@ Port behaviour is described in neutral terms. Each port's API doc gives its own 
 | D-12 | `IsLeapYear()` = Gregorian leap-ness of the AD year of the date (changes mid-BS-year) | not ported; a year length (364 to 367) instead, in every port | the C# meaning is surprising |
 | D-13 | Tithi, holidays and events are members of `NepaliDate`, in the one `NepDate` package (the author keeps it this way, 2026-10-07) | a separate package `nepdate-patro` that depends on the core (ADR-0004); same data and query results | size and release cadence; most users only convert dates |
 | D-15 | `ToString(string)` standard formats `G`, `g`, `d`, `D`, `s` | supported identically, **plus** Nepali-language output | parity + a feature the widget needs |
+| D-16 | `SplitByMonth` and `SplitByFiscalQuarter` advance to the month or quarter after the last piece, the enumerator, `WorkingDays`, `WeekendDays` and `DatesWithInterval` advance one step after the last date, and `IsAdjacentTo` computes the day after a range end, so a range that reaches 2199-12-30 throws `ArgumentOutOfRangeException`; `Intersect` throws for disjoint ranges when the receiver starts at 1901-01-01 | a valid range never throws because it touches the data end: both splits return every piece, the last ending at the range end; the enumerator and the three day helpers return every date up to and including 2199-12-30; `IsAdjacentTo` returns `false` when the other range would have to start after 2199-12-30, and in the mirror case before 1901-01-01; `Intersect` of disjoint ranges returns the port's "no range" value, also when the receiver starts at 1901-01-01 | C# advances one step past the last item, which is an implementation artifact, not a rule; throwing on a valid range is never what a caller wants |
 
 Everything not listed here must match the golden vectors.
 

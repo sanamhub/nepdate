@@ -87,9 +87,9 @@ Python 3.10 or newer, nothing else:
 py spec/reference/verify_vectors.py
 ```
 
-It checks the algorithm spec against 7176 month-boundary vectors and 20,360 golden rows (dates,
-add days, add months) recorded from C# NepDate, plus the formatting and parsing specs.
-`scripts/ci.sh` runs that and the data checks, the same as CI.
+It checks the algorithm spec against 7176 month-boundary vectors and 21,126 golden rows recorded
+from C# NepDate, plus the 299-year reference year length, the formatting and parsing specs, and
+the API coverage check. `scripts/ci.sh` runs that and the data checks, the same as CI.
 
 ## Credits and license
 

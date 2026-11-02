@@ -19,15 +19,18 @@ and Effective Dart style, not a separate API.
 - The D numbers in this file refer to `PARITY.md`. A row with a D number is a deliberate,
   agreed deviation, not a gap. D-09, D-10 and D-14 were removed on 2026-11-02; their APIs are
   back, so the numbering has gaps.
-- The `Vectors` column names the golden file and columns that cover the row. `needs vectors`
-  means the row has no vector yet; the section at the end lists every such row so the next step
-  can add it to `tools/csharp-golden` before the ports implement the row. `clock; no vector`
-  means the value comes from the machine clock, and `not ported` means a decision removes the
-  row from the port surface, so no vector is needed.
-- Vectors are in `spec/vectors`. `dates.tsv` has 1018 rows, `add-days.tsv` 9162,
-  `add-months.tsv` 10180, `format-pattern.tsv` 451, `csharp-golden/parse.tsv` 42, and
-  `parse.tsv` 69. `month-boundaries.csv` has 7176 data rows. `ERR` in a vector means the C#
-  call threw or returned false.
+- The `Vectors` column names the golden file and columns that cover the row. Every row has a
+  vector, a clock note, or a decision. `clock; no vector` means the value comes from the machine
+  clock, `not ported` means a decision removes the row from the port surface, and `no vector`
+  means the row is a language mechanism with no cross-language answer. `reference` marks a file
+  that is derived from `data/` rather than recorded from C#.
+- Vectors are in `spec/vectors`. The C# files under `csharp-golden/` have 20,360 rows for dates,
+  add-days and add-months, plus `format-pattern.tsv` (452), `parse.tsv` (42), `day-diff.tsv`
+  (16), `ymd-int.tsv` (14), `bulk.tsv` (6), `serialization.tsv` (11), `format-matrix.tsv` (102),
+  `ranges.tsv` (54), `range-factories.tsv` (27), `range-splits.tsv` (9), `range-days.tsv` (18)
+  and `range-format.tsv` (18). `year-length.tsv` (299 years), `parse.tsv` (69),
+  `month-boundaries.csv` (7176 data rows) and `patro-summary.json` are reference files. `ERR` in
+  a vector means the C# call threw or returned false, or that a port refuses an empty range.
 - A naming table gives the final name and signature for each port. Where a port already had a
   fitting name it is kept. A name may still be adjusted to a language's local style, but the
   concept, the arguments and the result do not change.
@@ -76,7 +79,7 @@ The decisions changed the port surface, not the C# inventory. The count stays 12
 | ND17 | `static readonly NepaliDate MaxValue` | 2199-12-30 BS, AD 2143-04-15. | dates.tsv boundary row |
 | ND18 | `NepaliDate MonthEndDate()` | This year and month on the last day. | month-boundaries.csv |
 | ND19 | `void Deconstruct(out int year, out int month, out int day)` | Tuple deconstruction of the three components. | language destructuring; no vector |
-| ND20 | `bool IsLeapYear()` | Gregorian leap year of `EnglishDate.Year`, not a BS year property. `D-12` replaces it with the BS year length, 364 to 367. | needs vectors |
+| ND20 | `bool IsLeapYear()` | Gregorian leap year of `EnglishDate.Year`, not a BS year property. `D-12` replaces it with the BS year length, 364 to 367. | year-length.tsv (reference; D-12) |
 | ND21 | `bool IsToday()` | `today(zone) == this`; the zone is explicit. | clock; no vector |
 | ND22 | `bool IsYesterday()` | `today(zone) - 1 day == this`. | clock; no vector |
 | ND23 | `bool IsTomorrow()` | `today(zone) + 1 day == this`. | clock; no vector |
@@ -102,7 +105,8 @@ Boundary rows: 1901-01-01 is AD 1844-04-11, and 2199-12-30 is AD 2143-04-15.
 
 `IsLeapYear` follows the Gregorian year, so 2080-01-01 (April 2023) is false while 2080-11-01
 (January 2024) is true. `D-12` replaces it with the length of the BS year, 364 to 367. Every port
-exposes that length as `ND20`; it sums the twelve month lengths and needs its own vector.
+exposes that length as `ND20`; it sums the twelve month lengths. C# has no year-length API, so
+`year-length.tsv` is a reference vector derived from `data/`, not recorded from C#.
 
 `Today` reads the machine clock and takes a zone or a fixed offset. `Now` has the same date as
 `Today`, because a date has no time of day, so `ND15` maps to the same `today(zone)` call and no
@@ -162,13 +166,13 @@ ordering; hash values are language-specific and have no cross-language vector.
 | NC01 | `static NepaliDate DateTimeExtensions.ToNepaliDate(this DateTime englishDate)` | Calls the `DateTime` constructor. | dates.tsv (ad, reverse) |
 | NC02 | `static NepaliDate SmartParsingExtensions.ToNepaliDate(this string input)` | Calls `SmartDateParser.Parse`. | parse.tsv (lenient) |
 | NC03 | `static bool SmartParsingExtensions.TryToNepaliDate(this string input, out NepaliDate result)` | Calls `SmartDateParser.TryParse`; false leaves no result. | parse.tsv (lenient, ERR) |
-| NC04 | `static IEnumerable<NepaliDate> NepaliDate.BulkConvert.ToNepaliDates(IEnumerable<DateTime> engDates, bool useParallel = true)` | Maps every date. The port form keeps input order, unlike the C# PLINQ path above 500 items. | needs vectors |
-| NC05 | `static IEnumerable<DateTime> ...ToEnglishDates(IEnumerable<string> nepDates, bool useParallel = true)` | Parses each string and returns its English date, in input order. | needs vectors |
-| NC06 | `static IEnumerable<DateTime> ...ToEnglishDates(IEnumerable<NepaliDate> nepDates, bool useParallel = true)` | Returns `EnglishDate` for each date, in input order. | needs vectors |
-| NC07 | `static IEnumerable<NepaliDate> ...BatchProcessToNepaliDates(IEnumerable<DateTime> engDates, int batchSize = 1000)` | Converts in batches and accumulates a list. The port's single batch function is the same operation. | needs vectors |
-| NC08 | `static IEnumerable<DateTime> ...BatchProcessToEnglishDates(IEnumerable<NepaliDate> nepDates, int batchSize = 1000)` | Converts in batches and accumulates a list. The port's single batch function is the same operation. | needs vectors |
-| NC09 | `sealed class NepaliDateTypeConverter : TypeConverter` | Converts to and from string, `YYYYMMDD` integer and `DateTime`; `ConvertTo` string is `YYYY-MM-DD`. The type is not ported; its integer form is. | needs vectors |
-| NC10 | `class SystemTextJsonConverters.NepaliDateJsonConverter : JsonConverter<NepaliDate>` | Reads a string or an object and writes `YYYY-MM-DD`; null becomes the default value. The port form is the language's native string hook only. | dates.tsv (to_string); native hook needs vectors |
+| NC04 | `static IEnumerable<NepaliDate> NepaliDate.BulkConvert.ToNepaliDates(IEnumerable<DateTime> engDates, bool useParallel = true)` | Maps every date. The port form keeps input order, unlike the C# PLINQ path above 500 items. | bulk.tsv |
+| NC05 | `static IEnumerable<DateTime> ...ToEnglishDates(IEnumerable<string> nepDates, bool useParallel = true)` | Parses each string and returns its English date, in input order. | bulk.tsv |
+| NC06 | `static IEnumerable<DateTime> ...ToEnglishDates(IEnumerable<NepaliDate> nepDates, bool useParallel = true)` | Returns `EnglishDate` for each date, in input order. | bulk.tsv |
+| NC07 | `static IEnumerable<NepaliDate> ...BatchProcessToNepaliDates(IEnumerable<DateTime> engDates, int batchSize = 1000)` | Converts in batches and accumulates a list. The port's single batch function is the same operation. | bulk.tsv |
+| NC08 | `static IEnumerable<DateTime> ...BatchProcessToEnglishDates(IEnumerable<NepaliDate> nepDates, int batchSize = 1000)` | Converts in batches and accumulates a list. The port's single batch function is the same operation. | bulk.tsv |
+| NC09 | `sealed class NepaliDateTypeConverter : TypeConverter` | Converts to and from string, `YYYYMMDD` integer and `DateTime`; `ConvertTo` string is `YYYY-MM-DD`. The type is not ported; its integer form is. | ymd-int.tsv (D-11) |
+| NC10 | `class SystemTextJsonConverters.NepaliDateJsonConverter : JsonConverter<NepaliDate>` | Reads a string or an object and writes `YYYY-MM-DD`; null becomes the default value. The port form is the language's native string hook only. | serialization.tsv (D-11); dates.tsv (to_string) |
 | NC11 | `class SystemTextJsonConverters.NepaliDateObjectJsonConverter` | Reads an object and writes `{ "Year", "Month", "Day" }`. | not ported (D-11); no vector |
 | NC12 | `class NewtonsoftJsonConverters.NepaliDateJsonConverter : JsonConverter<NepaliDate>` | The Newtonsoft version of NC10. | not ported (D-11); no vector |
 | NC13 | `class NewtonsoftJsonConverters.NepaliDateObjectJsonConverter` | The Newtonsoft version of NC11. | not ported (D-11); no vector |
@@ -221,8 +225,8 @@ The string and `DateTime` parts of the C# `TypeConverter` are covered by `NC01` 
 | NA01 | `NepaliDate AddMonths(double months, bool awayFromMonthEnd = false)` | Negative values delegate to subtraction. A fractional value is rounded away from zero and converted to days at 30.4167 days per month. A whole value moves in month space and clamps or spills at the target month end. | add-months.tsv |
 | NA02 | `NepaliDate AddDays(double days)` | Converts to `DateTime`, calls `DateTime.AddDays`, converts back; only the date part survives. | add-days.tsv |
 | NA03 | `NepaliDate AddYears(int years, bool awayFromMonthEnd = false)` | `AddMonths(years * 12.0, awayFromMonthEnd)`. | add-months.tsv (years x 12) |
-| NA04 | `TimeSpan Subtract(NepaliDate nepDateTo)` | C# returns `this - nepDateTo`; the port's named method returns `other - this`. | needs vectors |
-| NA05 | `static TimeSpan operator -(NepaliDate d1, NepaliDate d2)` | English date difference; positive when `d1` is later. Where the language overloads `-`, the operator keeps this C# direction. | needs vectors (sign) |
+| NA04 | `TimeSpan Subtract(NepaliDate nepDateTo)` | C# returns `this - nepDateTo`; the port's named method returns `other - this`. | day-diff.tsv (days_until; D-07) |
+| NA05 | `static TimeSpan operator -(NepaliDate d1, NepaliDate d2)` | English date difference; positive when `d1` is later. Where the language overloads `-`, the operator keeps this C# direction. | day-diff.tsv (operator_minus; D-07) |
 
 **Required behaviour.** Whole month arithmetic is the required model. `D-02` removes fractional
 months and makes the overflow choice explicit: clamp to the last day of the target month, or spill
@@ -235,7 +239,8 @@ boundaries. Examples from `ALGORITHM.md`: 2081-04-32 plus two months is 2081-06-
 the language overloads `-`, the operator keeps the C# direction, `this - other`, positive when
 the left date is later. The named method `days_until` (and `daysUntil`, `DaysUntil`) keeps the
 opposite direction, `other - this`, the direction of `ALGORITHM.md` `days_between(a, b)`. A port
-must not use the two names interchangeably, and its docs must state both.
+must not use the two names interchangeably, and its docs must state both. `day-diff.tsv` records
+both directions for the same pair.
 
 `AddYears` is `AddMonths(years * 12)` and uses the same overflow mode. `AddMonths` with a negative
 value is the subtraction path; it is not a separate API.
@@ -255,22 +260,22 @@ value is the subtraction path; it is not a separate API.
 | ID | C# signature | What the code does | Vectors |
 |---|---|---|---|
 | NF01 | `override string ToString()` | `YYYY/MM/DD`, zero padded, ASCII digits, exactly 10 characters. | dates.tsv (to_string) |
-| NF02 | `string ToString(DateFormats dateFormat, Separators separator = Separators.ForwardSlash, bool leadingZeros = true)` | Writes the three fields in the requested order with the requested separator and optional padding. | dates.tsv (dmy_dash_nopad); needs vectors for all orders and separators |
+| NF02 | `string ToString(DateFormats dateFormat, Separators separator = Separators.ForwardSlash, bool leadingZeros = true)` | Writes the three fields in the requested order with the requested separator and optional padding. | format-matrix.tsv (short); dates.tsv (dmy_dash_nopad) |
 | NF03 | `string ToLongDateString(bool leadingZeros = true, bool displayDayName = false, bool displayYear = true)` | `[Weekday, ]Month day[, year]`, English names, padded day by default. | dates.tsv (long_en, long_en_weekday, long_ne, long_ne_weekday) |
 | NF04 | `string ToUnicodeString(DateFormats dateFormat = DateFormats.YearMonthDay, Separators separator = Separators.ForwardSlash, bool leadingZeros = true)` | `ToString` with every ASCII digit replaced by its Devanagari counterpart. | dates.tsv (unicode) |
 | NF05 | `string ToLongDateUnicodeString(bool leadingZeros = true, bool displayDayName = false, bool displayYear = true)` | Long form with Devanagari month name, weekday name and digits. | dates.tsv (long_ne, long_ne_weekday) |
 | NF06 | `string ToString(string format, IFormatProvider formatProvider = null)` | Standard patterns `""`, `G`, `g`, `d`, `D`, `s`; anything else is the custom pattern language. The provider is ignored. | format-pattern.tsv |
-| NF07 | `bool ISpanFormattable.TryFormat(Span<char>, out int, ReadOnlySpan<char>, IFormatProvider)` | Formats into the caller's buffer; false when it does not fit. | format-pattern.tsv (content); buffer edge needs vectors |
-| NF08 | `enum DateFormats` | Six orders: `YearMonthDay`, `YearDayMonth`, `MonthYearDay`, `MonthDayYear`, `DayYearMonth`, `DayMonthYear`. | NF02 and NF03 vectors |
-| NF09 | `enum Separators` | Six separators: `/`, `\`, `.`, `_`, `-`, space. | NF02 vectors |
+| NF07 | `bool ISpanFormattable.TryFormat(Span<char>, out int, ReadOnlySpan<char>, IFormatProvider)` | Formats into the caller's buffer; false when it does not fit. | format-matrix.tsv (try_format); format-pattern.tsv (content) |
+| NF08 | `enum DateFormats` | Six orders: `YearMonthDay`, `YearDayMonth`, `MonthYearDay`, `MonthDayYear`, `DayYearMonth`, `DayMonthYear`. | format-matrix.tsv (order) |
+| NF09 | `enum Separators` | Six separators: `/`, `\`, `.`, `_`, `-`, space. | format-matrix.tsv (separator) |
 | NF10 | `enum NepaliMonths` | Twelve month names, `Baishakh` (1) to `Chaitra` (12). | dates.tsv (long_en, long_ne) |
 
 **Required behaviour.** The long form is `[<Weekday>, ]<Month> <day>[, <year>]`. `pad` pads
 month and day to two digits, the year is always four digits, and the weekday appears only when
 requested. Formatter output is covered by the `to_string`, `unicode`, `long_en`,
 `long_en_weekday`, `long_ne`, `long_ne_weekday` and `dmy_dash_nopad` columns of `dates.tsv`, and
-by the 451 rows of `format-pattern.tsv`. The six orders and six separators are not a full matrix
-in the vectors yet, so `NF02` needs one.
+by the 452 rows of `format-pattern.tsv`. The six orders and six separators are covered by
+`format-matrix.tsv`, which also records the short-buffer case for `TryFormat`.
 
 Custom pattern tokens: `yyyy` and longer runs write the four-digit year; `y`, `yy` and `yyy`
 write the last two digits; `MMMM` writes the full month name; `MMM` writes the first three
@@ -354,36 +359,36 @@ parse error kinds of `PARSING.md` section 4.
 
 | ID | C# signature | What the code does | Vectors |
 |---|---|---|---|
-| NR01 | `readonly struct NepaliDateRange : IEnumerable<NepaliDate>, IEquatable<NepaliDateRange>` | Inclusive range from `Start` to `End`; both ends are dates. | needs vectors |
-| NR02 | `NepaliDateRange(NepaliDate start, NepaliDate end)` | Stores the bounds; `start > end` means an empty range in C#, and is refused in a port that has no empty range. | needs vectors |
-| NR03 | `NepaliDate Start { get; }` | First date. | needs vectors |
-| NR04 | `NepaliDate End { get; }` | Last date, inclusive. | needs vectors |
+| NR01 | `readonly struct NepaliDateRange : IEnumerable<NepaliDate>, IEquatable<NepaliDateRange>` | Inclusive range from `Start` to `End`; both ends are dates. | ranges.tsv |
+| NR02 | `NepaliDateRange(NepaliDate start, NepaliDate end)` | Stores the bounds; `start > end` means an empty range in C#, and is refused in a port that has no empty range. | ranges.tsv (construct; D-01) |
+| NR03 | `NepaliDate Start { get; }` | First date. | ranges.tsv (start) |
+| NR04 | `NepaliDate End { get; }` | Last date, inclusive. | ranges.tsv (end) |
 | NR05 | `bool IsEmpty { get; }` | `Start > End`. | not exposed; ports are non-empty (D-01); no vector |
-| NR06 | `int Length { get; }` | Number of days, inclusive; 0 for an empty range. | needs vectors |
-| NR07 | `static NepaliDateRange SingleDay(NepaliDate date)` | Range of one date. | needs vectors |
-| NR08 | `static NepaliDateRange FromDayCount(NepaliDate start, int days)` | `start` to `start + days - 1`; `days` must be at least 1. | needs vectors |
-| NR09 | `static NepaliDateRange ForMonth(int year, int month)` | Day 1 to the last day of the BS month. | needs vectors |
-| NR10 | `static NepaliDateRange ForFiscalYear(int fiscalYear)` | 1 Shrawan of the fiscal year to the last day of Ashad of the next year. | dates.tsv (fy_start, fy_end) |
-| NR11 | `static NepaliDateRange ForCalendarYear(int year)` | 1 Baishakh to the last day of Chaitra. | needs vectors |
+| NR06 | `int Length { get; }` | Number of days, inclusive; 0 for an empty range. | ranges.tsv (length) |
+| NR07 | `static NepaliDateRange SingleDay(NepaliDate date)` | Range of one date. | range-factories.tsv (single_day) |
+| NR08 | `static NepaliDateRange FromDayCount(NepaliDate start, int days)` | `start` to `start + days - 1`; `days` must be at least 1. | range-factories.tsv (from_day_count) |
+| NR09 | `static NepaliDateRange ForMonth(int year, int month)` | Day 1 to the last day of the BS month. | range-factories.tsv (for_month) |
+| NR10 | `static NepaliDateRange ForFiscalYear(int fiscalYear)` | 1 Shrawan of the fiscal year to the last day of Ashad of the next year. | dates.tsv (fy_start, fy_end); range-factories.tsv (for_fiscal_year) |
+| NR11 | `static NepaliDateRange ForCalendarYear(int year)` | 1 Baishakh to the last day of Chaitra. | range-factories.tsv (for_calendar_year) |
 | NR12 | `static NepaliDateRange CurrentMonth()` | `ForMonth` of today's BS month. | clock; no vector |
 | NR13 | `static NepaliDateRange CurrentFiscalYear()` | `ForFiscalYear` of today's fiscal year. | clock; no vector |
 | NR14 | `static NepaliDateRange CurrentCalendarYear()` | `ForCalendarYear` of today's BS year. | clock; no vector |
-| NR15 | `bool Contains(NepaliDate date)` | True when the range is not empty and the date is between the bounds. | needs vectors |
-| NR16 | `bool Contains(NepaliDateRange other)` | True when this range fully contains the other; an empty other is contained by any non-empty range. | needs vectors |
-| NR17 | `bool Overlaps(NepaliDateRange other)` | True when the two non-empty ranges share a date. | needs vectors |
-| NR18 | `bool IsAdjacentTo(NepaliDateRange other)` | True when one range starts the day after the other ends. | needs vectors |
-| NR19 | `NepaliDateRange Intersect(NepaliDateRange other)` | Overlap, or an empty range when they do not overlap. A port without an empty range returns no value. | needs vectors |
-| NR20 | `NepaliDateRange Union(NepaliDateRange other)` | Smallest range covering both; `this` or `other` when one is empty. | needs vectors |
-| NR21 | `NepaliDateRange[] Except(NepaliDateRange other)` | This range with the other removed; zero, one or two ranges. | needs vectors |
-| NR22 | `NepaliDateRange[] SplitByMonth()` | One range per month touched, clipped at the range ends. | needs vectors |
-| NR23 | `NepaliDateRange[] SplitByFiscalQuarter()` | One range per fiscal quarter touched, clipped at the range ends. | needs vectors |
-| NR24 | `IEnumerable<NepaliDate> DatesWithInterval(int interval)` | Every `interval` days from `Start`; `interval` must be at least 1. | needs vectors |
-| NR25 | `IEnumerable<NepaliDate> WorkingDays(bool excludeSunday = false)` | Every day except Saturday, and except Sunday when asked. | needs vectors |
-| NR26 | `IEnumerable<NepaliDate> WeekendDays(bool includeSunday = true)` | Every Saturday, and Sunday when asked. | needs vectors |
-| NR27 | `IEnumerator<NepaliDate> GetEnumerator()` | Every day from `Start` to `End`. | needs vectors |
-| NR28 | `override string ToString()` | `"start - end"`, or `"Empty Range"`. | needs vectors |
-| NR29 | `string ToString(DateFormats format, Separators separator = Separators.ForwardSlash)` | The two dates formatted with the same options, separated by `" - "`. | needs vectors |
-| NR30 | `Equals`, `GetHashCode`, `operator ==`, `operator !=` | Value equality of the bounds; two empty ranges are equal in C#. | needs vectors |
+| NR15 | `bool Contains(NepaliDate date)` | True when the range is not empty and the date is between the bounds. | ranges.tsv (contains_date) |
+| NR16 | `bool Contains(NepaliDateRange other)` | True when this range fully contains the other; an empty other is contained by any non-empty range. | ranges.tsv (contains_range) |
+| NR17 | `bool Overlaps(NepaliDateRange other)` | True when the two non-empty ranges share a date. | ranges.tsv (overlaps) |
+| NR18 | `bool IsAdjacentTo(NepaliDateRange other)` | True when one range starts the day after the other ends. | ranges.tsv (is_adjacent_to; D-16) |
+| NR19 | `NepaliDateRange Intersect(NepaliDateRange other)` | Overlap, or an empty range when they do not overlap. A port without an empty range returns no value. | ranges.tsv (intersect; D-01, D-16) |
+| NR20 | `NepaliDateRange Union(NepaliDateRange other)` | Smallest range covering both; `this` or `other` when one is empty. | ranges.tsv (union) |
+| NR21 | `NepaliDateRange[] Except(NepaliDateRange other)` | This range with the other removed; zero, one or two ranges. | ranges.tsv (except) |
+| NR22 | `NepaliDateRange[] SplitByMonth()` | One range per month touched, clipped at the range ends. | range-splits.tsv (split_by_month; D-16) |
+| NR23 | `NepaliDateRange[] SplitByFiscalQuarter()` | One range per fiscal quarter touched, clipped at the range ends. | range-splits.tsv (split_by_fiscal_quarter; D-16) |
+| NR24 | `IEnumerable<NepaliDate> DatesWithInterval(int interval)` | Every `interval` days from `Start`; `interval` must be at least 1. | range-days.tsv (dates_with_interval; D-16) |
+| NR25 | `IEnumerable<NepaliDate> WorkingDays(bool excludeSunday = false)` | Every day except Saturday, and except Sunday when asked. | range-days.tsv (working_days; D-16) |
+| NR26 | `IEnumerable<NepaliDate> WeekendDays(bool includeSunday = true)` | Every Saturday, and Sunday when asked. | range-days.tsv (weekend_days; D-16) |
+| NR27 | `IEnumerator<NepaliDate> GetEnumerator()` | Every day from `Start` to `End`. | ranges.tsv (enumerate; D-16) |
+| NR28 | `override string ToString()` | `"start - end"`, or `"Empty Range"`. | range-format.tsv (default) |
+| NR29 | `string ToString(DateFormats format, Separators separator = Separators.ForwardSlash)` | The two dates formatted with the same options, separated by `" - "`. | range-format.tsv (short; D-15) |
+| NR30 | `Equals`, `GetHashCode`, `operator ==`, `operator !=` | Value equality of the bounds; two empty ranges are equal in C#. | ranges.tsv (equals) |
 
 **Required behaviour.** A range is inclusive. A port that can represent only valid dates has no
 empty range and refuses `start > end`; the C# empty range exists because a struct cannot refuse
@@ -400,6 +405,17 @@ The range set operations are pure value operations. `Intersect` returns no value
 do not overlap. `Union` is the smallest covering range, not a set union. `Except` returns zero,
 one or two ranges. `SplitByMonth` and `SplitByFiscalQuarter` clip the first and last piece to the
 range ends.
+
+C# advances to the next month, quarter or day after it has added the last piece or yielded the
+last date, so a range that reaches 2199-12-30 makes both splits and every day helper throw. It
+also computes the day after a range end in `IsAdjacentTo`, and `Intersect` throws for disjoint
+ranges when the receiver starts at 1901-01-01. `D-16` is the decision: a port never throws on a
+valid range because it touches the data end. Both splits return every piece, the last ending at
+the range end; the enumerator, `WorkingDays`, `WeekendDays` and `DatesWithInterval` return every
+date up to and including 2199-12-30; `IsAdjacentTo` returns `false` when the other range would
+have to start after 2199-12-30, and in the mirror case before 1901-01-01; `Intersect` of disjoint
+ranges returns the port's "no range" value. The `D-16` rows in `range-splits.tsv`,
+`range-days.tsv` and `ranges.tsv` hold the port's expected value, not the C# error.
 
 **Naming.**
 
@@ -553,25 +569,14 @@ signature.
 
 ## Rows that need vectors
 
-The next step is to add these vectors to `tools/csharp-golden` before a port implements the row.
-The existing files and columns do not change; each new file gets a generator and a loader check.
+None. Every row above has either a golden vector, a reference vector, a clock note, or a
+decision that removes it from the port surface. `tools/api_coverage.py` fails when a row loses
+that coverage, so the list cannot fill up again by accident.
 
-| Rows | Vector to add |
-|---|---|
-| ND20 | `year-length.tsv`: `bs`, `year_length` for all 1018 dates. |
-| NA04, NA05 | `day-diff.tsv`: `a`, `b`, `days` for `b - a` (named) and `a - b` (operator), including zero and both signs. |
-| NC04 to NC08 | `bulk.tsv`: `input`, `output`, `order` and one `ERR` row; check that the output order matches the input order. |
-| NC09 | `ymd-int.tsv`: `bs`, `yyyymmdd`, plus invalid integers (`0`, a missing month, a day over 32). |
-| NC10 | `serialization.tsv`: `bs`, `json`; the string value is already in `dates.tsv`, the hook needs a round-trip row. |
-| NF02, NF07 | `format-matrix.tsv`: `bs`, `order`, `separator`, `pad`, `lang`, `result`; plus a short buffer for the truncation case. |
-| NR01 to NR04, NR06 to NR09, NR11, NR15 to NR30 | `ranges.tsv`: `start`, `end`, `operation`, `argument`, `result`. Add `range-factories.tsv`, `range-splits.tsv`, `range-days.tsv` and `range-format.tsv` for the factories, the two splits, the interval and working-day helpers, and the two string forms. |
-
-Within the range rows, the new behaviour is concentrated in NR16 to NR26: containment of a range,
-overlap, adjacency, intersection, union, difference, the two splits, the interval and the
-working-day and weekend-day helpers. NR07, NR08 and NR12 to NR14 add the factories, and NR28 to
-NR30 add the string and equality forms. The basics in NR01 to NR04, NR06, NR09, NR11, NR15 and
-NR27 have no vector either, so they are in the same file. NR05 is not exposed, and NR10, NR12 to
-NR14 are covered by the fiscal columns or the clock, so they are not in the list.
+The only reference vector is `year-length.tsv`: C# has no year-length API (`D-12`), so its
+value is summed from the month lengths in `data/` by `spec/reference` rather than recorded from
+C#. The C# rows are in `spec/vectors/csharp-golden/`; the reference files are beside them in
+`spec/vectors/`. `tools/csharp-golden/regenerate.sh` rebuilds every one of them.
 
 ## Decisions
 
