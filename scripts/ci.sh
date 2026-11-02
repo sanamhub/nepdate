@@ -16,6 +16,7 @@ run() {
 }
 
 run "$PYTHON" spec/reference/verify_vectors.py
+run "$PYTHON" tools/api_coverage.py
 run "$PYTHON" tools/make_vectors.py --check
 run "$PYTHON" tools/version_line.py --check
 run "$PYTHON" tools/data_sanity.py
