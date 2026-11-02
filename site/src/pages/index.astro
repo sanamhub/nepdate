@@ -69,7 +69,7 @@ const race = languages.map((port) => {
   const next = nearest(port);
   return {
     name: port.name,
-    ours: formatNs(port.ops[0]),
+    ours: formatNs(next.ours),
     theirs: formatNs(next.b1),
     rival: next.name,
     wrong: next.wrong,
@@ -77,7 +77,7 @@ const race = languages.map((port) => {
       next.times < 1.5
         ? "As fast"
         : `${next.times < 10 ? next.times.toFixed(1) : Math.round(next.times).toString()}× faster`,
-    width: Math.min(100, Math.max(1, (port.ops[0] / next.b1) * 100)).toFixed(1),
+    width: Math.min(100, Math.max(1, (next.ours / next.b1) * 100)).toFixed(1),
   };
 });
 
@@ -167,8 +167,8 @@ const jsonLd = {
         <h1>Nepali dates in nanoseconds, the same in every language.</h1>
         <p class="lede">
           Bikram Sambat for C#, Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C. Each port of the C# original is
-          faster than every other BS library we measured in its language, the original is faster than the libraries
-          its own benchmark compares against, and all of them give the same day for any date from BS 1901 to 2199.
+          faster than the other BS libraries we measured in its language, and all of them give the same day for any
+          date from BS 1901 to 2199.
         </p>
         <div class="actions">
           <a class="button primary" href="/docs/quickstart/">Get started</a>
@@ -302,8 +302,8 @@ const jsonLd = {
         <h2 id="speed-title">The fastest right answer in every language</h2>
         <p>
           BS to AD, time per call, against the fastest other Bikram Sambat library in each language. We timed{" "}
-          {competitorCount} other libraries. None of them agrees with the calendar data on all 64 dates, and every
-          language is faster than its competitors on both conversions.
+          {competitorCount} other libraries. None of them agrees with the calendar data on all 64 dates, and in every
+          language NepDate is faster than all of them on both conversions.
         </p>
       </div>
       <ol class="panel race">
