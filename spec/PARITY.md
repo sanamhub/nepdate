@@ -8,7 +8,7 @@ the deviations listed here, and all ports deviate in the same way. Decided in
 
 The C# docs (README, `llms-full.txt`, XML comments) disagree with the C# code in several
 places: wrong min/max AD dates in comments (1844-04-13 vs the real 1844-04-11), metadata
-claimed as 2001–2089 but actually 2077–2084, a README calendar example that doesn't match the
+claimed as 2001 to 2089 but actually 2077 to 2084, a README calendar example that doesn't match the
 data, and documented APIs that don't exist. **Docs are never the oracle.**
 
 `tools/csharp-golden/` runs the published NuGet package `NepDate 2.0.7` and writes
@@ -40,14 +40,11 @@ Port behaviour is described in neutral terms. Each port's API doc gives its own 
 | D-04 | `MMM` abbreviations: Ashad and Ashoj both become `Ash` | `Asa` (Ashad) and `Aso` (Ashoj); other abbreviations unchanged | fix the ambiguity |
 | D-05 | Strict parse rejects Devanagari digits; no length limit per number (int overflow possible) | strict parse accepts ASCII **and** Devanagari digits (mixing allowed); max 4 digits per group | converters need it; still deterministic; no overflow |
 | D-06 | `SmartDateParser`: fuzzy substring month matching, 6-permutation guessing, `yy`→`20yy`, extra groups ignored | lenient parse: explicit rules + closed month-name list in `PARSING.md`; vectors `vectors/parse.tsv`; no guessing; 2-digit years → `Ambiguous` | determinism and cross-language reproducibility |
-| D-07 | `DateTime - DateTime` → `TimeSpan` | signed integer day difference | no TimeSpan type needed |
+| D-07 | `DateTime - DateTime` → `TimeSpan` | signed integer day difference. Where the language overloads `-`, the operator keeps the C# direction, `this - other`, positive when the left date is later. The named method `days_until` (and its translations) uses the opposite direction, `other - this`, the direction of `ALGORITHM.md` `days_between(a, b)`; the two names are not interchangeable | no TimeSpan type needed; the operator and the named method answer different questions |
 | D-08 | Fiscal year API: instance methods with `yearOffset` ints; static `GetFiscalYearQuarterStartDate(fy, month)` treats `fy` as a calendar year | a fiscal-year value: containing(date), start, end, quarter(q); quarters Q1 = Shrawan..Ashoj … Q4 = Baishakh..Ashad of the next year | clearer, no hidden offset rules. Vectors `fy_start`/`fy_end`/`quarter_*` still match |
-| D-09 | `NepaliDateRange` has `Except`, `Union` (hull), `WorkingDays`, `WeekendDays`, lazy argument exceptions | a date range with month, year, contains, length and a day iterator only; no set operations, splitting or working days | YAGNI; iterate and filter for working days |
-| D-10 | `BulkConvert` with PLINQ (unordered output) | not ported | the language's own map/parallel tools do this |
-| D-11 | Serialization: STJ, Newtonsoft, XML, object form `{Year,Month,Day}` | one string form `"YYYY-MM-DD"` | one format |
-| D-12 | `IsLeapYear()` = Gregorian leap-ness of the AD year of the date (changes mid-BS-year) | not ported; year length (364..=367) instead | the C# meaning is surprising |
+| D-11 | Serialization: STJ string and object, Newtonsoft string and object, XML, and a `TypeConverter` for string, `YYYYMMDD` integer and `DateTime` | the canonical text form is `YYYY-MM-DD`. Every port converts the `YYYYMMDD` integer to and from a date. Serialization uses the language's standard hook only: Rust `serde` behind a feature; Go `encoding.TextMarshaler`/`TextUnmarshaler` and `json.Marshaler`; Swift `Codable`; Kotlin `kotlinx.serialization` `KSerializer` in an optional artifact; TypeScript `toJSON` plus a `fromJSON` or reviver helper; Python `to_json`/`from_json` plus `__reduce__` for pickle; C++ `operator<<`/`std::formatter` and a from-string parser; C a format and parse pair; PHP `JsonSerializable` and `__toString`; Dart `toJson` and a `fromJson` factory. No object form, XML, Newtonsoft or `TypeConverter` type | the standard hook is what each ecosystem uses; one text form keeps interchange exact; the integer form is small and already part of the C# contract |
+| D-12 | `IsLeapYear()` = Gregorian leap-ness of the AD year of the date (changes mid-BS-year) | not ported; a year length (364 to 367) instead, in every port | the C# meaning is surprising |
 | D-13 | Tithi, holidays and events are members of `NepaliDate`, in the one `NepDate` package (the author keeps it this way, 2026-10-07) | a separate package `nepdate-patro` that depends on the core (ADR-0004); same data and query results | size and release cadence; most users only convert dates |
-| D-14 | `IsToday` / `IsYesterday` / `IsTomorrow` | not ported as such: compare with the port's `today(zone)` (and `±1` day); a port may add an is-today helper | YAGNI; "today" always needs an explicit zone |
 | D-15 | `ToString(string)` standard formats `G`, `g`, `d`, `D`, `s` | supported identically, **plus** Nepali-language output | parity + a feature the widget needs |
 
 Everything not listed here must match the golden vectors.
