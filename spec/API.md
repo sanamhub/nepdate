@@ -25,9 +25,9 @@ and Effective Dart style, not a separate API.
   means the row is a language mechanism with no cross-language answer. `reference` marks a file
   that is derived from `data/` rather than recorded from C#.
 - Vectors are in `spec/vectors`. The C# files under `csharp-golden/` have 20,360 rows for dates,
-  add-days and add-months, plus `format-pattern.tsv` (451), `parse.tsv` (42), `day-diff.tsv`
+  add-days and add-months, plus `format-pattern.tsv` (452), `parse.tsv` (42), `day-diff.tsv`
   (16), `ymd-int.tsv` (14), `bulk.tsv` (6), `serialization.tsv` (11), `format-matrix.tsv` (102),
-  `ranges.tsv` (52), `range-factories.tsv` (27), `range-splits.tsv` (9), `range-days.tsv` (18)
+  `ranges.tsv` (54), `range-factories.tsv` (27), `range-splits.tsv` (9), `range-days.tsv` (18)
   and `range-format.tsv` (18). `year-length.tsv` (299 years), `parse.tsv` (69),
   `month-boundaries.csv` (7176 data rows) and `patro-summary.json` are reference files. `ERR` in
   a vector means the C# call threw or returned false, or that a port refuses an empty range.
@@ -274,7 +274,7 @@ value is the subtraction path; it is not a separate API.
 month and day to two digits, the year is always four digits, and the weekday appears only when
 requested. Formatter output is covered by the `to_string`, `unicode`, `long_en`,
 `long_en_weekday`, `long_ne`, `long_ne_weekday` and `dmy_dash_nopad` columns of `dates.tsv`, and
-by the 451 rows of `format-pattern.tsv`. The six orders and six separators are covered by
+by the 452 rows of `format-pattern.tsv`. The six orders and six separators are covered by
 `format-matrix.tsv`, which also records the short-buffer case for `TryFormat`.
 
 Custom pattern tokens: `yyyy` and longer runs write the four-digit year; `y`, `yy` and `yyy`
@@ -376,16 +376,16 @@ parse error kinds of `PARSING.md` section 4.
 | NR15 | `bool Contains(NepaliDate date)` | True when the range is not empty and the date is between the bounds. | ranges.tsv (contains_date) |
 | NR16 | `bool Contains(NepaliDateRange other)` | True when this range fully contains the other; an empty other is contained by any non-empty range. | ranges.tsv (contains_range) |
 | NR17 | `bool Overlaps(NepaliDateRange other)` | True when the two non-empty ranges share a date. | ranges.tsv (overlaps) |
-| NR18 | `bool IsAdjacentTo(NepaliDateRange other)` | True when one range starts the day after the other ends. | ranges.tsv (is_adjacent_to) |
-| NR19 | `NepaliDateRange Intersect(NepaliDateRange other)` | Overlap, or an empty range when they do not overlap. A port without an empty range returns no value. | ranges.tsv (intersect; D-01) |
+| NR18 | `bool IsAdjacentTo(NepaliDateRange other)` | True when one range starts the day after the other ends. | ranges.tsv (is_adjacent_to; D-16) |
+| NR19 | `NepaliDateRange Intersect(NepaliDateRange other)` | Overlap, or an empty range when they do not overlap. A port without an empty range returns no value. | ranges.tsv (intersect; D-01, D-16) |
 | NR20 | `NepaliDateRange Union(NepaliDateRange other)` | Smallest range covering both; `this` or `other` when one is empty. | ranges.tsv (union) |
 | NR21 | `NepaliDateRange[] Except(NepaliDateRange other)` | This range with the other removed; zero, one or two ranges. | ranges.tsv (except) |
-| NR22 | `NepaliDateRange[] SplitByMonth()` | One range per month touched, clipped at the range ends. | range-splits.tsv (split_by_month) |
-| NR23 | `NepaliDateRange[] SplitByFiscalQuarter()` | One range per fiscal quarter touched, clipped at the range ends. | range-splits.tsv (split_by_fiscal_quarter) |
-| NR24 | `IEnumerable<NepaliDate> DatesWithInterval(int interval)` | Every `interval` days from `Start`; `interval` must be at least 1. | range-days.tsv (dates_with_interval) |
-| NR25 | `IEnumerable<NepaliDate> WorkingDays(bool excludeSunday = false)` | Every day except Saturday, and except Sunday when asked. | range-days.tsv (working_days) |
-| NR26 | `IEnumerable<NepaliDate> WeekendDays(bool includeSunday = true)` | Every Saturday, and Sunday when asked. | range-days.tsv (weekend_days) |
-| NR27 | `IEnumerator<NepaliDate> GetEnumerator()` | Every day from `Start` to `End`. | ranges.tsv (enumerate) |
+| NR22 | `NepaliDateRange[] SplitByMonth()` | One range per month touched, clipped at the range ends. | range-splits.tsv (split_by_month; D-16) |
+| NR23 | `NepaliDateRange[] SplitByFiscalQuarter()` | One range per fiscal quarter touched, clipped at the range ends. | range-splits.tsv (split_by_fiscal_quarter; D-16) |
+| NR24 | `IEnumerable<NepaliDate> DatesWithInterval(int interval)` | Every `interval` days from `Start`; `interval` must be at least 1. | range-days.tsv (dates_with_interval; D-16) |
+| NR25 | `IEnumerable<NepaliDate> WorkingDays(bool excludeSunday = false)` | Every day except Saturday, and except Sunday when asked. | range-days.tsv (working_days; D-16) |
+| NR26 | `IEnumerable<NepaliDate> WeekendDays(bool includeSunday = true)` | Every Saturday, and Sunday when asked. | range-days.tsv (weekend_days; D-16) |
+| NR27 | `IEnumerator<NepaliDate> GetEnumerator()` | Every day from `Start` to `End`. | ranges.tsv (enumerate; D-16) |
 | NR28 | `override string ToString()` | `"start - end"`, or `"Empty Range"`. | range-format.tsv (default) |
 | NR29 | `string ToString(DateFormats format, Separators separator = Separators.ForwardSlash)` | The two dates formatted with the same options, separated by `" - "`. | range-format.tsv (short; D-15) |
 | NR30 | `Equals`, `GetHashCode`, `operator ==`, `operator !=` | Value equality of the bounds; two empty ranges are equal in C#. | ranges.tsv (equals) |
@@ -407,10 +407,15 @@ one or two ranges. `SplitByMonth` and `SplitByFiscalQuarter` clip the first and 
 range ends.
 
 C# advances to the next month, quarter or day after it has added the last piece or yielded the
-last date, so a range that reaches 2199-12-30 makes both splits and every day helper throw.
-`range-splits.tsv` and `range-days.tsv` record those rows as `ERR`, because that is what C# does.
-This is a C# defect at the data end, not a rule a port should copy without a decision; the rows
-are named so the difference is visible.
+last date, so a range that reaches 2199-12-30 makes both splits and every day helper throw. It
+also computes the day after a range end in `IsAdjacentTo`, and `Intersect` throws for disjoint
+ranges when the receiver starts at 1901-01-01. `D-16` is the decision: a port never throws on a
+valid range because it touches the data end. Both splits return every piece, the last ending at
+the range end; the enumerator, `WorkingDays`, `WeekendDays` and `DatesWithInterval` return every
+date up to and including 2199-12-30; `IsAdjacentTo` returns `false` when the other range would
+have to start after 2199-12-30, and in the mirror case before 1901-01-01; `Intersect` of disjoint
+ranges returns the port's "no range" value. The `D-16` rows in `range-splits.tsv`,
+`range-days.tsv` and `ranges.tsv` hold the port's expected value, not the C# error.
 
 **Naming.**
 

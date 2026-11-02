@@ -50,7 +50,7 @@ marker that names it.
   date and a range, overlap, adjacency, intersection, union, difference, the month and
   fiscal-quarter splits, the interval and working-day helpers, iteration, and both string forms.
 - AC: golden `add-days.tsv` (9162 rows) and `add-months.tsv` (10180 rows, both columns);
-  `day-diff.tsv` (16 rows, both signs); `ranges.tsv` (52), `range-factories.tsv` (27),
+  `day-diff.tsv` (16 rows, both signs); `ranges.tsv` (54), `range-factories.tsv` (27),
   `range-splits.tsv` (9), `range-days.tsv` (18) and `range-format.tsv` (18); the §8 and
   §8a examples; golden `dates.tsv` fiscal and quarter columns; FY 2082 label in Nepali is
   `२०८२/८३`; every year's range length equals the sum of its month lengths; tests with negative
@@ -60,7 +60,7 @@ marker that names it.
 
 - Names (FORMATTING §1), Devanagari digits, short, long and pattern formats, strict and lenient parse
   (PARSING), the canonical string forms (`YYYY/MM/DD` display, `YYYY-MM-DD` interchange).
-- AC: golden `dates.tsv` text columns; `format-pattern.tsv` (451 rows) except D-04 rows;
+- AC: golden `dates.tsv` text columns; `format-pattern.tsv` (452 rows) except D-04 rows;
   `format-matrix.tsv` (102 rows: six orders, six separators, the short buffer, and the D-15
   Nepali rows); every row of `parse.tsv` with the right error kind; property or fuzz test:
   arbitrary input never crashes and only raises the port's parse error.

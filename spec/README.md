@@ -9,7 +9,7 @@ directory and `data/` into its own `shared/` (ADR-0001).
 | `FORMATTING.md` | yes | names (En/Ne), short/long/pattern formats, digit localisation |
 | `PARSING.md` | yes | strict and lenient parsers, closed month-name list, error kinds |
 | `PATRO.md` | yes | tithi/holiday/event data model, queries, layout guidance |
-| `PARITY.md` | yes | C# golden vectors and the deliberate deviations D-01 … D-15 |
+| `PARITY.md` | yes | C# golden vectors and the deliberate deviations D-01 … D-16 |
 | `PORT-PLAN.md` | yes | phases and acceptance criteria every port meets |
 | `BENCHMARK.md` | yes | benchmark protocol: reference machine, the 64 dates, operations B1–B8, targets |
 | `versions.json` | yes | the `MAJOR.MINOR` line every SDK shares and each SDK's released version (ADR-0007) |
