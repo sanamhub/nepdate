@@ -2,8 +2,9 @@
 
 BenchmarkDotNet project that measures the NepDate NuGet package (2.0.7, the version pinned in
 `tools/csharp-golden`) on operations B1 to B8 of [`spec/BENCHMARK.md`](../../spec/BENCHMARK.md).
-It also measures B1 and B2 for the other C# BS converters on nuget.org (`Competitors.cs`), so the
-docs can compare NepDate with the fastest of them. Results are in
+It also measures B1 and B2 for the three C# BS converters selected by
+[`spec/BENCHMARK.md` section 7](../../spec/BENCHMARK.md#7-choosing-competitors) (`Competitors.cs`), so
+the docs compare NepDate with the libraries people use. Results are in
 [`docs/benchmarks/dotnet.md`](../../docs/benchmarks/dotnet.md).
 
 ## Run
@@ -15,10 +16,10 @@ dotnet run -c Release -f net10.0 --project tools/dotnet-bench -- --filter "*" --
 ```
 
 The config runs every benchmark twice, once on .NET 10 and once on .NET 8 (both runtimes must be
-installed). Each job is pinned to logical CPU 2 (`WithAffinity(0x4)`), as BENCHMARK §1 asks, so no
-`start /affinity` wrapper is needed. A full run took 3 min 54 s on the reference machine. BenchmarkDotNet writes
-Markdown, CSV and HTML reports to `<out-dir>/results/`; copy the `.md` and `.csv` files to
-`docs/benchmarks/raw/`.
+installed). Each job is pinned to logical CPU 2 (`WithAffinity(0x4)`) and to the machine's Ultimate
+Performance GUID, as BENCHMARK §1 asks, so no `start /affinity` wrapper is needed. A full run took
+6 min 5 s on the reference machine. BenchmarkDotNet writes Markdown, CSV and HTML reports to
+`<out-dir>/results/`; copy the `.md` and `.csv` files to `docs/benchmarks/raw/`.
 
 To run only the other libraries, with NepDate's B1 and B2 in the same session:
 
@@ -71,17 +72,12 @@ conversion API in the shape that API takes:
 
 | Library | B1 call | B2 call |
 |---|---|---|
+| DateConverterNepali | `DateConverter.GetDateInAD(y, m, d)` | `DateConverter.GetDateInBS(y, m, d)` |
 | NepaliCalendarBS | `NepaliCalendar.Convert_BS2AD("YYYY/MM/DD")` | `NepaliCalendar.Convert_AD2BS(new DateTime(y, m, d))` |
-| NepaliDateConverter.Net | `DateConverter.ConvertToEnglish(y, m, d)` | `DateConverter.ConvertToNepali(y, m, d)` |
 | NepaliDateConverter.NETCORE | `DateConverter.ConvertToEnglish(y, m, d)` | `DateConverter.ConvertToNepali(y, m, d)` |
-| BSDateConverter | `DateConverter.ConvertBSToAD("YYYY-MM-DD")` | `DateConverter.ConvertADToBS("YYYY-MM-DD")` |
-| BsadConverter | `Patro.BsToAd(y, m, d)` (returns a string) | `Patro.AdToBs(y, m, d)` |
-| NepaliUtility.Core | `BsAdConverter.BsToAd(new NepaliDate(y, m, d))` | `BsAdConverter.AdToBs(new DateTime(y, m, d))` |
-| OSN.NepaliCalendar | `NepaliDateConverter.ToGregorian(new NepaliDate(y, m, d))` | `NepaliDateConverter.ToNepali(new DateTime(y, m, d))` |
 
 Input strings are built once in setup, as for B6. A string result is consumed by its length, so
-the time doesn't include parsing it back. NepaliCalendarToolkit is in the agreement check but not
-timed, because it throws on most of the 64 inputs.
+the time doesn't include parsing it back.
 
 To check each library's B1 and B2 results against the hub data on the 64 inputs:
 
