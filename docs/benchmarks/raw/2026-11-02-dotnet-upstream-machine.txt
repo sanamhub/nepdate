@@ -1,0 +1,9 @@
+Run 2026-11-02, upstream NepDate origin/main c6fff4f.
+Command (from benchmarks/NepDate.Benchmarks, Release, no debugger):
+  cmd /c "start /affinity 4 /high /wait /b dotnet run -c Release -f net10.0"
+CPU load samples before: 4, 0, 1 percent (average 1.7).
+CPU load samples after: 3, 5, 1 percent (average 3.0).
+Machine: 12th Gen Intel Core i5-12500H, 31.7 GB RAM, Windows 11 Home 10.0.26300.
+Power: Ultimate Performance, on AC (BatteryStatus 2, 100 percent).
+.NET SDK 10.0.403; runtime 10.0.14; BenchmarkDotNet 0.15.8.
+Affinity mask 0x4 set by the start wrapper; the benchmark processes inherit it.

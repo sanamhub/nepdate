@@ -37,6 +37,9 @@ export interface PortBenchmark {
   ops: [number, number, number, number, number, number, number, number];
   /** Every other Bikram Sambat library the port measured on B1 and B2, on the same machine. */
   competitors: Competitor[];
+  /** NepDate's own B1 and B2 in the run that timed the competitors, when that was a different run
+   *  from `ops`. Competitors are compared with these, never with numbers from another run. */
+  rivalRun?: { b1: number; b2: number };
   source: string;
 }
 
@@ -149,21 +152,21 @@ export const benchmarks: PortBenchmark[] = [
   },
 ];
 
-/** C# NepDate 2.0.7 on .NET 10, the original every port is compared with. Its competitors were
- *  measured in a later run, where NepDate itself took 15.10 and 21.60 ns on B1 and B2. */
+/** C# NepDate 2.0.7 on .NET 10, the original every port is compared with. `ops` is the hub's
+ *  64-date harness, like every port. The competitors are the libraries upstream NepDate's own
+ *  benchmark compares against, from that benchmark run here on 2026-11-02 (one fixed date per
+ *  direction), where NepDate itself took 7.58 and 18.42 ns. `agrees` comes from the hub's 64-date
+ *  `--agrees` check and is the lower of B1 and B2. */
 export const csharp: PortBenchmark = {
   id: "csharp",
   name: "C#",
   machine: `${LAPTOP}, .NET 10`,
   ops: [13.29, 18.64, 17.5, 18.85, 153.02, 21.55, 47.93, 3132.66],
+  rivalRun: { b1: 7.58, b2: 18.42 },
   competitors: [
-    { name: "OSN.NepaliCalendar", b1: 12.9, b2: 24.66, agrees: 61 },
-    { name: "BsadConverter", b1: 129.84, b2: 639.36, agrees: 62 },
-    { name: "NepaliUtility.Core", b1: 354.81, b2: 2268.19, agrees: 61 },
-    { name: "BSDateConverter", b1: 599.51, b2: 5829.35, agrees: 61 },
-    { name: "NepaliCalendarBS", b1: 14612.94, b2: 199.73, agrees: 63 },
-    { name: "NepaliDateConverter.NETCORE", b1: 24224.09, b2: 52243.22, agrees: 60 },
-    { name: "NepaliDateConverter.Net", b1: 31448.7, b2: 51057.99, agrees: 60 },
+    { name: "NepaliCalendarBS", b1: 17705.16, b2: 203.94, agrees: 63 },
+    { name: "NepaliDateConverter.NETCORE", b1: 33529.46, b2: 88677.6, agrees: 60 },
+    { name: "NepaliDateConverter.Net", b1: 41861.36, b2: 83759.31, agrees: 60 },
   ],
   source: blob("nepdate", "docs/benchmarks/dotnet.md"),
 };
@@ -173,19 +176,26 @@ export const languages: PortBenchmark[] = [csharp, ...benchmarks];
 
 export const competitorCount = languages.reduce((sum, port) => sum + port.competitors.length, 0);
 
-/** The fastest other library on B1, how many times slower it is than NepDate, and how many of the
- *  64 dates it gets wrong where that was counted. */
+/** NepDate's B1 and B2 in the same run as the port's competitors. */
+function rivalBase(port: PortBenchmark) {
+  return port.rivalRun ?? { b1: port.ops[0], b2: port.ops[1] };
+}
+
+/** The fastest other library on B1, NepDate's B1 in the same run (`ours`), how many times slower
+ *  that library is, and how many of the 64 dates it gets wrong where that was counted. */
 export function nearest(port: PortBenchmark) {
   const best = port.competitors.reduce((a, b) => (b.b1 < a.b1 ? b : a));
+  const ours = rivalBase(port).b1;
   const wrong = best.agrees === undefined ? undefined : 64 - best.agrees;
-  return { name: best.name, b1: best.b1, times: best.b1 / port.ops[0], wrong };
+  return { name: best.name, b1: best.b1, ours, times: best.b1 / ours, wrong };
 }
 
 /** NepDate beats every competitor on both B1 and B2, unless that competitor gets some of the 64
  *  dates wrong and says so in `agrees`; the build fails if a number says otherwise. */
 for (const port of languages) {
+  const base = rivalBase(port);
   for (const c of port.competitors) {
-    const faster = c.b1 <= port.ops[0] || c.b2 <= port.ops[1];
+    const faster = c.b1 <= base.b1 || c.b2 <= base.b2;
     if (faster && !(c.agrees !== undefined && c.agrees < 64)) {
       throw new Error(`benchmarks.ts: ${c.name} is not slower than ${port.name} on B1 and B2`);
     }
