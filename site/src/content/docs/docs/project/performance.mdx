@@ -1,20 +1,21 @@
 ---
 title: Performance
-description: How fast each port is, measured the same way in every language, against every other Bikram Sambat library we could find.
+description: How fast each port is, measured the same way in every language, against the other Bikram Sambat libraries in that language.
 ---
 
 import { BENCHMARK_SPEC, OPERATIONS, benchmarks, competitorCount, formatNs, languages, nearest } from "../../../../data/benchmarks";
 
 Every port is benchmarked on the same eight operations and the same 64 dates, defined once in the
 hub's [`spec/BENCHMARK.md`](https://github.com/sanamhub/nepdate/blob/main/spec/BENCHMARK.md). Each
-port, and the hub for C# NepDate, also measures every other Bikram Sambat library it could find in
-its language, on the same machine and the same dates.
+port also measures the other Bikram Sambat libraries in its language. The C# comparison follows
+upstream NepDate's own benchmark, which times B1 and B2 on one fixed date each, against the
+libraries its README lists.
 
 <p>
   None of the {competitorCount} other libraries gives the same answer as the hub's data on all 64
   dates; each report lists where they differ. In all {benchmarks.length} port languages, the port is
-  faster than every other library on both conversions. In C#, OSN.NepaliCalendar is about as fast
-  as NepDate, a little faster on BS to AD and slower on AD to BS, and gets 3 of the dates wrong.
+  faster than every other library on both conversions. In C#, NepDate is faster than all three
+  libraries upstream compares against.
 </p>
 
 ## Against other libraries
@@ -57,7 +58,8 @@ BS to AD (B1), time per call. "Next fastest" is the fastest other library in tha
 
 "Measured" counts the other libraries timed in that language. Each language's report, linked from its
 name, has AD to BS (B2) too, every library's row, which
-dates each one disagrees on, and why.
+dates each one disagrees on, and why. For C#, the three libraries are upstream NepDate's set, timed
+on one fixed date; every other language times its libraries over the 64 dates.
 
 ## Every operation
 
@@ -90,7 +92,9 @@ Time per call for B1 to B8. Lower is better. B8 builds a whole month grid with t
 </table>
 
 The C# row is C# NepDate 2.0.7 on .NET 10, the reference ([its report](https://github.com/sanamhub/nepdate/blob/main/docs/benchmarks/dotnet.md)).
-Its other libraries were timed in a later run, where NepDate itself took 15.1 ns on BS to AD.
+Its B1 and B2 are upstream's single-date benchmark, where NepDate took 7.58 and 18.42 ns; B3 to B8
+are the hub's 64-date harness. The C# competitors in the first table come from that upstream run
+too.
 The conversions, arithmetic and patro lookups allocate nothing in Rust, C++, C, Go and Swift.
 
 ## Reading the numbers

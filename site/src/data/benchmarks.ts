@@ -149,21 +149,19 @@ export const benchmarks: PortBenchmark[] = [
   },
 ];
 
-/** C# NepDate 2.0.7 on .NET 10, the original every port is compared with. Its competitors were
- *  measured in a later run, where NepDate itself took 15.10 and 21.60 ns on B1 and B2. */
+/** C# NepDate 2.0.7 on .NET 10. B1 and B2 are upstream NepDate's benchmark of one fixed date
+ *  each, run here on 2026-11-02, where NepDate took 7.58 and 18.42 ns; B3 to B8 are the hub's
+ *  64-date harness. The competitors are upstream's set as measured in that same run. `agrees`
+ *  comes from the hub's 64-date `--agrees` check and is the lower of B1 and B2. */
 export const csharp: PortBenchmark = {
   id: "csharp",
   name: "C#",
-  machine: `${LAPTOP}, .NET 10`,
-  ops: [13.29, 18.64, 17.5, 18.85, 153.02, 21.55, 47.93, 3132.66],
+  machine: `${LAPTOP}, .NET 10, upstream single-date suite`,
+  ops: [7.58, 18.42, 17.5, 18.85, 153.02, 21.55, 47.93, 3132.66],
   competitors: [
-    { name: "OSN.NepaliCalendar", b1: 12.9, b2: 24.66, agrees: 61 },
-    { name: "BsadConverter", b1: 129.84, b2: 639.36, agrees: 62 },
-    { name: "NepaliUtility.Core", b1: 354.81, b2: 2268.19, agrees: 61 },
-    { name: "BSDateConverter", b1: 599.51, b2: 5829.35, agrees: 61 },
-    { name: "NepaliCalendarBS", b1: 14612.94, b2: 199.73, agrees: 63 },
-    { name: "NepaliDateConverter.NETCORE", b1: 24224.09, b2: 52243.22, agrees: 60 },
-    { name: "NepaliDateConverter.Net", b1: 31448.7, b2: 51057.99, agrees: 60 },
+    { name: "NepaliCalendarBS", b1: 17705.16, b2: 203.94, agrees: 63 },
+    { name: "NepaliDateConverter.NETCORE", b1: 33529.46, b2: 88677.6, agrees: 60 },
+    { name: "NepaliDateConverter.Net", b1: 41861.36, b2: 83759.31, agrees: 60 },
   ],
   source: blob("nepdate", "docs/benchmarks/dotnet.md"),
 };
