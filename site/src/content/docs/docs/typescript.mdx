@@ -32,16 +32,16 @@ npm refuses the name `nepdate` as too close to an existing package, so the core 
 
 <Tabs syncKey="pkg">
   <TabItem label="npm">
-    <Code lang="sh" code="npm install nepdate-core@beta" />
+    <Code lang="sh" code={`npm install nepdate-core@${versions.typescript}`} />
   </TabItem>
   <TabItem label="pnpm">
-    <Code lang="sh" code="pnpm add nepdate-core@beta" />
+    <Code lang="sh" code={`pnpm add nepdate-core@${versions.typescript}`} />
   </TabItem>
   <TabItem label="yarn">
-    <Code lang="sh" code="yarn add nepdate-core@beta" />
+    <Code lang="sh" code={`yarn add nepdate-core@${versions.typescript}`} />
   </TabItem>
   <TabItem label="bun">
-    <Code lang="sh" code="bun add nepdate-core@beta" />
+    <Code lang="sh" code={`bun add nepdate-core@${versions.typescript}`} />
   </TabItem>
 </Tabs>
 
@@ -107,9 +107,7 @@ if (globalThis.Temporal !== undefined) {
 
 ## Tithi, holidays and events
 
-```sh
-npm install nepdate-core@beta nepdate-patro@beta
-```
+<Code lang="sh" code={`npm install nepdate-core@${versions.typescript} nepdate-patro@${versions.typescript}`} />
 
 ```ts
 import { NepaliDate } from "nepdate-core";

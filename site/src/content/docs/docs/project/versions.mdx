@@ -24,8 +24,9 @@ import { CSHARP_VERSION, MITIBAR_RELEASE, MITIBAR_VERSION, PYPI_VERSION, version
   on one day; a patch is a fix in one port only. The core and the patro of one port always share a
   version and are released together.
 - A data change, such as a new year's holidays, is a **patch** release of each port: no API change.
-- Pre-releases need asking for by name in most package managers: an exact pin in Cargo and SwiftPM,
-  the `beta` tag on npm, and `--pre` with pip.
+- Pre-releases need asking for by name in most package managers: an exact version in Cargo,
+  SwiftPM and npm, and `--pre` with pip. npm also keeps each pre-release kind under its own tag
+  (`beta`, `rc`), so `@beta` stays on the last beta after a release candidate ships.
 - Python spells the version the PEP 440 way, <code>{PYPI_VERSION}</code>.
 
 ## Releases are checked

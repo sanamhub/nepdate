@@ -41,6 +41,8 @@ For Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C, in any order:
 - [ ] Tag and name the version as ADR-0007 decision 4 says. Rust, Go, TypeScript, Kotlin, C and C++ tags
       start with `v` (`v0.2.0-beta.1`), the Swift package tag has no `v` (`0.2.0-beta.1`), and PyPI
       receives the PEP 440 spelling (`0.2.0b1`). Rust's older `nepdate-v*` tags stay as they are.
+- [ ] If a port's tag shape changes, update the `production` environment's deployment tag rules in
+      that repository too. A tag the rules do not match waits at the approval gate until it is added.
 - [ ] Once the release is on the registry, update that port's entry in `spec/versions.json` in a
       hub PR (several ports may share one PR). Merging it redeploys nepdate.com with the new
       install lines.

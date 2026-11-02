@@ -5,7 +5,7 @@ description: A Bikram Sambat date picker for any web page, as web components tha
 
 import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
 import DatepickerDemo from "../../../components/DatepickerDemo.astro";
-import { DATEPICKER_VERSION } from "../../../data/ports";
+import { DATEPICKER_VERSION, versions } from "../../../data/ports";
 
 [`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker) is a BS date picker for the
 web, built on [`nepdate-core`](/docs/typescript/). It is two custom elements, so it works without a
@@ -52,16 +52,16 @@ With a bundler (Vite, webpack, esbuild):
 
 <Tabs syncKey="pkg">
   <TabItem label="npm">
-    <Code lang="sh" code="npm install nepdate-core@beta nepdate-datepicker@beta" />
+    <Code lang="sh" code={`npm install nepdate-core@${versions.typescript} nepdate-datepicker@${DATEPICKER_VERSION}`} />
   </TabItem>
   <TabItem label="pnpm">
-    <Code lang="sh" code="pnpm add nepdate-core@beta nepdate-datepicker@beta" />
+    <Code lang="sh" code={`pnpm add nepdate-core@${versions.typescript} nepdate-datepicker@${DATEPICKER_VERSION}`} />
   </TabItem>
   <TabItem label="yarn">
-    <Code lang="sh" code="yarn add nepdate-core@beta nepdate-datepicker@beta" />
+    <Code lang="sh" code={`yarn add nepdate-core@${versions.typescript} nepdate-datepicker@${DATEPICKER_VERSION}`} />
   </TabItem>
   <TabItem label="bun">
-    <Code lang="sh" code="bun add nepdate-core@beta nepdate-datepicker@beta" />
+    <Code lang="sh" code={`bun add nepdate-core@${versions.typescript} nepdate-datepicker@${DATEPICKER_VERSION}`} />
   </TabItem>
 </Tabs>
 
