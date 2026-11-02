@@ -27,7 +27,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B1 BS to AD': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1488 1364 --benchmarkName DotnetBench.Benchmarks.B1_BsToAd --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 0 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1488 1364 --benchmarkName DotnetBench.Benchmarks.B1_BsToAd --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 0 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -142,7 +142,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B2 AD to BS': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1620 1616 --benchmarkName DotnetBench.Benchmarks.B2_AdToBs --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 1 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1620 1616 --benchmarkName DotnetBench.Benchmarks.B2_AdToBs --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 1 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -274,7 +274,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B3 add 1000 days': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1320 1592 --benchmarkName DotnetBench.Benchmarks.B3_AddDays --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 2 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1320 1592 --benchmarkName DotnetBench.Benchmarks.B3_AddDays --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 2 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -386,7 +386,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B4 add 13 months, Clamp': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1160 1488 --benchmarkName DotnetBench.Benchmarks.B4_AddMonthsClamp --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 3 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1160 1488 --benchmarkName DotnetBench.Benchmarks.B4_AddMonthsClamp --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 3 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -501,7 +501,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B5 long format, Nepali, weekday': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1196 1576 --benchmarkName DotnetBench.Benchmarks.B5_LongNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 4 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1196 1576 --benchmarkName DotnetBench.Benchmarks.B5_LongNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 4 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -725,7 +725,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B6 strict parse': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1668 1652 --benchmarkName DotnetBench.Benchmarks.B6_StrictParse --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 5 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1668 1652 --benchmarkName DotnetBench.Benchmarks.B6_StrictParse --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 5 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -837,7 +837,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B7 patro info': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1732 1728 --benchmarkName DotnetBench.Benchmarks.B7_PatroInfo --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 6 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1732 1728 --benchmarkName DotnetBench.Benchmarks.B7_PatroInfo --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 6 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -949,7 +949,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B8 patro month grid': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1756 1700 --benchmarkName DotnetBench.Benchmarks.B8_MonthGrid --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 7 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1756 1700 --benchmarkName DotnetBench.Benchmarks.B8_MonthGrid --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 7 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -1066,7 +1066,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B1 BS to AD': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1776 1768 --benchmarkName DotnetBench.Benchmarks.B1_BsToAd --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 0 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1776 1768 --benchmarkName DotnetBench.Benchmarks.B1_BsToAd --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 0 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -1179,7 +1179,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B2 AD to BS': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1620 1796 --benchmarkName DotnetBench.Benchmarks.B2_AdToBs --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 1 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1620 1796 --benchmarkName DotnetBench.Benchmarks.B2_AdToBs --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 1 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -1290,7 +1290,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B3 add 1000 days': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1732 1180 --benchmarkName DotnetBench.Benchmarks.B3_AddDays --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 2 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1732 1180 --benchmarkName DotnetBench.Benchmarks.B3_AddDays --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 2 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -1407,7 +1407,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B4 add 13 months, Clamp': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1796 1660 --benchmarkName DotnetBench.Benchmarks.B4_AddMonthsClamp --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 3 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1796 1660 --benchmarkName DotnetBench.Benchmarks.B4_AddMonthsClamp --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 3 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -1518,7 +1518,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B5 long format, Nepali, weekday': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1188 1756 --benchmarkName DotnetBench.Benchmarks.B5_LongNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 4 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1188 1756 --benchmarkName DotnetBench.Benchmarks.B5_LongNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 4 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -1653,7 +1653,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B6 strict parse': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1840 1688 --benchmarkName DotnetBench.Benchmarks.B6_StrictParse --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 5 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1840 1688 --benchmarkName DotnetBench.Benchmarks.B6_StrictParse --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 5 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -1764,7 +1764,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B7 patro info': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1760 1160 --benchmarkName DotnetBench.Benchmarks.B7_PatroInfo --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 6 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1760 1160 --benchmarkName DotnetBench.Benchmarks.B7_PatroInfo --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 6 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -1879,7 +1879,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: Benchmarks.'B8 patro month grid': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1648 1900 --benchmarkName DotnetBench.Benchmarks.B8_MonthGrid --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 7 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1648 1900 --benchmarkName DotnetBench.Benchmarks.B8_MonthGrid --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 7 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -2335,7 +2335,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B1 BS to AD, DateConverterNepali': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 2108 1840 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_DateConverterNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 8 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 2108 1840 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_DateConverterNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 8 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -2489,7 +2489,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B2 AD to BS, DateConverterNepali': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1724 1716 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_DateConverterNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 9 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1724 1716 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_DateConverterNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 9 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -2618,7 +2618,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B1 BS to AD, NepaliCalendarBS': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 2124 2040 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_NepaliCalendarBS --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 10 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 2124 2040 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_NepaliCalendarBS --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 10 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -2724,7 +2724,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B2 AD to BS, NepaliCalendarBS': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 2108 1964 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_NepaliCalendarBS --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 11 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 2108 1964 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_NepaliCalendarBS --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 11 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -2837,7 +2837,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B1 BS to AD, NepaliDateConverter.NETCORE': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 2156 2152 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_NepaliDateConverterNetCore --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 12 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 2156 2152 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_NepaliDateConverterNetCore --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 12 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -2948,7 +2948,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B2 AD to BS, NepaliDateConverter.NETCORE': Job-WMWMCP(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1728 2184 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_NepaliDateConverterNetCore --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 13 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
+// Execute: dotnet DotnetBench-Job-WMWMCP-1.dll --anonymousPipes 1728 2184 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_NepaliDateConverterNetCore --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 10.0" --benchmarkId 13 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-WMWMCP-1\bin\Release\net10.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -3060,7 +3060,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B1 BS to AD, DateConverterNepali': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1728 2184 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_DateConverterNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 8 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1728 2184 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_DateConverterNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 8 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -3266,7 +3266,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B2 AD to BS, DateConverterNepali': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1728 1716 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_DateConverterNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 9 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1728 1716 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_DateConverterNepali --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 9 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -3421,7 +3421,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B1 BS to AD, NepaliCalendarBS': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1716 1216 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_NepaliCalendarBS --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 10 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1716 1216 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_NepaliCalendarBS --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 10 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -3527,7 +3527,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B2 AD to BS, NepaliCalendarBS': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1740 1784 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_NepaliCalendarBS --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 11 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1740 1784 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_NepaliCalendarBS --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 11 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -3638,7 +3638,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B1 BS to AD, NepaliDateConverter.NETCORE': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1664 1788 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_NepaliDateConverterNetCore --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 12 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1664 1788 --benchmarkName DotnetBench.CompetitorBenchmarks.B1_NepaliDateConverterNetCore --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 12 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
@@ -3752,7 +3752,7 @@ Setup power plan (GUID: 5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6 FriendlyName: Ultim
 // Benchmark: CompetitorBenchmarks.'B2 AD to BS, NepaliDateConverter.NETCORE': Job-FIFZYN(Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0)
 // *** Execute ***
 // Launch: 1 / 1
-// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1664 1788 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_NepaliDateConverterNetCore --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 13 in E:\github\sanamhub\worktrees\bench-top-libs\nepdate\tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
+// Execute: dotnet DotnetBench-Job-FIFZYN-2.dll --anonymousPipes 1664 1788 --benchmarkName DotnetBench.CompetitorBenchmarks.B2_NepaliDateConverterNetCore --job "Affinity=0000000000000100, PowerPlanMode=5a4d4a58-bc7d-4df9-9eb7-5f61415ae0f6, Runtime=.NET 8.0" --benchmarkId 13 in tools\dotnet-bench\bin\Release\net10.0\DotnetBench-Job-FIFZYN-2\bin\Release\net8.0
 // BeforeAnythingElse
 
 // Benchmark Process Environment Information:
