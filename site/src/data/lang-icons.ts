@@ -18,6 +18,7 @@ import {
   siRust,
   siSwift,
   siTypescript,
+  siZig,
 } from "simple-icons";
 
 export const langIcons: Record<string, { path: string }> = {
@@ -35,6 +36,7 @@ export const langIcons: Record<string, { path: string }> = {
   cpp: siCplusplus,
   c: siC,
   dart: siDart,
+  zig: siZig,
   flutter: siFlutter,
   // The source link is a GitHub repository.
   source: siGithub,

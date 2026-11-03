@@ -27,6 +27,8 @@ function pep440(version: string): string {
 export const DATEPICKER_VERSION = "0.1.0-beta.2";
 /** MitiBar's release, tagged in its own repository (it has its own version line). */
 export const MITIBAR_VERSION = "1.0.0";
+/** Zig has no registry entry yet; this is the version its first release will use. */
+export const ZIG_VERSION = "1.0.0-rc.1";
 /** C# NepDate, the original library the ports are checked against (hub ADR-0003). */
 export const CSHARP_VERSION = "2.0.7";
 export const MITIBAR_REPO = "https://github.com/sanamhub/mitibar";
@@ -275,6 +277,26 @@ nepdate_to_ad(d, &ad);                   // 2024-07-30`,
 final date = NepaliDate.fromBs(2081, 4, 15);
 date.toDateTime();          // 2024-07-30 00:00:00.000Z
 date.toLongString();        // "Shrawan 15, 2081"`,
+  },
+  {
+    id: "zig",
+    name: "Zig",
+    lang: "zig",
+    repo: "nepdate-zig",
+    core: "nepdate",
+    patro: "nepdate_patro",
+    install: `zig fetch --save https://github.com/sanamhub/nepdate-zig/archive/refs/tags/v${ZIG_VERSION}.tar.gz`,
+    patroInstall: `exe.root_module.addImport("nepdate_patro", dep.module("nepdate_patro"))`,
+    installLang: "sh",
+    registry: { label: "GitHub Releases", href: `${gh("nepdate-zig")}/releases` },
+    api: { label: "API.md", href: `${gh("nepdate-zig")}/blob/main/docs/API.md` },
+    sample: `const nepdate = @import("nepdate");
+
+const date = try nepdate.Date.fromBs(2081, 4, 15);
+var buffer: [16]u8 = undefined;
+try date.write(&buffer);                    // 2081/04/15
+const ad = date.englishDate();              // 2024-07-30
+const long = try date.longAlloc(allocator, .{}); // Shrawan 15, 2081`,
   },
 ];
 

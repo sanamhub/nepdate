@@ -1,0 +1,187 @@
+---
+title: Zig
+description: Install nepdate and nepdate_patro from the tagged source archive and use them from Zig 0.17.
+---
+
+import { Code } from "@astrojs/starlight/components";
+import { ZIG_VERSION } from "../../../data/ports";
+
+Bikram Sambat dates, conversion, arithmetic, formatting, parsing, ranges and fiscal years for Zig
+0.17.0. The core and the patro are two modules of one package, released together from one tag. They
+compile the C amalgamation at a pinned tag, so the calendar data and the patro data are the same as
+every other port.
+
+- `nepdate` is the core module.
+- `nepdate_patro` is the patro module: tithi, public holidays and events for BS 2077-01-01 to
+  2084-08-20. It imports `nepdate`.
+- There is no package registry. The release is a source archive whose hash you record in
+  `build.zig.zon`.
+
+:::caution[Pre-release]
+This is <code>{ZIG_VERSION}</code>, the first release of the Zig port. It is not on a registry. The
+API is in [API.md](https://github.com/sanamhub/nepdate-zig/blob/main/docs/API.md) and may still
+change before 1.0.0.
+:::
+
+## Install
+
+<Code code={`zig fetch --save https://github.com/sanamhub/nepdate-zig/archive/refs/tags/v${ZIG_VERSION}.tar.gz`} lang="sh" />
+
+`zig fetch` adds the dependency and its hash to your `build.zig.zon`. Add both modules to your
+executable:
+
+```zig title="build.zig"
+const dep = b.dependency("nepdate", .{ .target = target, .optimize = optimize });
+exe.root_module.addImport("nepdate", dep.module("nepdate"));
+exe.root_module.addImport("nepdate_patro", dep.module("nepdate_patro"));
+```
+
+## Quick start
+
+```zig
+const nepdate = @import("nepdate");
+
+const date = try nepdate.Date.fromBs(2081, 4, 15);
+var buffer: [16]u8 = undefined;
+try date.write(&buffer);                    // 2081/04/15
+const ad = date.englishDate();              // 2024-07-30
+const long = try date.longAlloc(allocator, .{}); // Shrawan 15, 2081
+```
+
+A date is always a real day of the calendar, from BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to
+2143-04-15). Construction validates the year, then the month, then the day, and returns an error
+union. There is no invalid or default value in the API.
+
+## Dates
+
+```zig
+const date = try nepdate.Date.fromBs(2081, 4, 32);
+_ = date.year();        // 2081
+_ = date.month();       // .shrawan
+_ = date.day();         // 32
+_ = date.dayOfWeek();   // .friday
+_ = date.dayOfYear();   // 126
+_ = date.monthLength(); // 32
+_ = date.yearLength();  // 366
+```
+
+`yearLength` is the BS year length, 364 to 367 days, and replaces the C# `IsLeapYear()`.
+`monthEndDate()` replaces `MonthEndDate()`.
+
+## Conversion and serialization
+
+```zig
+try nepdate.Date.fromGregorian(2024, 7, 30);
+try nepdate.Date.fromYmd(20810415);
+_ = (try nepdate.Date.fromBs(2081, 4, 15)).ymd(); // 20810415
+const iso = try (try nepdate.Date.fromBs(2081, 4, 15)).toJsonAlloc(allocator);
+_ = try nepdate.Date.fromJson(iso);
+```
+
+Batch conversion keeps input order and is all or nothing:
+
+```zig
+var out: [1]nepdate.Date = undefined;
+_ = try nepdate.toNepaliDates(&.{.{ .year = 2024, .month = 7, .day = 30 }}, &out);
+```
+
+## Arithmetic
+
+```zig
+const date = try nepdate.Date.fromBs(2081, 4, 32);
+_ = try date.addDays(30);          // 2081-05-30
+_ = try date.addMonths(2, .clamp); // 2081-06-30
+_ = try date.addMonths(2, .spill); // 2081-07-02
+_ = date.daysUntil(try nepdate.Date.fromBs(2081, 4, 16)); // 1
+```
+
+`daysUntil` is `other - this`; `minus` is the C# operator direction, `this - other`. Fractional
+months and days are not ported.
+
+## Formatting
+
+```zig
+const date = try nepdate.Date.fromBs(2081, 4, 15);
+const short = try date.shortAlloc(allocator, .{ .order = .dmy, .separator = .dash }); // 15-04-2081
+const unicode = try date.shortAlloc(allocator, .{ .lang = .ne });                     // २०८१/०४/१५
+const long = try date.longAlloc(allocator, .{});                                      // Shrawan 15, 2081
+const pattern = try date.formatAlloc(allocator, "MMMM d, yyyy", .en);                  // Shrawan 15, 2081
+```
+
+`{f}` in `std.fmt` writes `YYYY/MM/DD`. Functions that build text take an allocator or a caller
+buffer; nothing allocates behind your back.
+
+## Parsing
+
+```zig
+_ = try nepdate.Date.parse("2081/04/15");
+_ = try nepdate.Date.parse("२०८१/०४/१५");
+_ = try nepdate.Date.parseLenient("15 Shrawan 2081 B.S.");
+_ = nepdate.Date.tryParse("2081/13/01"); // null
+```
+
+The strict parser accepts ASCII and Devanagari digits. The lenient parser accepts month names in
+English or Nepali, the day before the year, and era markers. Failures are named error values.
+
+## Ranges
+
+```zig
+const range = try nepdate.Range.of(
+    try nepdate.Date.fromBs(2081, 4, 10),
+    try nepdate.Date.fromBs(2081, 4, 20),
+);
+_ = range.length(); // 11
+_ = range.contains(try nepdate.Date.fromBs(2081, 4, 15)); // true
+const text = try range.formatAlloc(allocator); // 2081/04/10 - 2081/04/20
+```
+
+Ranges are inclusive and non-empty. They offer containment, overlap, adjacency, intersection,
+union, difference, month and fiscal-quarter splits, interval walks, working days and weekend days.
+
+## Fiscal year
+
+```zig
+const fy = nepdate.FiscalYear.containing(try nepdate.Date.fromBs(2082, 1, 15));
+_ = fy.year; // 2081
+var label_buffer: [39]u8 = undefined;
+_ = try fy.label(&label_buffer, .en); // 2081/82
+```
+
+## Today
+
+The clock and the zone are arguments, never a hidden local setting.
+
+```zig
+const instant: i64 = 1722364200; // 2024-07-30 18:30 UTC
+_ = try nepdate.Date.todayNepal(instant);      // 2081-04-16
+_ = try nepdate.Date.today(0, instant);        // 2081-04-15
+_ = try nepdate.Date.todayIn(.nepal, instant); // 2081-04-16
+```
+
+## Patro
+
+```zig
+const patro = @import("nepdate_patro");
+
+var events: [8]patro.Event = undefined;
+const info = try patro.infoInto(try nepdate.Date.fromBs(2081, 1, 1), &events);
+_ = info.tithiEn();         // Panchami
+_ = info.is_public_holiday; // true
+_ = info.events[0].english; // New Year
+```
+
+`patro.info(allocator, date)` allocates the event list and has a `deinit`; `infoInto` uses your
+buffer. The patro covers 2077-01-01 to 2084-08-20 and returns empty values outside that range.
+
+## Data and correctness
+
+The tests assert every shared vector file, walk every supported day through Gregorian and
+`YYYYMMDD`, and check the vendored C files against their release tag. The details are in
+[the port's README](https://github.com/sanamhub/nepdate-zig#readme) and
+[API.md](https://github.com/sanamhub/nepdate-zig/blob/main/docs/API.md).
+
+## Performance
+
+B1 to B8 against the C core are in
+[benchmarks.md](https://github.com/sanamhub/nepdate-zig/blob/main/docs/benchmarks.md). The numbers
+are preliminary until the quiet rerun before 1.0.0.

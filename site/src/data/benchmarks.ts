@@ -136,6 +136,17 @@ export const benchmarks: PortBenchmark[] = [
     competitors: [{ name: "nepali_utils", b1: 33526.7, b2: 79675.04, agrees: 31 }],
     source: blob("nepdate-dart", "docs/benchmarks.md"),
   },
+  // Preliminary: measured before the 30 second CPU-idle check, so the quiet rerun in the sweep
+  // replaces these figures (nepdate-zig docs/benchmarks.md says the same). The comparison is the
+  // C core this package wraps, not an independent Zig library.
+  {
+    id: "zig",
+    name: "Zig",
+    machine: LAPTOP,
+    ops: [22.2, 14.0, 3.8, 8.4, 240.1, 111.1, 32.2, 1139.3],
+    competitors: [],
+    source: blob("nepdate-zig", "docs/benchmarks.md"),
+  },
 ];
 
 /** C# NepDate 2.0.7 on .NET 10, the original every port is compared with. `ops` is the hub's
