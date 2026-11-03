@@ -1,6 +1,6 @@
 ---
 title: Kotlin and Java
-description: Add io.github.sanamhub:nepdate and nepdate-patro from Maven Central, for the JVM and Android.
+description: Add io.github.sanamhub:nepdate, nepdate-patro and nepdate-serialization from Maven Central, for the JVM and Android.
 ---
 
 import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
@@ -11,10 +11,11 @@ Bikram Sambat for Kotlin, Java and Android. Neither `java.time`, ThreeTen-Extra,
 
 | Artifact | Contains | Depends on |
 |---|---|---|
-| `io.github.sanamhub:nepdate` | Conversion, formatting, parsing, arithmetic, fiscal year | `kotlin-stdlib` |
+| `io.github.sanamhub:nepdate` | Conversion, formatting, parsing, arithmetic, fiscal year, ranges. BS 1901 to 2199 | `kotlin-stdlib` |
 | `io.github.sanamhub:nepdate-patro` | Tithi, public holidays and events, BS 2077-01-01 to 2084-08-20 | `nepdate` |
+| `io.github.sanamhub:nepdate-serialization` | kotlinx.serialization support, optional | `nepdate`, `kotlinx-serialization-core` |
 
-Both run on any JVM 11 or later and on Android API 21 or later without desugaring.
+All three run on any JVM 11 or later and on Android API 21 or later without desugaring.
 
 :::caution[Pre-release]
 This is the first public pre-release. The API may still change before 0.1.0.
@@ -30,6 +31,7 @@ This is the first public pre-release. The API may still change before 0.1.0.
       code={`dependencies {
     implementation("io.github.sanamhub:nepdate:${versions.kotlin}")
     implementation("io.github.sanamhub:nepdate-patro:${versions.kotlin}") // only for tithi, holidays, events
+    implementation("io.github.sanamhub:nepdate-serialization:${versions.kotlin}") // only for kotlinx.serialization
 }`}
     />
   </TabItem>
@@ -80,11 +82,163 @@ Named tithi = Patro.info(date).getTithi();
 २०८१`; `parseLenient` accepts month names such as `15 Shrawan 2080`. The `calendarInfo` Kotlin
 extension, from `nepdate-patro`, is `Patro.info` in Java.
 
+## Dates
+
+A valid date is 1901-01-01 to 2199-12-30 BS, which is 1844-04-11 to 2143-04-15 AD. An invalid date
+cannot be built, so there is no zero value to check.
+
+```kotlin
+NepaliDate.of(2081, 4, 15)           // 2081/04/15
+NepaliDate.of(2081, Month.SHRAWAN, 15)
+NepaliDate.ofGregorian(2024, 7, 30)  // 2081/04/15
+NepaliDate.MIN                        // 1901-01-01
+NepaliDate.MAX                        // 2199-12-30
+nepaliToday(KATHMANDU)                // today in Nepal
+NepaliDate.of(2081, 4, 15).yearLength()  // 366, the BS year's length
+NepaliDate.fromYmd(20810415)             // the YYYYMMDD integer form
+val (year, month, day) = NepaliDate.of(2081, 4, 15)
+```
+
+`year`, `monthValue`, `month`, `dayOfMonth`, `dayOfWeek`, `dayOfYear`, `lengthOfMonth()` and the
+three `gregorian*` fields are the parts. `isToday(zone)`, `isYesterday(zone)` and `isTomorrow(zone)`
+take the zone explicitly, and each also takes a `java.time.Clock`.
+
+## Conversion and serialization
+
+```kotlin
+LocalDate.of(2024, 7, 30).toNepaliDate()          // 2081-04-15
+NepaliDate.of(2081, 4, 15).toLocalDate()          // 2024-07-30
+NepaliDate.MIN.toEpochDay()                       // -45920, days since 1970-01-01
+NepaliDate.ofEpochDay(0)                          // 2056-09-17
+toNepaliDates(listOf(LocalDate.of(2024, 7, 30)))  // [2081-04-15], in input order
+toEnglishDates(listOf("2081-04-15"))              // [2024-07-30]
+date.toIsoString()                                // "2081-04-15"
+```
+
+With the optional artifact, a date is one JSON string:
+
+```kotlin
+@Serializable
+data class Festival(
+    val name: String,
+    @Serializable(with = NepaliDateSerializer::class) val date: NepaliDate,
+)
+
+Json.encodeToString(Festival("New Year", NepaliDate.of(2081, 1, 1)))
+// {"name":"New Year","date":"2081-01-01"}
+```
+
+## Arithmetic
+
+```kotlin
+val date = NepaliDate.of(2081, 4, 32)
+date.plusDays(1)                         // 2081-05-01
+date.plusMonths(2)                       // 2081-06-30, clamped to the month end
+date.plusMonths(2, MonthOverflow.SPILL)  // 2081-07-02, the extra days carried on
+date.plusYears(1)                        // 2082-04-30
+date.minusDays(1)                        // 2081-04-31
+date.daysUntil(NepaliDate.of(2081, 5, 1))    // 1, the named form
+(NepaliDate.of(2081, 5, 1) - date).totalDays // 1, the operator keeps the C# sign
+date.until(NepaliDate.of(2082, 5, 1))        // a DateDiff in years, months and days
+```
+
+`daysUntil(other)` is `other - this`; `this - other` is the opposite direction, as in C#. The two
+names are not interchangeable. Month arithmetic takes whole months and an explicit overflow mode.
+
+## Formatting
+
+```kotlin
+val date = NepaliDate.of(2081, 4, 15)
+date.toString()                                                  // 2081/04/15
+date.toShortString(DateOrder.DMY, Separator.DASH, pad = false)   // 15-4-2081
+date.toLongString(weekday = true)                                // Tuesday, Shrawan 15, 2081
+date.toLongString(lang = Lang.NEPALI)                            // साउन १५, २०८१
+date.format("yyyy-MM-dd")                                        // 2081-04-15
+date.format("dd.MM.yy")                                          // 15.04.81
+```
+
+The six `DateOrder` values and the six `Separator` values combine freely, and `Lang.NEPALI` gives
+Devanagari names and digits. The `append*String` and `formatTo` forms write into a `StringBuilder`
+without allocating once it has room.
+
+## Parsing
+
+```kotlin
+NepaliDate.parse("2081/04/15")               // strict: year, month, day in that order
+NepaliDate.parse("२०८१-०४-१५")               // ASCII and Devanagari digits both work
+NepaliDate.parseOrNull("2081/04/33")         // null
+NepaliDate.parseLenient("15 Shrawan 2080")   // month names, era markers, day first
+NepaliDate.parseLenientOrNull("not a date")  // null
+```
+
+A strict group has at most four digits, so no input can overflow, and there is no `autoAdjust`
+overload. Failures are a `NepDateException` with a `kind`, never a made-up date.
+
+## Ranges
+
+```kotlin
+val month = NepaliDateRange.ofMonth(2081, 4)      // 2081-04-01..2081-04-32
+val week = NepaliDate.of(2081, 4, 7)..NepaliDate.of(2081, 4, 13)
+month.containsRange(week)                          // true
+month.overlaps(NepaliDateRange.ofMonth(2081, 5))   // false
+month.intersect(NepaliDateRange.ofMonth(2081, 5))  // null
+month.union(week)                                  // the smallest range covering both
+month.minus(week)                                  // one or two ranges
+month.splitByMonth()                               // one piece per month
+week.workingDays(excludeSunday = true)
+week.datesWithInterval(2)
+month.toString()                                   // 2081/04/01 - 2081/04/32
+```
+
+A range is an inclusive `List<NepaliDate>`, never empty, and never throws at 2199-12-30. It
+compares, hashes and prints its two bounds rather than every day.
+
+## Fiscal year
+
+```kotlin
+val fy = NepaliDate.of(2081, 4, 15).fiscalYear   // FiscalYear(2081)
+fy.start()                                        // 2081-04-01, 1 Shrawan
+fy.end()                                          // 2082-03-32, the end of Ashad
+fy.range(Quarter.Q2)                              // Kartik to Poush
+fy.label()                                        // 2081/82
+```
+
+Quarters are `Q1` Shrawan to Ashoj, `Q2` Kartik to Poush, `Q3` Magh to Chaitra and `Q4` Baishakh to
+Ashad of the next year.
+
+## Errors
+
+```kotlin
+try {
+    NepaliDate.of(2081, 4, 33)
+} catch (e: NepDateException) {
+    e.kind        // INVALID_DAY
+    e.monthLength // 32
+}
+```
+
+`NepDateException` extends `IllegalArgumentException` and carries a `kind`: `OUT_OF_RANGE`,
+`INVALID_MONTH`, `INVALID_DAY`, `INVALID_GREGORIAN`, `INVALID_CHARACTER`, `WRONG_GROUP_COUNT`,
+`NUMBER_TOO_LONG`, `AMBIGUOUS` or `UNRECOGNIZED`. Check `kind`, not the message.
+
+## Tithi, holidays and events
+
+```kotlin
+val info = NepaliDate.of(2081, 1, 1).calendarInfo
+info.tithi?.english            // Panchami
+info.isPublicHoliday           // true
+info.events.map { it.english } // [New Year, Mesh Sankranti, Bisket Jatra]
+```
+
+The data covers BS 2077-01-01 to 2084-08-20. A day outside it answers with empty values. In Java,
+`Patro.info(date)`, `Patro.getCoverage()` and `Patro.getPublicHolidays()` are the same three
+queries.
+
 ## Reference
 
 | Topic | Where |
 |---|---|
-| Every public type and function | [docs/API.md](https://github.com/sanamhub/nepdate-kotlin/blob/main/docs/API.md) |
+| Every public type and function, with an example | [docs/API.md](https://github.com/sanamhub/nepdate-kotlin/blob/main/docs/API.md) |
 | Speed, allocations and size, with the C# baseline | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-kotlin/blob/main/docs/benchmarks.md) |
 | What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-kotlin/blob/main/CHANGELOG.md) |
 | Source | [sanamhub/nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) |
