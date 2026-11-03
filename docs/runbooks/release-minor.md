@@ -5,6 +5,14 @@ hub pull request before any port releases. A patch release does not use this run
 bumps its own manifest, releases, and then its entry in `spec/versions.json` is updated, which
 redeploys nepdate.com.
 
+## A port that has not released yet
+
+A port with no entry in `spec/versions.json` may pass a version on the current line or on a later
+one, never an earlier one (ADR-0008). Do not add an entry for it: the entries are released versions
+and the site shows them. Its `shared-check` is green while it is reviewed, and at the minor that
+carries it the port releases on the new line and its entry is added like every other port's. After
+that, the equality rule of ADR-0007 applies to it.
+
 ## Before the hub pull request
 
 - [ ] Every spec change this minor carries has merged in every port. A change one language cannot
@@ -26,7 +34,7 @@ redeploys nepdate.com.
 
 ## Each port
 
-For Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C, in any order:
+For every port that has released, in any order, and for a new port making its first release:
 
 - [ ] Open or update the port's `shared/` sync PR. It brings the new `spec/versions.json`, and the
       port's `shared-check` fails until its own version is on the new line. That failure is the
