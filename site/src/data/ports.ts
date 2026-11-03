@@ -250,6 +250,7 @@ nepdate_to_ad(d, &ad);                   // 2024-07-30`,
     patroInstall: `dart pub add nepdate_patro:${versions.dart}`,
     installLang: "sh",
     registry: { label: "pub.dev", href: "https://pub.dev/packages/nepdate" },
+    alsoFor: [{ name: "Flutter", icon: "flutter" }],
     api: { label: "API.md", href: `${gh("nepdate-dart")}/blob/main/docs/API.md` },
     sample: `import 'package:nepdate/nepdate.dart';
 
