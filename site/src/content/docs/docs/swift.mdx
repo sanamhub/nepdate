@@ -6,17 +6,17 @@ description: Add the NepDate and NepDatePatro products with Swift Package Manage
 import { Code } from "@astrojs/starlight/components";
 import { versions } from "../../../data/ports";
 
-One SwiftPM package with two products: `NepDate` (conversion, formatting, parsing, arithmetic,
-fiscal year) and `NepDatePatro` (tithi, public holidays and events for BS 2077-01-01 to
-2084-08-20). `NepDatePatro` depends on `NepDate`, never the reverse, so an app that only converts
-dates links no patro data.
+One SwiftPM package with two products: `NepDate` (dates, conversion, arithmetic, formatting,
+parsing, ranges, fiscal years and errors) and `NepDatePatro` (tithi, public holidays and events for
+BS 2077-01-01 to 2084-08-20). `NepDatePatro` depends on `NepDate`, never the reverse, so an app that
+only converts dates links no patro data.
 
 Pure Swift in the Swift 6 language mode, every type `Sendable`, no dependencies. The core doesn't
-need Foundation; `Date` interop compiles in where Foundation exists. Small enough for widget and
-watch extensions. Apple platforms, Linux and Windows are all built in CI.
+need Foundation; `Date` interop and `FormatStyle` compile in where Foundation exists. Small enough
+for widget and watch extensions. Apple platforms, Linux and Windows are all built in CI.
 
 :::caution[Pre-release]
-This is the first public pre-release. The API may still change before 0.1.0.
+This is a release candidate. The API may still change before 0.1.0.
 :::
 
 :::note[Not `Calendar.Identifier.vikram`]
@@ -56,7 +56,7 @@ do {
 }
 ```
 
-## Tithi, holidays and events
+The same date with the patro product:
 
 ```swift
 import NepDate
@@ -71,6 +71,142 @@ for event in info.events {
 ```
 
 Both blocks are the repository's `Examples` programs, so CI builds and runs them.
+
+## Dates and comparison
+
+```swift
+import NepDate
+
+do {
+  let date = try NepaliDate(year: 2081, month: 4, day: 15)
+  let (y, m, d) = (date.year, date.month, date.day)  // (2081, 4, 15)
+  print(date.weekday, date.dayOfYear, date.monthLength, date.yearLength)
+  print(date.adding(days: 1))
+} catch {
+  print(error)
+}
+```
+
+## Conversion and serialization
+
+```swift
+import Foundation
+import NepDate
+
+do {
+  let date = try NepaliDate(gregorianYear: 2024, month: 7, day: 30)
+  let midnight = date.date(in: .current)
+  let packed = date.ymd  // 20810415
+  let json = try JSONEncoder().encode(date)  // "2081-04-15"
+  print(midnight, packed, json)
+} catch {
+  print(error)
+}
+```
+
+## Arithmetic
+
+```swift
+import NepDate
+
+do {
+  let date = try NepaliDate(year: 2081, month: 4, day: 15)
+  let later = try date.adding(months: 2)
+  print(date.days(until: later))  // 63
+  print((later - date).totalDays)  // 63
+  print(try date.adding(months: 2, overflow: .spill))
+} catch {
+  print(error)
+}
+```
+
+## Formatting
+
+```swift
+import NepDate
+
+do {
+  let date = try NepaliDate(year: 2081, month: 4, day: 15)
+  print(date.short(order: .dmy, separator: .dash))  // 15-04-2081
+  print(date.long(lang: .nepali))                   // साउन १५, २०८१
+  print(date.format("yyyy-MM-dd"))                  // 2081-04-15
+} catch {
+  print(error)
+}
+```
+
+## Parsing
+
+```swift
+import NepDate
+
+do {
+  let strict = try NepaliDate.parse("2081-04-15")
+  let lenient = try NepaliDate.parseLenient("15 Shrawan 2081")
+  let optional = NepaliDate(lenient: "Shrawan 15, 2081")
+  print(strict, lenient, optional as Any)
+} catch {
+  print(error)
+}
+```
+
+## Ranges
+
+```swift
+import NepDate
+
+do {
+  let start = try NepaliDate(year: 2081, month: 4, day: 10)
+  let range = try NepaliDateRange(start: start, dayCount: 11)
+  print(range.description)  // 2081/04/10 - 2081/04/20
+  print(range.splitByMonth().count)
+  print(range.workingDays().count)
+  print(range.formatted(order: .dmy, separator: .dash))
+} catch {
+  print(error)
+}
+```
+
+## Fiscal year
+
+```swift
+import NepDate
+
+do {
+  let date = try NepaliDate(year: 2081, month: 4, day: 15)
+  let fiscal = date.fiscalYear
+  print(try fiscal.range(of: .q2))  // 2081/07/01 - 2081/09/29
+  print(fiscal.label())             // 2081/82
+} catch {
+  print(error)
+}
+```
+
+## Patro
+
+```swift
+import NepDate
+import NepDatePatro
+
+let date = (try? NepaliDate(year: 2081, month: 1, day: 1)) ?? .min
+print(Patro.coverage)                         // 2077/01/01 - 2084/08/20
+print(Patro.publicHolidays.contains(date))
+for event in date.calendarInfo.events {
+  print(event.english)
+}
+```
+
+## Errors
+
+```swift
+import NepDate
+
+do {
+  _ = try NepaliDate(year: 2080, month: 13, day: 1)
+} catch let error as NepDateError {
+  print(error.kind)  // invalidMonth
+}
+```
 
 ## Reference
 
