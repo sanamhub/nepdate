@@ -284,7 +284,7 @@ class ReportTest(unittest.TestCase):
         spec = package_status.load_spec(ROOT / "spec" / "packages.json")
         self.assertEqual(
             [port["id"] for port in spec["ports"]],
-            ["rust", "go", "typescript", "python", "swift", "kotlin", "cpp", "c"],
+            ["rust", "go", "typescript", "python", "swift", "kotlin", "cpp", "c", "php"],
         )
         for port in spec["ports"]:
             self.assertTrue(port["packages"])

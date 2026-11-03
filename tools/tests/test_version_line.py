@@ -34,10 +34,10 @@ def document(**overrides):
 class FileTest(unittest.TestCase):
     def test_the_hub_file_is_valid_and_lists_the_ports_in_hub_order(self):
         found = version_line.load(ROOT / 'spec' / 'versions.json')
-        self.assertEqual(found['line'], '0.1')
+        self.assertEqual(found['line'], '0.2')
         self.assertEqual(
             list(found['sdks']),
-            ['rust', 'go', 'typescript', 'python', 'swift', 'kotlin', 'cpp', 'c'],
+            ['rust', 'go', 'typescript', 'python', 'swift', 'kotlin', 'cpp', 'c', 'php'],
         )
 
     def test_entries_may_trail_a_line_that_moved_first(self):
@@ -105,15 +105,19 @@ class CommandLineTest(unittest.TestCase):
     def test_check_accepts_the_hub_file(self):
         code, out, _ = self.run_tool('--check')
         self.assertEqual(code, 0)
-        self.assertIn('8 SDKs, line 0.1', out)
+        self.assertIn('9 SDKs, line 0.2', out)
 
     def test_a_version_on_another_line_fails_with_a_clear_message(self):
-        code, _, err = self.run_tool('--sdk', 'rust', '--version', '0.2.0-beta.1')
+        code, _, err = self.run_tool('--sdk', 'rust', '--version', '0.3.0-beta.1')
         self.assertEqual(code, 1)
-        self.assertIn('major.minor 0.2 is not the hub line 0.1', err)
+        self.assertIn('major.minor 0.3 is not the hub line 0.2', err)
 
     def test_the_python_spelling_passes_the_command(self):
-        code, out, _ = self.run_tool('--sdk', 'python', '--version', '0.1.0b1')
+        # A file of its own, so the spelling is checked whatever line the hub is on.
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'versions.json'
+            path.write_text(json.dumps(DOCUMENT), encoding='utf-8')
+            code, out, _ = self.run_tool('--sdk', 'python', '--version', '0.1.0b1', '--file', str(path))
         self.assertEqual(code, 0)
         self.assertIn('0.1.0-beta.1', out)
 
