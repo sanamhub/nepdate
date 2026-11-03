@@ -67,9 +67,20 @@ class FileTest(unittest.TestCase):
             with self.assertRaisesRegex(version_line.VersionError, 'cannot read'):
                 version_line.read(Path(tmp) / 'versions.json')
 
-    def test_an_unknown_sdk_is_rejected(self):
-        with self.assertRaisesRegex(version_line.VersionError, 'unknown SDK'):
-            version_line.check_sdk(DOCUMENT, 'cobol', '0.1.0-beta.1')
+    def test_a_port_with_no_entry_may_declare_the_current_line(self):
+        self.assertEqual(version_line.check_sdk(DOCUMENT, 'java', '0.1.0-rc.1'), '0.1.0-rc.1')
+
+    def test_a_port_with_no_entry_may_declare_a_later_line(self):
+        self.assertEqual(
+            version_line.check_sdk(document(line='0.2'), 'java', '1.0.0-rc.1'), '1.0.0-rc.1')
+
+    def test_a_port_with_no_entry_may_not_declare_an_earlier_line(self):
+        with self.assertRaisesRegex(version_line.VersionError, 'behind the hub line 0.2'):
+            version_line.check_sdk(document(line='0.2'), 'java', '0.1.0-rc.1')
+
+    def test_a_released_port_still_may_not_lead_the_line(self):
+        with self.assertRaisesRegex(version_line.VersionError, 'rust 0.2.0-rc.1.*not the hub line 0.1'):
+            version_line.check_sdk(DOCUMENT, 'rust', '0.2.0-rc.1')
 
 
 class SpellingTest(unittest.TestCase):
@@ -116,6 +127,17 @@ class CommandLineTest(unittest.TestCase):
         code, out, _ = self.run_tool('--sdk', 'python', '--version', '1.0.0rc1')
         self.assertEqual(code, 0)
         self.assertIn('1.0.0-rc.1', out)
+
+    def test_an_unreleased_port_on_a_later_line_passes_the_command(self):
+        code, out, _ = self.run_tool('--sdk', 'ruby', '--version', '2.0.0-rc.1')
+        self.assertEqual(code, 0)
+        self.assertIn('ahead of the 1.0 line', out)
+        self.assertIn('has not released yet', out)
+
+    def test_an_unreleased_port_on_an_earlier_line_fails_the_command(self):
+        code, _, err = self.run_tool('--sdk', 'ruby', '--version', '0.2.0-rc.1')
+        self.assertEqual(code, 1)
+        self.assertIn('behind the hub line 1.0', err)
 
 
 if __name__ == '__main__':

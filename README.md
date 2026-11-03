@@ -25,9 +25,9 @@ informational, not an official calendar.
 Every port ships two packages, one version: the core (conversion, arithmetic, formatting, parsing)
 and the patro (पात्रो: tithi, holidays, events), so an app that only converts dates carries no
 almanac data ([ADR-0004](docs/adr/0004-patro-in-a-separate-package.md)). The first public line was
-`0.1.0-rc.1`. The next pre-release line is `1.0.0-rc.1`; a port's table entry shows the version its
-registry serves, and the ports still trail the line until each one releases on it. The API can
-still change before 1.0.0.
+`0.1.0-rc.1`. The current line is `1.0.0-rc.1`; a port's table entry shows the version its registry
+serves, so the ports released on `0.2.0-rc.1` trail until each one releases on the new line. The API
+can still change before 1.0.0.
 
 | Language | Core | Patro | Version | Repository |
 |---|---|---|---|---|
@@ -67,7 +67,9 @@ lines, with the exact version, are in each repository's README and its GitHub re
 Each port keeps a read-only copy of `data/` and `spec/` in its own `shared/` directory, with the
 hub commit in `shared/VERSION`, and generates constant tables from it at build time. A check in
 each port fails if `shared/` drifts from the hub
-([ADR-0001](docs/adr/0001-hub-and-spoke-repositories.md)).
+([ADR-0001](docs/adr/0001-hub-and-spoke-repositories.md)). A port that has not released yet has no
+entry in `spec/versions.json`, and its `shared-check` accepts a version on the current line or a
+later one ([ADR-0008](docs/adr/0008-unreleased-port-version.md)).
 
 Calendar data comes from C# NepDate first, then here, then the ports
 ([ADR-0002](docs/adr/0002-canonical-data-and-upstream-first.md)). Report a wrong date, holiday or

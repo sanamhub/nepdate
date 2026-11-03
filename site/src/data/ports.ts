@@ -24,7 +24,7 @@ function pep440(version: string): string {
 }
 
 /** The date picker is a UI component outside the SDK line and keeps its own version (ADR-0007 decision 6). */
-export const DATEPICKER_VERSION = "0.1.0-beta.1";
+export const DATEPICKER_VERSION = "0.1.0-beta.2";
 /** MitiBar's release, tagged in its own repository (it has its own version line). */
 export const MITIBAR_VERSION = "1.0.0";
 /** C# NepDate, the original library the ports are checked against (hub ADR-0003). */
