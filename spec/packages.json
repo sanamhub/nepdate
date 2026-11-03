@@ -140,6 +140,20 @@
       "packages": ["sanamhub/nepdate", "sanamhub/nepdate-patro"],
       "managers": ["composer"],
       "install": "composer require sanamhub/nepdate:0.2.0-rc.1"
+    },
+    {
+      "id": "ruby",
+      "name": "Ruby",
+      "repository": "sanamhub/nepdate-ruby",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "RubyGems",
+        "url": "https://rubygems.org/gems/nepdate"
+      },
+      "package": "nepdate",
+      "packages": ["nepdate", "nepdate-patro"],
+      "managers": ["rubygems", "bundler"],
+      "install": "gem install nepdate -v 1.0.0-rc.1"
     }
   ]
 }
