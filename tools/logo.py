@@ -203,6 +203,7 @@ LANGS = {
     "nepdate-kotlin": ("Kt", "#7F52FF", "#FFFFFF"),
     "nepdate-dart": ("Dart", "#0175C2", "#FFFFFF"),
     "nepdate-php": ("PHP", "#777BB4", "#FFFFFF"),
+    "nepdate-zig": ("Zig", "#F7A41D", "#1A1A1A"),
     "nepdate-mobile": ("App", "#1F2937", "#FFFFFF"),
 }
 
