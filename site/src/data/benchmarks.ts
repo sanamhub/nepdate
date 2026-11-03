@@ -92,6 +92,14 @@ export const benchmarks: PortBenchmark[] = [
     source: blob("nepdate-kotlin", "docs/benchmarks.md"),
   },
   {
+    id: "java",
+    name: "Java",
+    machine: `${LAPTOP}, JDK 17`,
+    ops: [13.88, 8.5, 6.26, 11.93, 96.55, 30.94, 2.07, 81.84],
+    competitors: [{ name: "shivathapaa", b1: 649.45, b2: 590.91, agrees: 61 }],
+    source: blob("nepdate-java", "docs/benchmarks.md"),
+  },
+  {
     id: "typescript",
     name: "TypeScript",
     machine: `${LAPTOP}, Node.js`,

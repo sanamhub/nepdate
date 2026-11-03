@@ -1,0 +1,143 @@
+---
+title: Java
+description: Install nepdate-java and nepdate-java-patro from Maven Central.
+---
+
+import { versions } from "../../../data/ports";
+import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
+
+Bikram Sambat dates, conversion, formatting and parsing for Java 17 and newer, with no runtime
+dependency and a real JPMS module.
+
+- The core is `io.github.sanamhub:nepdate-java`, package `io.github.sanamhub.nepdate.java`, module
+  `io.github.sanamhub.nepdate.java`.
+- Tithi, public holidays and events are a separate artifact, `io.github.sanamhub:nepdate-java-patro`.
+  The core has none of that data.
+- The Kotlin port stays for Kotlin and Android; this one is for a classpath without the Kotlin
+  standard library.
+
+:::caution[Pre-release]
+This is the first public pre-release, <code>{versions.java}</code> on Maven Central. The API may
+still change before 1.0.0.
+:::
+
+## Install
+
+<Tabs syncKey="build">
+  <TabItem label="Gradle (Kotlin)">
+    <Code
+      lang="kotlin"
+      title="build.gradle.kts"
+      code={`dependencies {
+    implementation("io.github.sanamhub:nepdate-java:${versions.java}")
+    implementation("io.github.sanamhub:nepdate-java-patro:${versions.java}") // tithi, holidays, events
+}`}
+    />
+  </TabItem>
+  <TabItem label="Maven">
+    <Code
+      lang="xml"
+      title="pom.xml"
+      code={`<dependency>
+  <groupId>io.github.sanamhub</groupId>
+  <artifactId>nepdate-java</artifactId>
+  <version>${versions.java}</version>
+</dependency>`}
+    />
+  </TabItem>
+</Tabs>
+
+Every file on Maven Central is signed by the release key
+`44ED6E4129D97536CAE086175B979A307721A17B`. The artifacts are JPMS modules
+`io.github.sanamhub.nepdate.java` and `io.github.sanamhub.nepdate.java.patro`.
+
+Every clock method takes a `ZoneId` or a `Clock`, so nothing reads a hidden local zone. The
+supported range is BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to 2143-04-15).
+
+## Quick start
+
+```java
+import io.github.sanamhub.nepdate.java.NepaliDate;
+
+NepaliDate date = NepaliDate.of(2081, 4, 15);
+date.toString();                 // 2081/04/15
+date.toLocalDate();              // 2024-07-30
+date.toLongString();             // Shrawan 15, 2081
+date.toIsoString();              // 2081-04-15
+NepaliDate.parse("2081/04/15");  // the same date
+```
+
+Arithmetic is explicit about the two cases a month can have. `CLAMP` uses the target month's last
+day, `SPILL` carries the extra days into the next month:
+
+```java
+import io.github.sanamhub.nepdate.java.MonthOverflow;
+import io.github.sanamhub.nepdate.java.NepaliDate;
+
+NepaliDate date = NepaliDate.of(2081, 4, 32);
+date.plusMonths(2);                      // 2081/06/30
+date.plusMonths(2, MonthOverflow.SPILL); // 2081/07/02
+date.plusDays(1000);                     // 2084/01/30
+```
+
+Formatting and parsing have an English and a Nepali form, and both parsers have a non-throwing
+`Optional` variant:
+
+```java
+import io.github.sanamhub.nepdate.java.*;
+import java.util.Optional;
+
+NepaliDate date = NepaliDate.of(2081, 4, 15);
+date.toLongString(LongDateOptions.DEFAULT.withWeekday(true)); // Tuesday, Shrawan 15, 2081
+date.format("MMMM d, yyyy", Language.NEPALI);                 // साउन १५, २०८१
+NepaliDate.parseLenient("15 Shrawan 2080");                   // 2080/04/15
+Optional<NepaliDate> none = NepaliDate.tryParse("2080/05/40");
+```
+
+## Ranges, fiscal years and today
+
+```java
+import io.github.sanamhub.nepdate.java.*;
+import java.time.Clock;
+import java.time.Instant;
+
+NepaliDateRange month = NepaliDateRange.forMonth(2081, 4);
+month.length();                       // 32
+month.workingDays(false).count();     // the working days of the month
+NepaliDate.of(2081, 4, 15).fiscalYear().label(); // 2081/82
+
+Clock clock = Clock.fixed(Instant.parse("2024-07-30T18:30:00Z"), NepaliDate.KATHMANDU);
+NepaliDate.today(clock);              // 2081/04/16
+```
+
+## Tithi, holidays and events
+
+```java
+import io.github.sanamhub.nepdate.java.NepaliDate;
+import io.github.sanamhub.nepdate.java.patro.*;
+
+CalendarInfo day = Patro.info(NepaliDate.of(2081, 1, 1));
+day.tithiEn();                        // Panchami
+day.isPublicHoliday();                // true
+day.eventsEn();                       // [New Year, Mesh Sankranti, Bisket Jatra]
+Patro.coverage();                     // 2077/01/01 - 2084/08/20
+```
+
+`info` never throws: a date outside the coverage returns one shared empty `CalendarInfo`. The data
+covers BS 2077-01-01 to 2084-08-20.
+
+## What each artifact exports
+
+| Artifact | Names |
+|---|---|
+| `nepdate-java` | `NepaliDate`, `NepaliDateRange`, `FiscalYear`, `Month`, `Weekday`, `Language`, `DateOrder`, `Separator`, `MonthOverflow`, `Quarter`, `LongDateOptions`, `NepDateException`, `NepDateError` |
+| `nepdate-java-patro` | `Named`, `CalendarInfo`, `Patro` |
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Signatures, defaults and exceptions | [docs/API.md](https://github.com/sanamhub/nepdate-java/blob/main/docs/API.md) |
+| Benchmarks against the Kotlin port, C# NepDate and the Maven Central competitor | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-java/blob/main/docs/benchmarks.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-java/blob/main/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-java](https://github.com/sanamhub/nepdate-java) |

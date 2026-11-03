@@ -221,6 +221,24 @@ val d = date.gregorianDay    // 30
 println(date.toLongString()) // Shrawan 15, 2081`,
   },
   {
+    id: "java",
+    name: "Java",
+    lang: "java",
+    repo: "nepdate-java",
+    core: "io.github.sanamhub:nepdate-java",
+    patro: "io.github.sanamhub:nepdate-java-patro",
+    install: `implementation("io.github.sanamhub:nepdate-java:${versions.java}")`,
+    patroInstall: `implementation("io.github.sanamhub:nepdate-java-patro:${versions.java}")`,
+    installLang: "kotlin",
+    registry: { label: "Maven Central", href: "https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-java" },
+    api: { label: "API.md", href: `${gh("nepdate-java")}/blob/main/docs/API.md` },
+    sample: `import io.github.sanamhub.nepdate.java.NepaliDate;
+
+NepaliDate date = NepaliDate.of(2081, 4, 15);
+date.toLocalDate();   // 2024-07-30
+date.toLongString();  // "Shrawan 15, 2081"`,
+  },
+  {
     id: "cpp",
     name: "C++",
     lang: "cpp",
