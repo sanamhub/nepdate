@@ -65,7 +65,9 @@ lines, with the exact version, are in each repository's README and its GitHub re
 Each port keeps a read-only copy of `data/` and `spec/` in its own `shared/` directory, with the
 hub commit in `shared/VERSION`, and generates constant tables from it at build time. A check in
 each port fails if `shared/` drifts from the hub
-([ADR-0001](docs/adr/0001-hub-and-spoke-repositories.md)).
+([ADR-0001](docs/adr/0001-hub-and-spoke-repositories.md)). A port that has not released yet has no
+entry in `spec/versions.json`, and its `shared-check` accepts a version on the current line or a
+later one ([ADR-0008](docs/adr/0008-unreleased-port-version.md)).
 
 Calendar data comes from C# NepDate first, then here, then the ports
 ([ADR-0002](docs/adr/0002-canonical-data-and-upstream-first.md)). Report a wrong date, holiday or

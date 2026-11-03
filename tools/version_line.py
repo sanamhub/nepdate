@@ -4,6 +4,10 @@ spec/versions.json records the current MAJOR.MINOR line and each SDK's latest re
 port passes its own version to the reusable shared-check workflow, which runs this tool, so a port
 cannot move to another minor by accident.
 
+A port that has never released has no entry yet. It may declare the line it is built for, which is
+the current line or a later one, but never an earlier one (ADR-0008). The entry appears at its first
+release, and from then on the equality rule below applies.
+
 On release day for a minor the hub moves the line first and each SDK entry follows once that port
 has released, so an entry may trail the line but never lead it. The site reads the entries, so
 it never names a version a registry does not serve yet.
@@ -34,7 +38,7 @@ PEP440_KINDS = {'a': 'alpha', 'b': 'beta', 'rc': 'rc'}
 
 
 class VersionError(Exception):
-    """A version file or a version that breaks ADR-0007."""
+    """A version file or a version that breaks ADR-0007 or ADR-0008."""
 
 
 def read(path=VERSIONS):
@@ -123,11 +127,22 @@ def load(path=VERSIONS):
 
 
 def check_sdk(document, sdk, version):
-    """Check one port's version against the file and return its SemVer spelling."""
+    """Check one port's version against the file and return its SemVer spelling.
+
+    A port with an entry has released, so its version must be on the hub line. A port with no
+    entry has never released, so it may declare the current line or a later one, never an earlier
+    one (ADR-0008).
+    """
     sdks = document['sdks']
-    if sdk not in sdks:
-        raise VersionError(f'unknown SDK {sdk!r}; spec/versions.json lists {", ".join(sdks)}')
-    return check_version(sdk, version, document['line'])
+    if sdk in sdks:
+        return check_version(sdk, version, document['line'])
+    spelled, (major, minor) = parse_version(sdk, version)
+    line = line_parts(document['line'])
+    if (major, minor) < line:
+        raise VersionError(
+            f'{sdk} {version}: {major}.{minor} is behind the hub line {document["line"]}; '
+            'a port with no entry may declare the current line or a later one')
+    return spelled
 
 
 def main(argv=None):
@@ -152,7 +167,12 @@ def main(argv=None):
         if not args.sdk or args.version is None:
             parser.error('--sdk and --version must be given together, or use --check')
         spelled = check_sdk(document, args.sdk, args.version)
-        print(f'version-line: {args.sdk} {args.version} is on the {document["line"]} line ({spelled})')
+        if args.sdk not in document['sdks'] and \
+                parse_version(args.sdk, args.version)[1] > line_parts(document['line']):
+            print(f'version-line: {args.sdk} {args.version} is ahead of the {document["line"]} '
+                  f'line ({spelled}); the port has not released yet')
+        else:
+            print(f'version-line: {args.sdk} {args.version} is on the {document["line"]} line ({spelled})')
         return 0
     except VersionError as error:
         print(f'version-line: {error}', file=sys.stderr)
