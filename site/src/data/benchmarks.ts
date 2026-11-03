@@ -128,6 +128,14 @@ export const benchmarks: PortBenchmark[] = [
     ],
     source: blob("nepdate-python", "docs/benchmarks.md"),
   },
+  {
+    id: "dart",
+    name: "Dart",
+    machine: `${LAPTOP}, Dart AOT (preliminary)`,
+    ops: [67.37, 121.59, 19.35, 17.11, 854.73, 102.36, 42.48, 1698.46],
+    competitors: [{ name: "nepali_utils", b1: 33526.7, b2: 79675.04, agrees: 31 }],
+    source: blob("nepdate-dart", "docs/benchmarks.md"),
+  },
 ];
 
 /** C# NepDate 2.0.7 on .NET 10, the original every port is compared with. `ops` is the hub's

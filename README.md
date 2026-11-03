@@ -24,8 +24,10 @@ informational, not an official calendar.
 
 Every port ships two packages, one version: the core (conversion, arithmetic, formatting, parsing)
 and the patro (पात्रो: tithi, holidays, events), so an app that only converts dates carries no
-almanac data ([ADR-0004](docs/adr/0004-patro-in-a-separate-package.md)). The first public
-version of the ports is `0.1.0-beta.1`; the API can still change before 0.1.0.
+almanac data ([ADR-0004](docs/adr/0004-patro-in-a-separate-package.md)). The first public line was
+`0.1.0-rc.1`. The current pre-release line is `0.2.0-rc.1`; a port's table entry shows the version
+its registry serves, and not every port has released on the new line yet. The API can still change
+before 0.2.0.
 
 | Language | Core | Patro | Version | Repository |
 |---|---|---|---|---|
@@ -38,6 +40,7 @@ version of the ports is `0.1.0-beta.1`; the API can still change before 0.1.0.
 | Kotlin, Java, Android | [`io.github.sanamhub:nepdate`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [`io.github.sanamhub:nepdate-patro`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-patro) | [![Maven Central](https://img.shields.io/maven-central/v/io.github.sanamhub/nepdate?logo=apachemaven&label=)](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) |
 | C++20 | `nepdate::nepdate` | `nepdate::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-cpp?include_prereleases&sort=semver&logo=cplusplus&label=)](https://github.com/sanamhub/nepdate-cpp/releases) | [nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) |
 | C11, Zig | `nepdate-c::nepdate` | `nepdate-c::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-c?include_prereleases&sort=semver&logo=c&label=)](https://github.com/sanamhub/nepdate-c/releases) | [nepdate-c](https://github.com/sanamhub/nepdate-c) |
+| Dart, Flutter | [`nepdate`](https://pub.dev/packages/nepdate) | [`nepdate_patro`](https://pub.dev/packages/nepdate_patro) | [![pub.dev](https://img.shields.io/pub/v/nepdate?include_prereleases&logo=dart&label=)](https://pub.dev/packages/nepdate) | [nepdate-dart](https://github.com/sanamhub/nepdate-dart) |
 
 For the web there is also a BS date picker, [`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker):
 web components built on the TypeScript core that work in plain HTML and any framework

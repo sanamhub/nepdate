@@ -5,7 +5,9 @@ import {
   siAndroid,
   siC,
   siCplusplus,
+  siDart,
   siDotnet,
+  siFlutter,
   siGithub,
   siGo,
   siJavascript,
@@ -30,6 +32,8 @@ export const langIcons: Record<string, { path: string }> = {
   android: siAndroid,
   cpp: siCplusplus,
   c: siC,
+  dart: siDart,
+  flutter: siFlutter,
   // The source link is a GitHub repository.
   source: siGithub,
 };
