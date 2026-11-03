@@ -61,22 +61,52 @@ int main() {
               << static_cast<unsigned>(ad.month()) << '-' << std::setw(2)
               << static_cast<unsigned>(ad.day()) << '\n';
     std::cout << nepdate::to_string(nepdate::from_gregorian(ad).value()) << '\n';
+    std::cout << nepdate::to_iso_string(d) << '\n';
+    std::cout << d.to_ymd_int() << '\n';
 }
 ```
 
-**Arithmetic and fiscal year.** `add_days`, `add_months` and `add_years` return `result<date>` with
-`overflow::clamp` or `overflow::spill`. `diff` returns whole years, months and days. `fiscal_year`
-gives the start, end, range and the `2082/83` label.
+## Dates, conversion and serialization
 
-**Formatting.** `to_chars`, `to_chars_iso`, `to_chars_short`, `to_chars_long` and
-`to_chars_pattern` write into the caller's buffer and allocate nothing. The `to_string` twins return
-`std::string`. `std::formatter<nepdate::date>` prints `{}` as `YYYY/MM/DD`.
+`make_date` builds a date; `from_gregorian`, `from_sys_days` and `from_local_days` convert from
+Gregorian. `to_year_month_day` and `to_sys_days` go back. `to_iso_string` and `parse` are the
+canonical `YYYY-MM-DD` text form, `to_ymd_int` and `from_ymd_int` the `YYYYMMDD` form.
+`to_nepali_dates` and `to_english_dates` convert a whole span in input order.
 
-**`<chrono>` interop.** `to_year_month_day`, `to_sys_days`, `from_gregorian`, `from_sys_days` and
-`from_sys_time` use the standard calendar types. `today(utc_offset)` returns the current BS date in a
-fixed-offset zone, Nepal's +05:45 by default.
+## Arithmetic and fiscal year
+
+`add_days`, `add_months` and `add_years` return `result<date>` with `overflow::clamp` or
+`overflow::spill`. `days_until` returns `other - this`; `operator-` returns a `date_diff` whose
+`total_days` is `this - other`. `fiscal_year` gives the start, end, range, quarter ranges and the
+`2081/82` label.
+
+```cpp
+const nepdate::date d = nepdate::make_date(2081, 4, 32).value();
+const auto clamped = d.add_months(2, nepdate::overflow::clamp);
+const auto spilled = d.add_months(2, nepdate::overflow::spill);
+const nepdate::fiscal_year fy = nepdate::fiscal_year::of(d);
+```
+
+## Formatting
+
+`to_chars`, `to_chars_iso`, `to_chars_short`, `to_chars_long` and `to_chars_pattern` write into the
+caller's buffer and allocate nothing. The `to_string` twins return `std::string`.
+`std::formatter<nepdate::date>` prints `{}` as `YYYY/MM/DD` and `{:<pattern>}` through the shared
+pattern language where the standard library has `<format>`. A trailing backslash in a pattern
+writes a literal backslash.
+
+```cpp
+const std::string plain = nepdate::to_string(d);
+const std::string nepali = nepdate::format_short(
+    d, {nepdate::date_order::dmy, nepdate::separator::dash, true}, nepdate::lang::ne);
+const std::string long_form = nepdate::format_long(d, {.weekday = true}, nepdate::lang::en);
+```
 
 ## Parsing
+
+`parse` reads strict `year month day` text; `parse_lenient` accepts human input such as
+`2081 Shrawan 15`. Both are `constexpr` over `std::string_view` and reject rather than guess.
+`try_parse` and `try_parse_lenient` return `std::optional<date>`.
 
 ```cpp
 #include <nepdate/nepdate.hpp>
@@ -88,6 +118,42 @@ int main() {
     const nepdate::result<nepdate::date> lenient = nepdate::parse_lenient("2081 Shrawan 15");
     std::cout << nepdate::to_string(strict.value()) << '\n';
     std::cout << nepdate::to_string(lenient.value()) << '\n';
+}
+```
+
+## Ranges
+
+`date_range` is an inclusive, non-empty view. It has the factories, containment, overlap,
+adjacency, intersection, union, difference, the month and fiscal-quarter splits, the interval and
+working-day views, and both string forms. The set operations return a value, `std::optional` or the
+fixed `range_set`; the two splits return a `std::vector`. `std::formatter<date_range>` and
+`operator<<` are available.
+
+```cpp
+const nepdate::date_range week =
+    nepdate::date_range::make(nepdate::make_date(2081, 4, 10).value(),
+                              nepdate::make_date(2081, 4, 16).value())
+        .value();
+for (const nepdate::date d : week.working_days(true)) {
+    // the working days
+}
+const auto overlap =
+    week.intersect(nepdate::date_range::of_month(2081, nepdate::month::shrawan).value());
+const auto rest =
+    week.subtract(nepdate::date_range::single(nepdate::make_date(2081, 4, 12).value()));
+```
+
+## Errors and result
+
+Every fallible function returns `result<T>`, which holds a value or a `nepdate::errc`. `try_parse`
+returns `std::optional` when there is no error kind to report. `errc` converts to
+`std::error_code`, `make_error_condition` makes a condition, and `value()` on an error throws
+`nepdate::bad_result_access`.
+
+```cpp
+const nepdate::result<nepdate::date> parsed = nepdate::parse("2081/04/33");
+if (!parsed) {
+    const std::error_code code = parsed.error();
 }
 ```
 
