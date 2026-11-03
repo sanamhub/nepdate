@@ -11,7 +11,8 @@ events) is the package `github.com/sanamhub/nepdate-go/patro` of the same module
 imports it, so a program that only converts dates links no patro data.
 
 Zero dependencies, and zero allocations on conversion, arithmetic, comparison, successful parsing,
-`Append*` formatting and patro lookups (measured with `-benchmem`).
+`Append*` formatting and patro lookups (measured with `-benchmem`). A valid date is BS 1901-01-01
+to 2199-12-30, AD 1844-04-11 to 2143-04-15.
 
 :::caution[Pre-release]
 This is <code>{versions.go}</code>, a release candidate. The API may still change before the final 0.2 release.
@@ -30,59 +31,128 @@ import (
 )
 ```
 
-## Quick start
+## Dates
 
 The snippets use `fmt`, `log` and `time` from the standard library, plus the imports above.
 
-Construct a BS date and read its Gregorian date:
-
 ```go
-d, err := nepdate.New(2081, nepdate.Shrawan, 32)
+d, err := nepdate.New(2081, nepdate.Shrawan, 15)
 if err != nil {
 	log.Fatal(err)
 }
 y, m, day := d.Gregorian()
+fmt.Println(d, d.Weekday(), d.YearLength())
 fmt.Println(y, int(m), day)
+// 2081/04/15 Tuesday 366
+// 2024 7 30
 ```
 
-Format in Nepali:
+`New` checks the year, then the month, then the day. `FromGregorian`, `FromTime` and `Today` go
+the other way. `Today(loc)` and `d.Time(loc)` both treat a nil location as Asia/Kathmandu; pass
+`time.UTC` when you mean UTC. `YearLength` is the BS year length, 364 to 367, not Gregorian
+leap-ness.
+
+`Date` is comparable: `==`, `<`, `Compare` and map keys work. `Min` and `Max` are the supported
+bounds. The zero `Date` means "no date": `IsZero` reports true, accessors return 0 or `""`, and
+operations that can fail return `ErrOutOfRange`.
+
+## Conversion and serialization
 
 ```go
-d, _ := nepdate.New(2081, nepdate.Shrawan, 15)
+d, _ := nepdate.FromYMD(20810415)
+payload, _ := json.Marshal(struct{ D nepdate.Date }{d})
+fmt.Println(string(payload), d.YMD())
+// {"D":"2081-04-15"} 20810415
+```
+
+The integer form is `YYYYMMDD`. The ordered batch functions are `ToNepaliDates`,
+`ToEnglishDates` and `ToEnglishDatesFromStrings`; each keeps the input order and stops at the
+first error.
+
+A `Date` marshals as the JSON string `"YYYY-MM-DD"` and implements the text hooks for JSON, YAML
+and map keys. JSON `null` is rejected with `ErrOutOfRange`, so an optional field should be a
+`*Date`; nil marshals as null.
+
+## Arithmetic
+
+```go
+d := nepdate.MustNew(2081, nepdate.Shrawan, 32)
+clamped, _ := d.AddMonths(2, nepdate.Clamp)
+spilled, _ := d.AddMonths(2, nepdate.Spill)
+fmt.Println(clamped, spilled, d.DaysUntil(nepdate.Max))
+// 2081/06/30 2081/07/02 43340
+```
+
+`AddMonths` and `AddYears` take whole counts and an `Overflow` mode: `Clamp` stops at the target
+month end, `Spill` carries the extra days into the next month. `DaysUntil(other)` is
+`other - d`, positive when `other` is later. `Diff` returns calendar years, months, days and the
+signed total.
+
+## Formatting and parsing
+
+```go
+d := nepdate.MustNew(2081, nepdate.Shrawan, 15)
 fmt.Println(d.Format("MMM d, yyyy", nepdate.Nepali))
+parsed, ok := nepdate.TryParseLenient("15 Shrawan 2081")
+fmt.Println(parsed, ok)
+// साउन १५, २०८१
+// 2081/04/15 true
 ```
 
-Append a long form without allocating:
+`String` is `YYYY/MM/DD`. `Short` takes an order, a separator, padding and a language. `Long`
+takes `LongOptions` for the weekday, the year and padding. `Format` supports the standard
+patterns `""`, `G`, `g`, `d`, `D` and `s`, and the custom pattern language. Every string form has
+an `Append` twin that writes into a byte slice.
+
+`Parse` is strict: year, month and day, ASCII or Devanagari digits, four digits per group.
+`ParseLenient` also accepts month names and a year at either end. `TryParse` and
+`TryParseLenient` return `(Date, bool)` instead of an error.
+
+## Ranges
 
 ```go
-d, _ := nepdate.New(2081, nepdate.Shrawan, 15)
-var buf []byte
-buf = d.AppendLong(buf, nepdate.LongOptions{Weekday: true}, nepdate.Nepali)
-fmt.Println(string(buf))
+r, _ := nepdate.FromDayCount(nepdate.MustNew(2081, nepdate.Shrawan, 10), 11)
+fmt.Println(r.Len(), r.Contains(nepdate.MustNew(2081, nepdate.Shrawan, 15)))
+fmt.Println(r.Format(nepdate.YMD, nepdate.Dash, nepdate.English))
+// 11 true
+// 2081-04-10 - 2081-04-20
 ```
 
-Parse what a person wrote:
+A range is inclusive and cannot be empty. `NewRange` returns false for `start > end` and for the
+zero `Date`. The factories are `SingleDay`, `FromDayCount`, `MonthRange`, `YearRange`,
+`CurrentMonth`, `CurrentFiscalYear` and `CurrentCalendarYear`.
+
+The full set is available: `ContainsRange`, `Overlaps`, `IsAdjacentTo`, `Intersect`, `Union`,
+`Except`, `SplitByMonth`, `SplitByFiscalQuarter`, `DatesWithInterval`, `WorkingDays`,
+`WeekendDays` and `Days`. `Intersect` returns `(Range, bool)` because there is no empty range.
+`String` is `start - end`; `Format` writes both dates with the same order, separator and
+language. A valid range never fails because it touches 2199-12-30.
+
+## Fiscal year
 
 ```go
-d, err := nepdate.ParseLenient("15 Shrawan 2080")
-if err != nil {
-	log.Fatal(err)
-}
-fmt.Println(d)
+fy := nepdate.MustNew(2081, nepdate.Shrawan, 15).FiscalYear()
+q, _ := fy.QuarterRange(nepdate.Q1)
+fmt.Println(fy.Label(nepdate.Nepali), q.Start(), q.End())
+// २०८१/८२ 2081/04/01 2081/06/30
 ```
 
-Convert a Go time:
+A fiscal year starts on 1 Shrawan and ends on the last day of Ashad of the next BS year. It is
+named by its starting year. `Start`, `End`, `Range` and `QuarterRange` return `ErrOutOfRange`
+outside the supported data.
+
+## Errors
 
 ```go
-d, err := nepdate.FromTime(time.Date(2024, time.August, 16, 0, 0, 0, 0, time.UTC))
-if err != nil {
-	log.Fatal(err)
-}
-fmt.Println(d)
+var d nepdate.Date
+_, err := d.AddDays(1)
+fmt.Println(d.IsZero(), errors.Is(err, nepdate.ErrOutOfRange))
+// true true
 ```
 
-A `Date` marshals to JSON as `"YYYY-MM-DD"`. Saving an unset (zero) `Date` returns an error, so use
-`*Date` for an optional field; nil marshals as null.
+The sentinels are `ErrOutOfRange`, `ErrInvalidMonth`, `ErrInvalidDay` and `ErrInvalidGregorian`;
+test them with `errors.Is`. A syntax failure is a `*ParseError` with an `Input` and a `Kind`
+(`InvalidCharacter`, `WrongGroupCount`, `NumberTooLong`, `Ambiguous` or `Unrecognized`).
 
 ## Tithi, holidays and events
 
@@ -96,14 +166,18 @@ for n := 0; n < i.EventCount(); n++ {
 }
 ```
 
-The data covers BS 2077-01-01 to 2084-08-20.
+The data covers BS 2077-01-01 to 2084-08-20. Tithi names end at BS 2083-12-30. Outside that
+range `Of` returns an empty `Info`; it never fails.
 
 ## Reference
 
 | Topic | Where |
 |---|---|
-| Package docs | [pkg.go.dev](https://pkg.go.dev/github.com/sanamhub/nepdate-go) |
-| Every exported identifier | [docs/API.md](https://github.com/sanamhub/nepdate-go/blob/main/docs/API.md) |
+| Every public item | [pkg.go.dev](https://pkg.go.dev/github.com/sanamhub/nepdate-go) |
+| The API in one page | [docs/API.md](https://github.com/sanamhub/nepdate-go/blob/main/docs/API.md) |
 | Speed and allocations, with the C# baseline | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-go/blob/main/docs/benchmarks.md) |
 | What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-go/blob/main/CHANGELOG.md) |
 | Source | [sanamhub/nepdate-go](https://github.com/sanamhub/nepdate-go) |
+
+[MitiBar](/docs/apps/mitibar/), the desktop calendar, lives in its own repository,
+[sanamhub/mitibar](https://github.com/sanamhub/mitibar).

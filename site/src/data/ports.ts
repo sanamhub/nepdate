@@ -163,6 +163,24 @@ date.to_date()  # datetime.date(2024, 7, 30)
 date.long()     # 'Shrawan 15, 2081'`,
   },
   {
+    id: "php",
+    name: "PHP",
+    lang: "php",
+    repo: "nepdate-php",
+    core: "sanamhub/nepdate",
+    patro: "sanamhub/nepdate-patro",
+    install: `composer require sanamhub/nepdate:${versions.php}`,
+    patroInstall: `composer require sanamhub/nepdate-patro:${versions.php}`,
+    installLang: "sh",
+    registry: { label: "Packagist", href: "https://packagist.org/packages/sanamhub/nepdate" },
+    api: { label: "API.md", href: `${gh("nepdate-php")}/blob/main/docs/API.md` },
+    sample: `$date = NepaliDate::fromBs(2081, 4, 15);
+
+$date->toDateTime()->format('Y-m-d'); // '2024-07-30'
+$date->toLongString();                // 'Shrawan 15, 2081'
+$date->isoformat();                   // '2081-04-15'`,
+  },
+  {
     id: "swift",
     name: "Swift",
     lang: "swift",
@@ -238,6 +256,25 @@ nepdate_date d;
 nepdate_ymd ad;
 nepdate_from_bs(2081, 4, 15, &d);
 nepdate_to_ad(d, &ad);                   // 2024-07-30`,
+  },
+  {
+    id: "dart",
+    name: "Dart",
+    lang: "dart",
+    repo: "nepdate-dart",
+    core: "nepdate",
+    patro: "nepdate_patro",
+    install: `dart pub add nepdate:${versions.dart}`,
+    patroInstall: `dart pub add nepdate_patro:${versions.dart}`,
+    installLang: "sh",
+    registry: { label: "pub.dev", href: "https://pub.dev/packages/nepdate" },
+    alsoFor: [{ name: "Flutter", icon: "flutter" }],
+    api: { label: "API.md", href: `${gh("nepdate-dart")}/blob/main/docs/API.md` },
+    sample: `import 'package:nepdate/nepdate.dart';
+
+final date = NepaliDate.fromBs(2081, 4, 15);
+date.toDateTime();          // 2024-07-30 00:00:00.000Z
+date.toLongString();        // "Shrawan 15, 2081"`,
   },
 ];
 

@@ -24,8 +24,10 @@ informational, not an official calendar.
 
 Every port ships two packages, one version: the core (conversion, arithmetic, formatting, parsing)
 and the patro (पात्रो: tithi, holidays, events), so an app that only converts dates carries no
-almanac data ([ADR-0004](docs/adr/0004-patro-in-a-separate-package.md)). The first public
-version of the ports is `0.1.0-beta.1`; the API can still change before 0.1.0.
+almanac data ([ADR-0004](docs/adr/0004-patro-in-a-separate-package.md)). The first public line was
+`0.1.0-rc.1`. The current pre-release line is `0.2.0-rc.1`; a port's table entry shows the version
+its registry serves, and not every port has released on the new line yet. The API can still change
+before 0.2.0.
 
 | Language | Core | Patro | Version | Repository |
 |---|---|---|---|---|
@@ -34,10 +36,12 @@ version of the ports is `0.1.0-beta.1`; the API can still change before 0.1.0.
 | Go | [`nepdate`](https://pkg.go.dev/github.com/sanamhub/nepdate-go) | [`nepdate/patro`](https://pkg.go.dev/github.com/sanamhub/nepdate-go/patro) | [![Go](https://img.shields.io/github/v/tag/sanamhub/nepdate-go?include_prereleases&sort=semver&logo=go&label=)](https://pkg.go.dev/github.com/sanamhub/nepdate-go) | [nepdate-go](https://github.com/sanamhub/nepdate-go) |
 | TypeScript, JavaScript | [`nepdate-core`](https://www.npmjs.com/package/nepdate-core) | [`nepdate-patro`](https://www.npmjs.com/package/nepdate-patro) | [![npm](https://img.shields.io/npm/v/nepdate-core/beta?logo=npm&label=)](https://www.npmjs.com/package/nepdate-core) | [nepdate-typescript](https://github.com/sanamhub/nepdate-typescript) |
 | Python | [`nepdate-core`](https://pypi.org/project/nepdate-core/) | [`nepdate-patro`](https://pypi.org/project/nepdate-patro/) | [![PyPI](https://img.shields.io/pypi/v/nepdate-core?logo=python&logoColor=white&label=)](https://pypi.org/project/nepdate-core/) | [nepdate-python](https://github.com/sanamhub/nepdate-python) |
+| PHP | [`sanamhub/nepdate`](https://packagist.org/packages/sanamhub/nepdate) | [`sanamhub/nepdate-patro`](https://packagist.org/packages/sanamhub/nepdate-patro) | [![Packagist](https://img.shields.io/packagist/v/sanamhub/nepdate?include_prereleases&label=)](https://packagist.org/packages/sanamhub/nepdate) | [nepdate-php](https://github.com/sanamhub/nepdate-php) |
 | Swift | [`NepDate`](https://swiftpackageindex.com/sanamhub/nepdate-swift) | [`NepDatePatro`](https://swiftpackageindex.com/sanamhub/nepdate-swift) | [![SwiftPM](https://img.shields.io/github/v/tag/sanamhub/nepdate-swift?include_prereleases&sort=semver&logo=swift&label=)](https://github.com/sanamhub/nepdate-swift/releases) | [nepdate-swift](https://github.com/sanamhub/nepdate-swift) |
 | Kotlin, Java, Android | [`io.github.sanamhub:nepdate`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [`io.github.sanamhub:nepdate-patro`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-patro) | [![Maven Central](https://img.shields.io/maven-central/v/io.github.sanamhub/nepdate?logo=apachemaven&label=)](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) |
 | C++20 | `nepdate::nepdate` | `nepdate::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-cpp?include_prereleases&sort=semver&logo=cplusplus&label=)](https://github.com/sanamhub/nepdate-cpp/releases) | [nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) |
 | C11, Zig | `nepdate-c::nepdate` | `nepdate-c::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-c?include_prereleases&sort=semver&logo=c&label=)](https://github.com/sanamhub/nepdate-c/releases) | [nepdate-c](https://github.com/sanamhub/nepdate-c) |
+| Dart, Flutter | [`nepdate`](https://pub.dev/packages/nepdate) | [`nepdate_patro`](https://pub.dev/packages/nepdate_patro) | [![pub.dev](https://img.shields.io/pub/v/nepdate?include_prereleases&logo=dart&label=)](https://pub.dev/packages/nepdate) | [nepdate-dart](https://github.com/sanamhub/nepdate-dart) |
 
 For the web there is also a BS date picker, [`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker):
 web components built on the TypeScript core that work in plain HTML and any framework

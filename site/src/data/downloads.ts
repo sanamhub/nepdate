@@ -45,6 +45,26 @@ const sources: Record<string, () => Promise<Downloads>> = {
     const counts = packages.map((p) => sum(p.data.map((row: any) => row.downloads)));
     return { count: sum(counts), span: "last 180 days, without mirrors", registry: "PyPI" };
   },
+  php: async () => {
+    const packages = await Promise.all(
+      ["sanamhub/nepdate", "sanamhub/nepdate-patro"].map((p) => json(`https://packagist.org/packages/${p}.json`)),
+    );
+    return {
+      count: sum(packages.map((p) => p.package.downloads.total)),
+      span: "all time",
+      registry: "Packagist",
+    };
+  },
+  dart: async () => {
+    const packages = await Promise.all(
+      ["nepdate", "nepdate_patro"].map((p) => json(`https://pub.dev/api/packages/${p}/score`)),
+    );
+    return {
+      count: sum(packages.map((p) => p.downloadCount30Days)),
+      span: "last 30 days",
+      registry: "pub.dev",
+    };
+  },
 };
 
 async function load(): Promise<Record<string, Downloads>> {
