@@ -85,7 +85,8 @@ covers a minor release.
 
 The workflow runs the port's generator in a job without secrets or write permission and hands a
 patch to a second job that opens the PR. A generator that needs a tool the runner image lacks asks
-for it in the caller: `dart-sdk: true` installs the pinned Dart SDK before the regenerate step.
+for it in the caller: `dart-sdk: true` installs the current stable Dart SDK before the regenerate
+step.
 For a spoke without a GitHub remote, or to test by hand,
 `py tools/shared_sync.py ../nepdate-<language>` does the same copy from a hub commit and
 `--check` does what `shared-check.yml` does in CI.
