@@ -126,6 +126,20 @@
       "packages": ["nepdate", "nepdate_patro"],
       "managers": ["pub"],
       "install": "dart pub add nepdate:0.2.0-rc.1"
+    },
+    {
+      "id": "php",
+      "name": "PHP",
+      "repository": "sanamhub/nepdate-php",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "Packagist",
+        "url": "https://packagist.org/packages/sanamhub/nepdate"
+      },
+      "package": "sanamhub/nepdate",
+      "packages": ["sanamhub/nepdate", "sanamhub/nepdate-patro"],
+      "managers": ["composer"],
+      "install": "composer require sanamhub/nepdate:0.2.0-rc.1"
     }
   ]
 }

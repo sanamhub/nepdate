@@ -103,6 +103,20 @@ export const benchmarks: PortBenchmark[] = [
     ],
     source: blob("nepdate-typescript", "docs/benchmarks.md"),
   },
+  // Preliminary: measured on the reference laptop while other work was running on it, so the quiet
+  // rerun in the sweep replaces these figures (nepdate-php docs/benchmarks.md says the same). The
+  // two competitors are the ones BENCHMARK.md §7 selects for PHP.
+  {
+    id: "php",
+    name: "PHP",
+    machine: `${LAPTOP}, PHP 8.3`,
+    ops: [1456, 2427, 2235, 1793, 1067, 2525, 2105, 115490],
+    competitors: [
+      { name: "laravel-nepali-date", b1: 1470822, b2: 1676688, agrees: 60 },
+      { name: "ernilambar/nepali-date", b1: 5773987, b2: 4913110, agrees: 60 },
+    ],
+    source: blob("nepdate-php", "docs/benchmarks.md"),
+  },
   {
     id: "python",
     name: "Python",

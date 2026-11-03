@@ -1,0 +1,191 @@
+---
+title: PHP
+description: Install and use sanamhub/nepdate and sanamhub/nepdate-patro from Packagist.
+---
+
+import { Code } from "@astrojs/starlight/components";
+import { versions } from "../../../data/ports";
+
+Bikram Sambat dates, conversion, formatting and parsing for PHP 8.3 and newer. Pure PHP, no
+extension, no FFI and no runtime data file; tested on Linux, macOS and Windows with PHP 8.3, 8.4 and
+8.5. Immutable value objects, `DateTimeImmutable` for the Gregorian side, and exceptions that name
+what failed.
+
+- The Composer package is `sanamhub/nepdate`, the namespace `NepDate`.
+- Tithi, public holidays and events are a separate package, `sanamhub/nepdate-patro`
+  (namespace `NepDate\Patro`). The core package has none of that data.
+- There is no framework coupling: Laravel, Symfony and plain PHP need no bridge and no service
+  provider.
+
+:::caution[Pre-release]
+This is the first public pre-release of the PHP port, <code>{versions.php}</code> on Packagist. The
+API may still change before 0.2.0.
+:::
+
+## Install
+
+```sh
+composer require sanamhub/nepdate
+```
+
+## Quick start
+
+```php
+use NepDate\NepaliDate;
+
+$date = NepaliDate::fromBs(2081, 4, 15);
+(string) $date;                        // '2081/04/15'
+$date->toDateTime()->format('Y-m-d');  // '2024-07-30'
+$date->toLongString();                 // 'Shrawan 15, 2081'
+$date->isoformat();                    // '2081-04-15'
+```
+
+A date is always a real day of the calendar, from BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to
+2143-04-15). Construction validates the year first, then the month, then the day, and fails with a
+`NepDateException` whose `kind()` names the rule.
+
+```php
+use NepDate\ErrorKind;
+use NepDate\NepDateException;
+use NepDate\NepaliDate;
+
+try {
+    NepaliDate::fromBs(2081, 4, 40);
+} catch (NepDateException $error) {
+    $error->kind(); // ErrorKind::InvalidDay
+}
+```
+
+## Arithmetic
+
+Months are whole numbers. When the day does not exist in the target month, the default clamps to the
+last day and the spill mode carries the extra days into the following month:
+
+```php
+use NepDate\MonthOverflow;
+use NepDate\NepaliDate;
+
+$date = NepaliDate::fromBs(2081, 4, 32);
+$date->addDays(1)->isoformat();                             // '2081-05-01'
+$date->addMonths(2)->isoformat();                           // '2081-06-30'
+$date->addMonths(2, MonthOverflow::Spill)->isoformat();     // '2081-07-02'
+$date->addYears(1)->isoformat();                            // '2082-04-31'
+$date->daysUntil(NepaliDate::fromBs(2081, 5, 1));           // 1
+```
+
+`daysUntil` is `other - this`. PHP has no operator overloading, so that named method is the only day
+difference; the C# operator direction, `this - other`, is its negation. `diff()` returns the years,
+months and days breakdown.
+
+```php
+use NepDate\NepaliDate;
+
+$diff = NepaliDate::fromBs(2080, 1, 1)->diff(NepaliDate::fromBs(2081, 4, 15));
+$diff->years;      // 1
+$diff->months;     // 3
+$diff->days;       // 14
+$diff->totalDays;  // 473
+```
+
+## Formatting and parsing
+
+Short forms take an order, a separator, a padding flag and a language; the long form is
+`[Weekday, ]Month day[, year]`. Nepali output uses Devanagari names and digits.
+
+```php
+use NepDate\DateOrder;
+use NepDate\Lang;
+use NepDate\NepaliDate;
+use NepDate\Separator;
+
+$date = NepaliDate::fromBs(2081, 4, 15);
+$date->toShortString(DateOrder::Dmy, Separator::Dash);  // '15-04-2081'
+$date->toShortString(lang: Lang::Ne);                   // '२०८१/०४/१५'
+$date->toLongString(weekday: true, lang: Lang::Ne);     // 'मङ्गलवार, साउन १५, २०८१'
+$date->format('yyyy-MM-dd');                            // '2081-04-15'
+$date->format('MMM yyyy');                              // 'Shr 2081'
+```
+
+The strict parser takes year, month and day with `- / . _ \ space | ।` as separators and accepts
+Devanagari digits. The lenient parser also reads month names, era markers and any order of the three
+numbers. Both have a `try*` form that returns `null`.
+
+```php
+use NepDate\NepaliDate;
+
+NepaliDate::parse('2081/04/15')->isoformat();          // '2081-04-15'
+NepaliDate::parse('२०८१/०४/१५')->isoformat();           // '2081-04-15'
+NepaliDate::parseLenient('15 Shrawan 2081')->isoformat(); // '2081-04-15'
+NepaliDate::tryParse('not a date');                    // null
+```
+
+## Ranges and fiscal years
+
+A range is inclusive and never empty. The factories cover a month, a calendar year and a fiscal
+year, and `splitByMonth` and `splitByFiscalQuarter` clip the first and last piece to the range ends.
+
+```php
+use NepDate\FiscalYear;
+use NepDate\NepaliDate;
+use NepDate\NepaliDateRange;
+
+$range = NepaliDateRange::forMonth(2081, 4);
+$range->count();      // 32
+$range->start()->isoformat(); // '2081-04-01'
+$range->end()->isoformat();   // '2081-04-32'
+(string) $range;      // '2081/04/01 - 2081/04/32'
+count($range->splitByMonth()); // 1
+
+$fiscal = FiscalYear::containing(NepaliDate::fromBs(2081, 4, 15));
+$fiscal->label();               // '2081/82'
+$fiscal->start()->isoformat();  // '2081-04-01'
+$fiscal->end()->isoformat();    // '2082-03-32'
+```
+
+Nothing reads a hidden local zone: every clock method takes the zone explicitly.
+
+```php
+$zone = new DateTimeZone('Asia/Kathmandu');
+$today = NepDate\NepaliDate::today($zone);
+$today->isToday($zone); // true
+```
+
+## Tithi, holidays and events
+
+```sh
+composer require sanamhub/nepdate-patro
+```
+
+```php
+use NepDate\Lang;
+use NepDate\NepaliDate;
+use function NepDate\Patro\coverage;
+use function NepDate\Patro\info;
+
+$day = info(NepaliDate::fromBs(2081, 1, 1));
+$day->tithi()->name();          // 'Panchami'
+$day->tithi()->name(Lang::Ne);  // 'पञ्चमी'
+$day->isPublicHoliday();        // true
+$day->events()[0]->name();      // 'New Year'
+coverage()->start()->isoformat(); // '2077-01-01'
+```
+
+`info()` never fails: a date outside the coverage returns a `null` tithi, `false` and an empty list.
+The data covers BS 2077-01-01 to 2084-08-20.
+
+## What each package exports
+
+| Package | Names |
+|---|---|
+| `sanamhub/nepdate` | `NepaliDate`, `NepaliDateRange`, `FiscalYear`, `DateDiff`, `NepDateException`, `ErrorKind`, `Month`, `Weekday`, `Quarter`, `DateOrder`, `Separator`, `Lang`, `MonthOverflow` |
+| `sanamhub/nepdate-patro` | `info`, `coverage`, `publicHolidays`, `CalendarInfo`, `Tithi`, `NepEvent` |
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Signatures, defaults and exceptions, with an example for every item | [docs/API.md](https://github.com/sanamhub/nepdate-php/blob/main/docs/API.md) |
+| Benchmarks against the other PHP packages and C# NepDate | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-php/blob/main/docs/benchmarks.md) |
+| Which competitors were compared and why | [docs/competitors.md](https://github.com/sanamhub/nepdate-php/blob/main/docs/competitors.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-php/blob/main/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-php](https://github.com/sanamhub/nepdate-php) |

@@ -37,7 +37,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(found['line'], '0.2')
         self.assertEqual(
             list(found['sdks']),
-            ['rust', 'go', 'typescript', 'python', 'swift', 'kotlin', 'cpp', 'c', 'dart'],
+            ['rust', 'go', 'typescript', 'python', 'swift', 'kotlin', 'cpp', 'c', 'dart', 'php'],
         )
 
     def test_entries_may_trail_a_line_that_moved_first(self):
@@ -105,7 +105,7 @@ class CommandLineTest(unittest.TestCase):
     def test_check_accepts_the_hub_file(self):
         code, out, _ = self.run_tool('--check')
         self.assertEqual(code, 0)
-        self.assertIn('9 SDKs, line 0.2', out)
+        self.assertIn('10 SDKs, line 0.2', out)
 
     def test_a_version_on_another_line_fails_with_a_clear_message(self):
         code, _, err = self.run_tool('--sdk', 'rust', '--version', '0.3.0-beta.1')
