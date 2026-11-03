@@ -17,7 +17,7 @@ export default defineConfig({
     starlight({
       title: "NepDate",
       description:
-        "Bikram Sambat (Nepali calendar) libraries for C#, Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C, and the MitiBar desktop calendar.",
+        "Bikram Sambat (Nepali calendar) libraries for C#, Rust, Go, TypeScript, Python, Swift, Kotlin, C++, C and Dart, and the MitiBar desktop calendar.",
       // The title text beside the logo names the site, so the logo itself is decorative.
       logo: { src: "./src/assets/nepdate.svg", alt: "" },
       favicon: "/favicon.svg",
@@ -74,6 +74,7 @@ export default defineConfig({
             { label: "Kotlin and Java", link: "/docs/kotlin/" },
             { label: "C++", link: "/docs/cpp/" },
             { label: "C", link: "/docs/c/" },
+            { label: "Dart and Flutter", link: "/docs/dart/" },
           ],
         },
         {

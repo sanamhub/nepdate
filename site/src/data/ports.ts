@@ -239,6 +239,25 @@ nepdate_ymd ad;
 nepdate_from_bs(2081, 4, 15, &d);
 nepdate_to_ad(d, &ad);                   // 2024-07-30`,
   },
+  {
+    id: "dart",
+    name: "Dart",
+    lang: "dart",
+    repo: "nepdate-dart",
+    core: "nepdate",
+    patro: "nepdate_patro",
+    install: `dart pub add nepdate:${versions.dart}`,
+    patroInstall: `dart pub add nepdate_patro:${versions.dart}`,
+    installLang: "sh",
+    registry: { label: "pub.dev", href: "https://pub.dev/packages/nepdate" },
+    alsoFor: [{ name: "Flutter", icon: "flutter" }],
+    api: { label: "API.md", href: `${gh("nepdate-dart")}/blob/main/docs/API.md` },
+    sample: `import 'package:nepdate/nepdate.dart';
+
+final date = NepaliDate.fromBs(2081, 4, 15);
+date.toDateTime();          // 2024-07-30 00:00:00.000Z
+date.toLongString();        // "Shrawan 15, 2081"`,
+  },
 ];
 
 /** The ports built in this family, without upstream C# NepDate. */

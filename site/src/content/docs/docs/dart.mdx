@@ -1,0 +1,87 @@
+---
+title: Dart
+description: Install and use nepdate and nepdate_patro from pub.dev.
+---
+
+import { versions } from "../../../data/ports";
+
+Bikram Sambat dates, conversion, formatting and parsing for Dart 3.6 and newer, and for Flutter on
+every platform. Pure Dart with no dependencies, including on the web.
+
+- You `import 'package:nepdate/nepdate.dart'`.
+- Tithi, public holidays and events are a separate package, `nepdate_patro`
+  (`import 'package:nepdate_patro/nepdate_patro.dart'`). The core has none of that data.
+
+:::caution[Pre-release]
+This is the first public pre-release, <code>{versions.dart}</code> on pub.dev. The API may still
+change before 0.2.0.
+:::
+
+## Install
+
+```sh
+dart pub add nepdate
+```
+
+<p>
+  <code>dart pub add nepdate:{versions.dart}</code> pins this pre-release; <code>dart pub add
+  nepdate_patro:{versions.dart}</code> adds the patro.
+</p>
+
+## Quick start
+
+```dart
+import 'package:nepdate/nepdate.dart';
+
+final d = NepaliDate.fromBs(2080, 5, 15);
+d.toString();                       // 2080/05/15
+d.toDateTime();                     // 2023-09-01 00:00:00.000Z
+d.toLongString(weekday: true, lang: Lang.ne); // शुक्रवार, भदौ १५, २०८०
+NepaliDate.parse('2080/05/15') == d; // true
+```
+
+Arithmetic stays on the BS calendar, so month lengths come from the shared data rather than from the
+Gregorian calendar:
+
+```dart
+final d = NepaliDate.fromBs(2080, 5, 15);
+d.addDays(1000);                    // 2083/02/14
+d.addMonths(13);                    // 2081/06/15
+d.fiscalYear.label();               // 2080/81
+```
+
+## Tithi, holidays and events
+
+```sh
+dart pub add nepdate_patro
+```
+
+```dart
+import 'package:nepdate/nepdate.dart';
+import 'package:nepdate_patro/nepdate_patro.dart';
+
+final day = info(NepaliDate.fromBs(2080, 5, 15));
+day.isPublicHoliday;                // true
+day.tithi?.english;                 // Dwitiya
+day.events.map((e) => e.english).toList(); // [Saparu (Gaijatra) (Kathmandu Holiday), Ropain Jatra]
+coverage().start;                   // 2077/01/01
+```
+
+`info` never throws: a date outside the coverage returns one shared empty `CalendarInfo`. The data
+covers BS 2077-01-01 to 2084-08-20.
+
+## What each package exports
+
+| Package | Names |
+|---|---|
+| `nepdate` | `NepaliDate`, `NepaliDateRange`, `FiscalYear`, `DateDiff`, `Lang`, `Month`, `Weekday`, `DateOrder`, `Separator`, `MonthOverflow`, `Quarter`, `ErrorKind`, `NepDateException` |
+| `nepdate_patro` | `Named`, `CalendarInfo`, `info`, `coverage`, `publicHolidays` |
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Signatures, defaults and exceptions | [docs/API.md](https://github.com/sanamhub/nepdate-dart/blob/main/docs/API.md) |
+| Benchmarks against the pub.dev competitor and C# NepDate | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-dart/blob/main/docs/benchmarks.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-dart/blob/main/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-dart](https://github.com/sanamhub/nepdate-dart) |
