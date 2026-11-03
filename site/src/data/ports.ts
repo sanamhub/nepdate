@@ -16,6 +16,8 @@ export type Sdk = keyof typeof versions;
  * This is the site's copy of the mapping in tools/version_line.py.
  */
 export const PYPI_VERSION = pep440(versions.python);
+/** The Ruby port has no `sdks` entry until its first release (hub ADR-0008). */
+export const RUBY_VERSION = "1.0.0-rc.1";
 
 function pep440(version: string): string {
   const found = /^(.*)-(beta|rc)\.(\d+)$/.exec(version);
@@ -179,6 +181,25 @@ date.long()     # 'Shrawan 15, 2081'`,
 $date->toDateTime()->format('Y-m-d'); // '2024-07-30'
 $date->toLongString();                // 'Shrawan 15, 2081'
 $date->isoformat();                   // '2081-04-15'`,
+  },
+  {
+    id: "ruby",
+    name: "Ruby",
+    lang: "ruby",
+    repo: "nepdate-ruby",
+    core: "nepdate",
+    patro: "nepdate-patro",
+    install: `gem install nepdate -v ${RUBY_VERSION}`,
+    patroInstall: `gem install nepdate-patro -v ${RUBY_VERSION}`,
+    installLang: "sh",
+    registry: { label: "RubyGems", href: "https://rubygems.org/gems/nepdate" },
+    api: { label: "API.md", href: `${gh("nepdate-ruby")}/blob/main/docs/API.md` },
+    sample: `require "nepdate"
+
+date = NepDate::Date.from_bs(2081, 4, 15)
+date.to_date.iso8601;                 # "2024-07-30"
+date.to_long_string(weekday: true);   # "Tuesday, Shrawan 15, 2081"
+date.iso8601;                         # "2081-04-15"`,
   },
   {
     id: "swift",

@@ -1,0 +1,195 @@
+---
+title: Ruby
+description: Install and use the nepdate and nepdate-patro gems from RubyGems.
+---
+
+import { Code } from "@astrojs/starlight/components";
+import { RUBY_VERSION } from "../../../data/ports";
+
+Bikram Sambat dates, conversion, formatting and parsing for Ruby 3.4 and newer. Pure Ruby, no native
+extension and no runtime dependency; tested on Linux, macOS and Windows with Ruby 3.4, Ruby 4.0 and
+`head`. Immutable value objects, `Date` and `Time` interop, `Comparable`, and one `NepDate::Error`
+hierarchy with a `kind` symbol.
+
+- The gem is `nepdate`, the module `NepDate`, and the core type `NepDate::Date`.
+- Tithi, public holidays and events are a separate gem, `nepdate-patro` (module `NepDate::Patro`).
+  The core gem has none of that data.
+- Ruby has no time zone database in its standard library, so a clock function takes a fixed offset
+  or a clock you inject. Nepal's +05:45 is the documented default.
+
+:::caution[Pre-release]
+This is <code>{RUBY_VERSION}</code>, the first release of the Ruby port, joining the family at 1.0.
+The API may still change before the final 1.0 release.
+:::
+
+## Install
+
+<Code lang="sh" code={`gem install nepdate -v ${RUBY_VERSION}
+gem install nepdate-patro -v ${RUBY_VERSION}`} />
+
+```ruby
+require "nepdate"
+require "nepdate/patro"
+```
+
+## Quick start
+
+```ruby
+date = NepDate::Date.from_bs(2081, 4, 15)
+date.to_s                            # "2081/04/15"
+date.to_date.iso8601                 # "2024-07-30"
+date.to_long_string(weekday: true)   # "Tuesday, Shrawan 15, 2081"
+date.iso8601                         # "2081-04-15"
+```
+
+A date is always a real day of the calendar, from BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to
+2143-04-15). Construction validates the year first, then the month, then the day, and raises a
+`NepDate::Error` whose `kind` names the rule. There is no invalid or default date.
+
+```ruby
+date = NepDate::Date.from_bs(2081, 4, 32)
+date.year          # 2081
+date.month         # 4
+date.day           # 32
+date.weekday       # NepDate::Weekday::FRIDAY
+date.day_of_year   # 126
+date.month_length  # 32
+date.year_length   # 366
+date.month_enum    # NepDate::Month::SHRAWAN
+
+NepDate::Date::MIN.to_s # "1901/01/01"
+NepDate::Date::MAX.to_s # "2199/12/30"
+```
+
+## Conversion and serialization
+
+The Gregorian side is the standard library's `Date`, `DateTime` or `Time`; the time of day is
+discarded. The canonical text form is `YYYY-MM-DD`, and the `YYYYMMDD` integer works both ways.
+
+```ruby
+date = NepDate::Date.from_date(::Date.new(2024, 7, 30))
+date.iso8601                                  # "2081-04-15"
+NepDate::Date.from_ymd(20_810_415) == date    # true
+date.to_ymd                                   # 20810415
+date.to_json                                  # "\"2081-04-15\""
+NepDate::Date.from_json(date.to_json) == date # true
+
+NepDate::Date.from_gregorian_batch([::Date.new(2024, 7, 30)])
+NepDate::Date.parse_batch(["2081-04-15"])
+NepDate::Date.to_gregorian_batch([date])
+```
+
+## Arithmetic and errors
+
+Months are whole numbers. When the day does not exist in the target month, `:clamp` (the default)
+uses the last day and `:spill` carries the excess into the following month. `days_until` is
+`other - self`; the `-` operator is `self - other`, the C# direction (`D-07`).
+
+```ruby
+date = NepDate::Date.from_bs(2081, 4, 32)
+date.add_days(30).iso8601                          # "2081-05-30"
+date.add_months(2).iso8601                         # "2081-06-30"
+date.add_months(2, overflow: :spill).iso8601       # "2081-07-02"
+date.add_years(1).iso8601                          # "2082-04-31"
+date.days_until(NepDate::Date.from_bs(2081, 5, 1)) # 1
+(date - NepDate::Date.from_bs(2081, 4, 15))        # 17
+date.diff(NepDate::Date.from_bs(2081, 5, 31)).days # 0
+
+begin
+  NepDate::Date.from_bs(2081, 4, 40)
+rescue NepDate::Error => error
+  error.kind       # :invalid_day
+  error.kind_name  # "InvalidDay"
+end
+```
+
+## Formatting and parsing
+
+Short forms take an order, a separator, a padding flag and a language; the long form is
+`[Weekday, ]Month day[, year]`. Nepali output uses Devanagari names and digits.
+
+```ruby
+date = NepDate::Date.from_bs(2081, 4, 15)
+date.to_short_string(order: :dmy, separator: :dash)       # "15-04-2081"
+date.to_short_string(lang: :ne)                           # "२०८१/०४/१५"
+date.to_long_string(weekday: true, lang: :ne)             # "मङ्गलवार, साउन १५, २०८१"
+date.format("yyyy-MM-dd")                                 # "2081-04-15"
+date.format("MMM yyyy")                                   # "Shr 2081"
+```
+
+The strict parser takes year, month and day with `- / . _ \ space | ।` as separators and accepts
+Devanagari digits. The lenient parser also reads month names, era markers and any order of the three
+numbers. Both have a non-throwing form that returns `nil`.
+
+```ruby
+NepDate::Date.parse("2081/04/15").iso8601             # "2081-04-15"
+NepDate::Date.parse("२०८१/०४/१५").iso8601              # "2081-04-15"
+NepDate::Date.parse_lenient("15 Shrawan 2081").iso8601 # "2081-04-15"
+NepDate::Date.try_parse("not a date")                 # nil
+NepDate::Date.try_parse_lenient("15 Shrawan 2081")    # #<NepDate::Date 2081-04-15>
+```
+
+## Ranges and fiscal years
+
+A range is inclusive and never empty, and includes `Enumerable`. `split_by_month` and
+`split_by_fiscal_quarter` clip the first and last piece to the range ends. A fiscal year starts on
+1 Shrawan and ends on the last day of Ashad of the next BS year.
+
+```ruby
+range = NepDate::DateRange.for_month(2081, 4)
+range.length                       # 32
+range.start.iso8601                # "2081-04-01"
+range.end.iso8601                  # "2081-04-32"
+range.to_s                         # "2081/04/01 - 2081/04/32"
+range.split_by_month.length        # 1
+range.dates_with_interval(5).length # 7
+range.working_days.length          # 28
+
+fiscal = NepDate::FiscalYear.containing(NepDate::Date.from_bs(2081, 4, 15))
+fiscal.label                       # "2081/82"
+fiscal.start.iso8601               # "2081-04-01"
+fiscal.end.iso8601                 # "2082-03-32"
+fiscal.quarter_range(:q1).to_s     # "2081/04/01 - 2081/06/30"
+```
+
+Nothing reads a hidden local zone: every clock method takes a zone or an offset, and a clock can be
+injected.
+
+```ruby
+clock = -> { Time.utc(2024, 7, 30, 18, 30) }
+NepDate::Date.today(clock: clock).iso8601               # "2081-04-16"
+NepDate::Date.today(zone: "UTC", clock: clock).iso8601  # "2081-04-15"
+NepDate::Date.from_bs(2081, 4, 16).today?(clock: clock) # true
+```
+
+## Tithi, holidays and events
+
+```ruby
+day = NepDate::Patro.info(NepDate::Date.from_bs(2081, 2, 15))
+day.tithi.english              # "Panchami"
+day.tithi.nepali               # "पञ्चमी"
+day.public_holiday?            # true
+day.events_en                  # ["Republic Day"]
+NepDate::Patro.coverage.start.iso8601 # "2077-01-01"
+NepDate::Patro.public_holidays.length # 294
+```
+
+`info` never fails: a date outside the coverage returns a `nil` tithi, `false` and an empty list.
+The data covers BS 2077-01-01 to 2084-08-20 and is informational, not an official calendar.
+
+## What each gem exports
+
+| Gem | Names |
+|---|---|
+| `nepdate` | `NepDate::Date`, `NepDate::DateRange`, `NepDate::FiscalYear`, `NepDate::DateDiff`, `NepDate::Error`, `NepDate::ErrorKind`, `NepDate::Month`, `NepDate::Weekday`, `NepDate::Quarter`, `NepDate::DateOrder`, `NepDate::Separator`, `NepDate::Lang`, `NepDate::MonthOverflow` |
+| `nepdate-patro` | `NepDate::Patro.info`, `.coverage`, `.public_holidays`, `CalendarInfo`, `Tithi`, `Event` |
+
+## Reference
+
+| Topic | Where |
+|---|---|
+| Signatures, defaults and errors, with an example for every item | [docs/API.md](https://github.com/sanamhub/nepdate-ruby/blob/main/docs/API.md) |
+| Benchmarks against C# NepDate | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-ruby/blob/main/docs/benchmarks.md) |
+| Which RubyGems candidates were considered and why | [docs/competitors.md](https://github.com/sanamhub/nepdate-ruby/blob/main/docs/competitors.md) |
+| What changed | [CHANGELOG.md](https://github.com/sanamhub/nepdate-ruby/blob/main/CHANGELOG.md) |
+| Source | [sanamhub/nepdate-ruby](https://github.com/sanamhub/nepdate-ruby) |
