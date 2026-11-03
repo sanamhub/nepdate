@@ -43,6 +43,9 @@ its registry serves. The API can still change before 0.2.0.
 | Dart, Flutter | [`nepdate`](https://pub.dev/packages/nepdate) | [`nepdate_patro`](https://pub.dev/packages/nepdate_patro) | [![pub.dev](https://img.shields.io/pub/v/nepdate?include_prereleases&logo=dart&label=)](https://pub.dev/packages/nepdate) | [nepdate-dart](https://github.com/sanamhub/nepdate-dart) |
 | Zig | `nepdate` | `nepdate_patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-zig?include_prereleases&sort=semver&logo=zig&label=)](https://github.com/sanamhub/nepdate-zig/releases) | [nepdate-zig](https://github.com/sanamhub/nepdate-zig) |
 
+The Zig port's first release is `1.0.0-rc.1`. It is not in `spec/versions.json` until that release
+exists, and its package is the tagged source archive rather than a registry entry.
+
 For the web there is also a BS date picker, [`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker):
 web components built on the TypeScript core that work in plain HTML and any framework
 ([docs](https://nepdate.com/docs/datepicker/)).
