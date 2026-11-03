@@ -26,8 +26,7 @@ Every port ships two packages, one version: the core (conversion, arithmetic, fo
 and the patro (पात्रो: tithi, holidays, events), so an app that only converts dates carries no
 almanac data ([ADR-0004](docs/adr/0004-patro-in-a-separate-package.md)). The first public line was
 `0.1.0-rc.1`. The current pre-release line is `0.2.0-rc.1`; a port's table entry shows the version
-its registry serves, and not every port has released on the new line yet. The API can still change
-before 0.2.0.
+its registry serves. The API can still change before 0.2.0.
 
 | Language | Core | Patro | Version | Repository |
 |---|---|---|---|---|
