@@ -35,6 +35,10 @@ on:
         description: Runner for the regenerate step.
         type: string
         default: ubuntu-24.04
+      dart-sdk:
+        description: Install the pinned Dart SDK before the regenerate step, for a Dart spoke whose generator needs one the runner image does not carry.
+        type: boolean
+        default: false
       ci-workflow:
         description: The spoke's CI workflow file, started on the PR when it is opened with GITHUB_TOKEN. It needs a workflow_dispatch trigger.
         type: string
@@ -94,6 +98,11 @@ jobs:
             echo
             echo "After merge, release a patch version (docs/runbooks/data-update.md)."
           } > "$body"
+      - name: Set up Dart
+        if: inputs.dart-sdk
+        uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
+        with:
+          sdk: 3.11.0
       - name: Regenerate
         if: inputs.regenerate != ''
         env:
