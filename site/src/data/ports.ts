@@ -40,7 +40,7 @@ function rubygems(version: string): string {
 }
 
 /** The date picker is a UI component outside the SDK line and keeps its own version (ADR-0007 decision 6). */
-export const DATEPICKER_VERSION = "0.1.0-beta.2";
+export const DATEPICKER_VERSION = "0.1.0-beta.3";
 /** MitiBar's release, tagged in its own repository (it has its own version line). */
 export const MITIBAR_VERSION = "1.0.0";
 /** Zig has no registry entry yet; this is the version its first release will use. */
