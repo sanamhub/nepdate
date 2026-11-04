@@ -4,6 +4,8 @@
 // Operations B1 to B8 are defined in the hub's spec/BENCHMARK.md. Times are nanoseconds per
 // operation, lower is better.
 
+import { ports } from "./ports";
+
 const blob = (repo: string, path: string) => `https://github.com/sanamhub/${repo}/blob/main/${path}`;
 
 export const BENCHMARK_SPEC = blob("nepdate", "spec/BENCHMARK.md");
@@ -185,7 +187,10 @@ export const csharp: PortBenchmark = {
 };
 
 /** C# NepDate first, then the ports: every language on the site. */
-export const languages: PortBenchmark[] = [csharp, ...benchmarks];
+/** Every port's benchmark, in the site's language order (ports.ts). */
+export const languages: PortBenchmark[] = [csharp, ...benchmarks].sort(
+  (x, y) => ports.findIndex((p) => p.id === x.id) - ports.findIndex((p) => p.id === y.id),
+);
 
 export const competitorCount = languages.reduce((sum, port) => sum + port.competitors.length, 0);
 

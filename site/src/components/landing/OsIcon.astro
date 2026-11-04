@@ -1,11 +1,12 @@
 ---
-// A system's mark beside its name: the Windows four panes, the Apple logo and Tux, one colour
-// (currentColor) on a 24 px grid. Apple and Tux are Simple Icons 16.35.0 (CC0); the Windows
+// A system's mark beside its name: the Windows four panes, the Apple logo and Tux, in its brand colour
+// (currentColor, set by the .brand rule) on a 24 px grid. Apple and Tux are Simple Icons 16.35.0 (CC0); the Windows
 // panes are drawn here. The paths live in src/assets/os/, where the version check does not read
 // path data as version numbers. Decorative: the name always sits next to the mark.
 import windows from "../../assets/os/windows.svg?raw";
 import macos from "../../assets/os/macos.svg?raw";
 import linux from "../../assets/os/linux.svg?raw";
+import { brandColours, platformIcons } from "../../data/lang-icons";
 
 interface Props {
   os: "windows" | "macos" | "linux";
@@ -13,6 +14,17 @@ interface Props {
 }
 const { os, size = 18 } = Astro.props;
 const paths = { windows, macos, linux };
+// In each system's own colour, adjusted per theme like the language marks (.lang-icon.brand).
+const colours = brandColours(platformIcons[os].hex);
 ---
 
-<svg class="os-icon" viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" focusable="false" set:html={paths[os]} />
+<svg
+  class="os-icon lang-icon brand"
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  style={`--brand-light:${colours.light};--brand-dark:${colours.dark}`}
+  aria-hidden="true"
+  focusable="false"
+  set:html={paths[os]}
+/>

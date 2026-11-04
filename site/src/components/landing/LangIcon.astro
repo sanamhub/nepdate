@@ -1,19 +1,31 @@
 ---
-// A language mark or link glyph, drawn in the current text colour so the list stays one colour.
-// The paths live in the cached sprite /lang-icons.svg (data/lang-icons.ts), not in the page.
-import { langIcons, linkIcons } from "../../data/lang-icons";
+// A mark or link glyph from the cached sprite /lang-icons.svg (data/lang-icons.ts). Marks draw in
+// the current text colour; with `brand`, in their brand colour for the active theme (the .brand
+// rule in tokens.css picks --brand-light or --brand-dark).
+import { brandColours, linkIcons, marks } from "../../data/lang-icons";
 
 interface Props {
   id: string;
   size?: number;
   class?: string;
+  brand?: boolean;
 }
-const { id, size = 20, class: className } = Astro.props;
+const { id, size = 20, class: className, brand = false } = Astro.props;
+const mark = marks[id];
+const colours = brand && mark ? brandColours(mark.hex) : null;
+const style = colours ? `--brand-light:${colours.light};--brand-dark:${colours.dark}` : undefined;
 ---
 
 {
-  (langIcons[id] || linkIcons[id]) && (
-    <svg class:list={["lang-icon", className]} width={size} height={size} aria-hidden="true" focusable="false">
+  (mark || linkIcons[id]) && (
+    <svg
+      class:list={["lang-icon", className, { brand: colours }]}
+      width={size}
+      height={size}
+      style={style}
+      aria-hidden="true"
+      focusable="false"
+    >
       <use href={`/lang-icons.svg#${id}`} />
     </svg>
   )

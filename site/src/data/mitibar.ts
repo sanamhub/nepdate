@@ -67,6 +67,6 @@ export const numbers = {
   machine: "a Windows 11 laptop with a Core i5-12500H",
 };
 
-/** NepDate Widget, Raju Prasai's Windows app: the full toolbox to MitiBar's date. */
+/** NepDate Widget, the Windows app from the C# NepDate author: the full toolbox to MitiBar's date. */
 export const NEPDATE_WIDGET = "https://nepdatewidget.rajuprasai.com.np/";
 export const NEPDATE_WIDGET_REPO = "https://github.com/RajuPrasai/NepDateWidget";

@@ -454,6 +454,31 @@ dd code {
   border-bottom-color: var(--nd-ink);
 }
 
+/* The hero's language tabs: fourteen marks fit one row, so each tab is its mark alone and the
+   chosen one adds its name. The marks are grey until pointed at or chosen. */
+.hero-object .tabs [role="tab"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding-inline: 0.55rem;
+}
+.hero-object .tabs .lang-icon {
+  filter: grayscale(1);
+  opacity: 0.65;
+  transition: filter 0.15s ease, opacity 0.15s ease;
+}
+.hero-object .tabs [role="tab"]:hover .lang-icon,
+.hero-object .tabs [role="tab"][aria-selected="true"] .lang-icon {
+  filter: none;
+  opacity: 1;
+}
+.hero-object .tab-name {
+  display: none;
+}
+.hero-object [aria-selected="true"] .tab-name {
+  display: inline;
+}
+
 /* The code under the date sits on the sunken surface, so the object reads as the date above and
    the code that produces a date below. */
 .hero-object .tabs {

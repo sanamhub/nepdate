@@ -62,127 +62,176 @@
   font-weight: 600;
 }
 
-/* Supported languages. One row per language: who it is for on the left, the install lines and
-   links on the right, so every language reads the same way down the page. On narrow screens a
-   language selector with the hero's tab pattern (scripts/landing.ts) shows one row at a time; from
-   48rem the tabs give way and every row shows. Every line is in the HTML either way.
-   The one flourish: each row carries its language marks large and faint at the end of the name
-   column, two or three of them where one package serves several languages (TypeScript and JavaScript, Kotlin,
-   Java and Android). */
+/* The strip before the closing line: every language mark, platform and app, scrolling slowly as one loop
+   so the whole family is seen without a click. It pauses under the pointer, and with reduced
+   motion it stops and wraps into rows instead. */
 
-.langs {
-  border: 1px solid var(--nd-hairline);
-  border-radius: var(--nd-radius-l);
-  background: var(--nd-raised);
+.strip {
+  border-block: 1px solid var(--nd-hairline);
+  padding-block: 1.4rem;
   overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
-.install .tabs {
-  margin-bottom: 0.75rem;
+.strip-track {
+  display: flex;
+  width: max-content;
+}
+.strip-run {
+  display: flex;
+  gap: 2.25rem;
+  margin: 0;
+  padding: 0 1.125rem;
+  list-style: none;
+}
+.strip-run li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--nd-ink-muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.strip-run img {
+  border-radius: 5px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .strip-track {
+    animation: strip 70s linear infinite;
+  }
+  .strip:hover .strip-track {
+    animation-play-state: paused;
+  }
+}
+@keyframes strip {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .strip {
+    mask-image: none;
+  }
+  .strip-track {
+    width: auto;
+    justify-content: center;
+  }
+  .strip-run {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.9rem 1.75rem;
+  }
+  .strip-run[aria-hidden] {
+    display: none;
+  }
+}
+
+/* Install in your language. The languages are tiles in a grid, each in its brand colour, and the
+   chosen one opens below with its install lines and links (the tab pattern in scripts/landing.ts).
+   One language at a time keeps the section short at every width, and every line is still in the
+   HTML. The panel's one flourish is the chosen mark, large and faint, at its right edge. */
+
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.75rem, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+@media (min-width: 60rem) {
+  .lang-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+.lang-tile {
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  padding: 1rem 0.5rem 0.85rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-m);
+  background: var(--nd-raised);
+  color: var(--nd-ink-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.lang-tile:hover,
+.lang-tile[aria-selected="true"] {
+  color: var(--nd-ink);
+}
+.lang-tile:hover {
+  border-color: var(--nd-line);
+}
+.lang-tile[aria-selected="true"] {
+  border-color: var(--nd-ink);
+  box-shadow: var(--nd-shadow);
 }
 .lang {
   position: relative;
   isolation: isolate;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    "id"
-    "cmds"
-    "links";
   gap: 1rem;
   min-width: 0;
-  padding: 1.35rem 1.25rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
   overflow: hidden;
 }
 .lang[hidden] {
   display: none;
 }
 @media (min-width: 48rem) {
-  .install .tabs {
-    display: none;
-  }
-  .lang,
-  .lang[hidden] {
-    display: grid;
-    grid-template-columns: 14rem minmax(0, 1fr);
+  .lang {
+    grid-template-columns: 11rem minmax(0, 1fr);
     grid-template-areas:
       "id cmds"
       "id links";
-    gap: 0.75rem 2rem;
-    padding: 1.5rem 1.75rem;
+    gap: 1rem 2rem;
   }
-  .lang + .lang {
-    border-top: 1px solid var(--nd-hairline);
+  .lang-id {
+    grid-area: id;
+  }
+  .lang-cmds {
+    grid-area: cmds;
+  }
+  .lang-links {
+    grid-area: links;
   }
 }
 .lang-watermark {
   position: absolute;
   z-index: -1;
-  top: 0.9rem;
-  right: 1rem;
-  display: flex;
-  align-items: center;
-  color: var(--nd-ink);
-  opacity: 0.06;
+  right: -2.5rem;
+  bottom: -3.5rem;
+  width: 13rem;
+  height: 13rem;
+  opacity: 0.07;
   pointer-events: none;
 }
-.lang-watermark .lang-icon {
-  width: 4.5rem;
-  height: 4.5rem;
-}
-.lang-watermark .lang-icon + .lang-icon {
-  width: 3rem;
-  height: 3rem;
-  margin-left: -0.5rem;
-}
-@media (min-width: 48rem) {
-  /* In the empty end of the name column, clear of the install lines. */
-  .lang-watermark {
-    top: 50%;
-    right: auto;
-    left: 9.5rem;
-    transform: translateY(-50%);
-  }
-  .lang-watermark .lang-icon {
-    width: 5.5rem;
-    height: 5.5rem;
-  }
-  .lang-watermark .lang-icon + .lang-icon {
-    width: 3.5rem;
-    height: 3.5rem;
-  }
-}
 .lang-id {
-  grid-area: id;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.8rem;
   min-width: 0;
-}
-.lang-icon {
-  flex: none;
-  color: var(--nd-ink);
-}
-.lang-mark {
-  margin-top: 0.1rem;
 }
 .lang-name {
   margin: 0;
-  font-size: 1.2rem;
-  line-height: 1.3;
+  font-size: var(--nd-step-2);
+  line-height: 1.15;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
-.lang-also,
 .lang-count {
-  margin: 0.15rem 0 0;
+  margin: 0.35rem 0 0;
   color: var(--nd-ink-muted);
   font-size: var(--nd-step--1);
-}
-.lang-count {
   font-variant-numeric: tabular-nums;
 }
+.lang-icon {
+  flex: none;
+}
 .lang-cmds {
-  grid-area: cmds;
   display: grid;
   gap: 0.5rem;
   min-width: 0;
@@ -253,7 +302,6 @@
   background: var(--nd-raised);
 }
 .lang-links {
-  grid-area: links;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -277,7 +325,7 @@
   text-decoration: none;
   border-color: var(--nd-ink-muted);
 }
-.chip .lang-icon {
+.chip .lang-icon:not(.brand) {
   color: var(--nd-ink-muted);
 }
 
@@ -731,8 +779,13 @@
 }
 @media (min-width: 48rem) {
   .footer-grid {
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1.6fr 1fr;
   }
+}
+/* Fourteen languages read as two short columns, not one long one. */
+.site-footer .footer-langs {
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  column-gap: 2rem;
 }
 .footer-brand {
   grid-column: 1 / -1;
@@ -766,7 +819,8 @@
   color: var(--nd-ink);
 }
 /* The valley at the foot of the page: the Himalaya behind Nyatapola, Dharahara, Boudhanath under
-   its prayer flags, Newari houses, Krishna Mandir, a porter with his doko and a chorten, drawn in
+   its prayer flags with the Buddha in meditation beside it, Newari houses, Krishna Mandir, a porter
+   with his doko and a chorten, and the sun and moon of the flag at either end, drawn in
    one colour. The drawing (public/footer-skyline.svg) is a mask, so it takes sindoor in either
    theme, and its ground runs straight into the band that holds the copyright line. On a narrow
    screen it is drawn at 66rem and shows the middle of the valley. */
@@ -777,6 +831,19 @@
   background: var(--nd-sindoor);
   -webkit-mask: url("/footer-skyline.svg") bottom center / max(100%, 66rem) auto no-repeat;
   mask: url("/footer-skyline.svg") bottom center / max(100%, 66rem) auto no-repeat;
+}
+/* Snow on the highest peaks. The valley is a one-colour mask, so the snow is its own layer drawn
+   over it at the same size: paper white by day, moonlit and dimmer at night. */
+.footer-snow {
+  height: calc(max(100vw, 66rem) * 0.2125);
+  margin-top: calc(max(100vw, 66rem) * -0.2125);
+  background: #fff;
+  -webkit-mask: url("/footer-snow.svg") bottom center / max(100%, 66rem) auto no-repeat;
+  mask: url("/footer-snow.svg") bottom center / max(100%, 66rem) auto no-repeat;
+  pointer-events: none;
+}
+:root[data-theme="dark"] .footer-snow {
+  background: rgb(233 228 220 / 0.6);
 }
 .footer-base {
   margin-top: -1px;
@@ -1113,4 +1180,221 @@
       animation-range: cover calc(14% + var(--r) * 4%) cover calc(20% + var(--r) * 4%);
     }
   }
+}
+
+/* Section additions for 1.0: language marks in the speed rows, the patro link row, the phone note,
+   and two quiet backgrounds that come from the subject. The patro section carries the fifteen
+   tithis of a fortnight as moon phases from new to full; the converter carries this year in both
+   calendars, large and faint. Both sit far behind the content and leave it untouched. */
+
+.race-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.patro,
+.convert {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.moons {
+  position: absolute;
+  z-index: -1;
+  top: clamp(1.5rem, 4vw, 3rem);
+  right: max(var(--nd-gutter), calc((100% - var(--nd-wrap)) / 2));
+  width: min(40rem, 60%);
+  height: auto;
+  opacity: 0.5;
+}
+.moon-dark {
+  fill: none;
+  stroke: var(--nd-line);
+  stroke-width: 1;
+  opacity: 0.5;
+}
+.moon-lit {
+  fill: var(--nd-marigold);
+  opacity: 0.35;
+}
+.patro-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-top: 2rem;
+}
+.patro-cta p {
+  margin: 0;
+  max-width: 34rem;
+  color: var(--nd-ink-muted);
+  font-size: var(--nd-step--1);
+}
+
+.convert-numerals {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-inline: var(--nd-gutter);
+  pointer-events: none;
+  font-weight: 800;
+  font-size: clamp(7rem, 18vw, 15rem);
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--nd-line);
+  opacity: 0.35;
+}
+.convert-numerals span:last-child {
+  align-self: flex-start;
+}
+
+.os-marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: none;
+}
+.actions .os-marks {
+  margin-left: 0.5rem;
+}
+.phone {
+  margin-top: 2.5rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px dashed var(--nd-line);
+  border-radius: var(--nd-radius-l);
+}
+.phone h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+.phone p {
+  margin: 0.5rem 0 0;
+}
+.soon {
+  padding: 0.1rem 0.55rem;
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-slate-soft);
+  color: var(--nd-slate);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* The AD calendar (scripts/landing.ts), drawn like the BS picker's popover: the AD day large and
+   its BS day small under it, the chosen day in slate and today ringed. */
+.ad-field {
+  position: relative;
+}
+.ad-cal {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  width: min(19rem, calc(100vw - 2rem));
+  padding: 0.75rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
+  box-shadow: var(--nd-shadow);
+}
+.ad-cal[hidden] {
+  display: none;
+}
+.ad-cal-head {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+.ad-cal-head button {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: var(--nd-radius-s);
+  background: none;
+  color: var(--nd-ink);
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+.ad-cal-head button:hover {
+  background: var(--nd-sunken);
+}
+.ad-cal-head select {
+  flex: 1;
+  min-width: 0;
+  height: 2rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-s);
+  background: var(--nd-raised);
+  color: var(--nd-ink);
+  font: inherit;
+  font-size: 0.85rem;
+}
+.ad-cal-head select + select {
+  flex: 0 0 4.75rem;
+}
+.ad-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+.ad-cal-wd {
+  padding: 0.25rem 0;
+  color: var(--nd-ink-muted);
+  font-size: 0.68rem;
+  text-align: center;
+}
+.ad-cal-grid button {
+  display: grid;
+  justify-items: center;
+  padding: 0.25rem 0 0.2rem;
+  border: 0;
+  border-radius: var(--nd-radius-s);
+  background: none;
+  color: var(--nd-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.ad-cal-grid button span {
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+.ad-cal-grid button small {
+  color: var(--nd-ink-muted);
+  font-size: 0.6rem;
+  line-height: 1.1;
+}
+.ad-cal-grid button:hover {
+  background: var(--nd-sunken);
+}
+.ad-cal-grid button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.ad-cal-grid button.today {
+  box-shadow: inset 0 0 0 1px var(--nd-slate);
+}
+.ad-cal-grid button[aria-pressed="true"] {
+  background: var(--nd-slate);
+  color: var(--nd-raised);
+  font-weight: 700;
+}
+.ad-cal-grid button[aria-pressed="true"] small {
+  color: inherit;
+  opacity: 0.85;
+}
+.ad-cal-grid button:focus-visible {
+  outline: 2px solid var(--nd-slate);
+  outline-offset: 1px;
 }

@@ -1,96 +1,94 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sanamhub/nepdate/main/assets/logo/nepdate-128.png" width="128" alt="NepDate logo">
+  <img src="https://raw.githubusercontent.com/sanamhub/nepdate/main/assets/logo/nepdate-128.png" width="112" alt="NepDate logo">
 </p>
 
-<h1 align="center">nepdate</h1>
+<h1 align="center">NepDate</h1>
 
 <p align="center">
+  Bikram Sambat, the Nepali calendar, with the same answer in every language.
+</p>
+
+<p align="center">
+  <a href="https://nepdate.com"><img src="https://img.shields.io/badge/docs-nepdate.com-c12b2b" alt="Docs: nepdate.com"></a>
+  <a href="https://patro.nepdate.com"><img src="https://img.shields.io/badge/patro-patro.nepdate.com-3f6383" alt="Patro: patro.nepdate.com"></a>
   <a href="https://github.com/sanamhub/nepdate/actions/workflows/ci.yml"><img src="https://github.com/sanamhub/nepdate/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/sanamhub/nepdate/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT"></a>
 </p>
 
-Bikram Sambat (the Nepali calendar) for thirteen libraries, and the shared data and specification
-behind them. Every library converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD
-1844-04-11 to 2143-04-15), gives the same answer as the others, and checks that against the same
-test vectors. This repository holds no library code: it has what must be identical in every
-language, imported from the C# [NepDate](https://github.com/RajuPrasai/NepDate) library.
+NepDate converts between Bikram Sambat (BS) and Gregorian (AD) dates for BS 1901-01-01 to
+2199-12-30 (AD 1844-04-11 to 2143-04-15), formats and parses them in English and Nepali, does date
+arithmetic and fiscal years, and knows each day's tithi, public holidays and events. It started as
+the C# [NepDate](https://github.com/RajuPrasai/NepDate) library and now has a port for thirteen more
+languages. Every port is built from one dataset and one specification, and checked against the same
+test vectors, so they all give the same day for the same date.
 
-Documentation for every language, and a converter: **[nepdate.com](https://nepdate.com)**.
+This repository is the hub: the data, the specification, the decisions that bind every port, and
+the websites. The library code lives in each language's own repository.
 
-Tithi, public holidays and events cover BS 2077 to 2084 (tithi until 2083-12-30). They are
-informational, not an official calendar.
+## Languages
 
-## Packages
+Each port ships two packages on one version line: the **core** (conversion, arithmetic, formatting,
+parsing; no dependencies, no almanac data) and the **patro** (पात्रो: tithi, public holidays and
+events). The API is stable from 1.0 ([ADR-0009](docs/adr/0009-what-1.0-promises.md)).
 
-Every port ships two packages, one version: the core (conversion, arithmetic, formatting, parsing)
-and the patro (पात्रो: tithi, holidays, events), so an app that only converts dates carries no
-almanac data ([ADR-0004](docs/adr/0004-patro-in-a-separate-package.md)). The first public line was
-`0.1.0-rc.1`. The `1.0.0-rc.1` release candidate is the next release for all thirteen ports; a
-port's table entry shows the version its registry serves, so the ten ports on `0.2.0-rc.1` trail
-until each registry serves the new line. The API is stable from 1.0
-([ADR-0009](docs/adr/0009-what-1.0-promises.md)). Ruby, Java and Zig have no `versions.json` entry
-until their first release ([ADR-0008](docs/adr/0008-unreleased-port-version.md)).
-
-| Language | Core | Patro | Version | Repository |
+| Language | Core | Patro | Latest | Repository |
 |---|---|---|---|---|
-| C# (upstream) | [`NepDate`](https://www.nuget.org/packages/NepDate) | in the same package | [![NuGet](https://img.shields.io/nuget/v/NepDate?logo=nuget&label=)](https://www.nuget.org/packages/NepDate) | [RajuPrasai/NepDate](https://github.com/RajuPrasai/NepDate) |
-| Rust | [`nepdate`](https://crates.io/crates/nepdate) | [`nepdate-patro`](https://crates.io/crates/nepdate-patro) | [![crates.io](https://img.shields.io/crates/v/nepdate?include_prereleases&logo=rust&label=)](https://crates.io/crates/nepdate) | [nepdate-rust](https://github.com/sanamhub/nepdate-rust) |
+| C# | [`NepDate`](https://www.nuget.org/packages/NepDate) | in the same package | [![NuGet](https://img.shields.io/nuget/v/NepDate?logo=nuget&label=)](https://www.nuget.org/packages/NepDate) | [RajuPrasai/NepDate](https://github.com/RajuPrasai/NepDate) |
+| TypeScript | [`nepdate-core`](https://www.npmjs.com/package/nepdate-core) | [`nepdate-patro`](https://www.npmjs.com/package/nepdate-patro) | [![npm](https://img.shields.io/npm/v/nepdate-core/rc?logo=npm&label=)](https://www.npmjs.com/package/nepdate-core) | [nepdate-typescript](https://github.com/sanamhub/nepdate-typescript) |
+| Python | [`nepdate-core`](https://pypi.org/project/nepdate-core/) | [`nepdate-patro`](https://pypi.org/project/nepdate-patro/) | [![PyPI](https://img.shields.io/pypi/v/nepdate-core?include_prereleases&logo=python&logoColor=white&label=)](https://pypi.org/project/nepdate-core/) | [nepdate-python](https://github.com/sanamhub/nepdate-python) |
+| PHP | [`sanamhub/nepdate`](https://packagist.org/packages/sanamhub/nepdate) | [`sanamhub/nepdate-patro`](https://packagist.org/packages/sanamhub/nepdate-patro) | [![Packagist](https://img.shields.io/packagist/v/sanamhub/nepdate?include_prereleases&logo=packagist&logoColor=white&label=)](https://packagist.org/packages/sanamhub/nepdate) | [nepdate-php](https://github.com/sanamhub/nepdate-php) |
+| Java | [`io.github.sanamhub:nepdate-java`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-java) | [`nepdate-java-patro`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-java-patro) | [![Maven Central](https://img.shields.io/maven-central/v/io.github.sanamhub/nepdate-java?logo=apachemaven&label=)](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-java) | [nepdate-java](https://github.com/sanamhub/nepdate-java) |
+| Dart | [`nepdate`](https://pub.dev/packages/nepdate) | [`nepdate_patro`](https://pub.dev/packages/nepdate_patro) | [![pub.dev](https://img.shields.io/pub/v/nepdate?include_prereleases&logo=dart&label=)](https://pub.dev/packages/nepdate) | [nepdate-dart](https://github.com/sanamhub/nepdate-dart) |
+| Kotlin | [`io.github.sanamhub:nepdate`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [`nepdate-patro`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-patro) | [![Maven Central](https://img.shields.io/maven-central/v/io.github.sanamhub/nepdate?logo=apachemaven&label=)](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) |
 | Go | [`nepdate`](https://pkg.go.dev/github.com/sanamhub/nepdate-go) | [`nepdate/patro`](https://pkg.go.dev/github.com/sanamhub/nepdate-go/patro) | [![Go](https://img.shields.io/github/v/tag/sanamhub/nepdate-go?include_prereleases&sort=semver&logo=go&label=)](https://pkg.go.dev/github.com/sanamhub/nepdate-go) | [nepdate-go](https://github.com/sanamhub/nepdate-go) |
-| TypeScript, JavaScript | [`nepdate-core`](https://www.npmjs.com/package/nepdate-core) | [`nepdate-patro`](https://www.npmjs.com/package/nepdate-patro) | [![npm](https://img.shields.io/npm/v/nepdate-core/beta?logo=npm&label=)](https://www.npmjs.com/package/nepdate-core) | [nepdate-typescript](https://github.com/sanamhub/nepdate-typescript) |
-| Python | [`nepdate-core`](https://pypi.org/project/nepdate-core/) | [`nepdate-patro`](https://pypi.org/project/nepdate-patro/) | [![PyPI](https://img.shields.io/pypi/v/nepdate-core?logo=python&logoColor=white&label=)](https://pypi.org/project/nepdate-core/) | [nepdate-python](https://github.com/sanamhub/nepdate-python) |
-| PHP | [`sanamhub/nepdate`](https://packagist.org/packages/sanamhub/nepdate) | [`sanamhub/nepdate-patro`](https://packagist.org/packages/sanamhub/nepdate-patro) | [![Packagist](https://img.shields.io/packagist/v/sanamhub/nepdate?include_prereleases&label=)](https://packagist.org/packages/sanamhub/nepdate) | [nepdate-php](https://github.com/sanamhub/nepdate-php) |
-| Ruby | [`nepdate`](https://rubygems.org/gems/nepdate) | [`nepdate-patro`](https://rubygems.org/gems/nepdate-patro) | [![RubyGems](https://img.shields.io/gem/v/nepdate?include_prereleases&label=)](https://rubygems.org/gems/nepdate) | [nepdate-ruby](https://github.com/sanamhub/nepdate-ruby) |
 | Swift | [`NepDate`](https://swiftpackageindex.com/sanamhub/nepdate-swift) | [`NepDatePatro`](https://swiftpackageindex.com/sanamhub/nepdate-swift) | [![SwiftPM](https://img.shields.io/github/v/tag/sanamhub/nepdate-swift?include_prereleases&sort=semver&logo=swift&label=)](https://github.com/sanamhub/nepdate-swift/releases) | [nepdate-swift](https://github.com/sanamhub/nepdate-swift) |
-| Kotlin, Android | [`io.github.sanamhub:nepdate`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [`io.github.sanamhub:nepdate-patro`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-patro) | [![Maven Central](https://img.shields.io/maven-central/v/io.github.sanamhub/nepdate?logo=apachemaven&label=)](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate) | [nepdate-kotlin](https://github.com/sanamhub/nepdate-kotlin) |
-| Java | [`io.github.sanamhub:nepdate-java`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-java) | [`io.github.sanamhub:nepdate-java-patro`](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-java-patro) | [![Maven Central](https://img.shields.io/maven-central/v/io.github.sanamhub/nepdate-java?include_prereleases&logo=apachemaven&label=)](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-java) | [nepdate-java](https://github.com/sanamhub/nepdate-java) |
-| C++20 | `nepdate::nepdate` | `nepdate::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-cpp?include_prereleases&sort=semver&logo=cplusplus&label=)](https://github.com/sanamhub/nepdate-cpp/releases) | [nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) |
-| C11, Zig | `nepdate-c::nepdate` | `nepdate-c::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-c?include_prereleases&sort=semver&logo=c&label=)](https://github.com/sanamhub/nepdate-c/releases) | [nepdate-c](https://github.com/sanamhub/nepdate-c) |
-| Dart, Flutter | [`nepdate`](https://pub.dev/packages/nepdate) | [`nepdate_patro`](https://pub.dev/packages/nepdate_patro) | [![pub.dev](https://img.shields.io/pub/v/nepdate?include_prereleases&logo=dart&label=)](https://pub.dev/packages/nepdate) | [nepdate-dart](https://github.com/sanamhub/nepdate-dart) |
-| Zig | `nepdate` | `nepdate_patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-zig?include_prereleases&sort=semver&logo=zig&label=)](https://github.com/sanamhub/nepdate-zig/releases) | [nepdate-zig](https://github.com/sanamhub/nepdate-zig) |
+| C++ | `nepdate::nepdate` (CMake) | `nepdate::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-cpp?include_prereleases&sort=semver&logo=cplusplus&label=)](https://github.com/sanamhub/nepdate-cpp/releases) | [nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) |
+| C | `nepdate-c::nepdate` (CMake) | `nepdate-c::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-c?include_prereleases&sort=semver&logo=c&label=)](https://github.com/sanamhub/nepdate-c/releases) | [nepdate-c](https://github.com/sanamhub/nepdate-c) |
+| Rust | [`nepdate`](https://crates.io/crates/nepdate) | [`nepdate-patro`](https://crates.io/crates/nepdate-patro) | [![crates.io](https://img.shields.io/crates/v/nepdate?include_prereleases&logo=rust&label=)](https://crates.io/crates/nepdate) | [nepdate-rust](https://github.com/sanamhub/nepdate-rust) |
+| Ruby | [`nepdate`](https://rubygems.org/gems/nepdate) | [`nepdate-patro`](https://rubygems.org/gems/nepdate-patro) | [![RubyGems](https://img.shields.io/gem/v/nepdate?include_prereleases&logo=rubygems&label=)](https://rubygems.org/gems/nepdate) | [nepdate-ruby](https://github.com/sanamhub/nepdate-ruby) |
+| Zig | `nepdate` (build.zig.zon) | `nepdate_patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-zig?include_prereleases&sort=semver&logo=zig&label=)](https://github.com/sanamhub/nepdate-zig/releases) | [nepdate-zig](https://github.com/sanamhub/nepdate-zig) |
 
-The Zig port's first release is `1.0.0-rc.1`. It is not in `spec/versions.json` until that release
-exists, and its package is the tagged source archive rather than a registry entry.
+Install lines with the exact version are in each repository's README and on
+[nepdate.com](https://nepdate.com). A few names differ from the rest: the core is `nepdate-core`
+on PyPI and npm, because `nepdate` is taken on PyPI and refused as too close to `nep-date` on npm
+(in Python you still `import nepdate`). C++, C and Zig have no central registry and install from a
+tagged release.
 
-For the web there is also a BS date picker, [`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker):
-web components built on the TypeScript core that work in plain HTML and any framework
+For web pages there is also [`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker),
+BS date picker web components that work in plain HTML and any framework
 ([docs](https://nepdate.com/docs/datepicker/)).
 
-The core is `nepdate-core` on PyPI and npm: on PyPI `nepdate` belongs to an unrelated package, and
-npm refuses it as too close to the existing `nep-date`. In Python you still `import nepdate`. Swift is
-listed on the [Swift Package Index](https://swiftpackageindex.com/sanamhub/nepdate-swift) and added
-with SwiftPM; C++ and C have no central registry, so use CMake `FetchContent` pinned to a tag
-(C also builds as a Zig package). Install
-lines, with the exact version, are in each repository's README and its GitHub release notes.
+## Apps
 
-### Apps
+| | |
+|---|---|
+| **[MitiBar](https://nepdate.com/mitibar/)** | Today's BS date in the tray and taskbar, with the month, tithi and holidays one click away. Windows, macOS and Linux. [Download](https://github.com/sanamhub/mitibar/releases/latest) |
+| **[patro.nepdate.com](https://patro.nepdate.com)** | The Nepali calendar on the web: every month with tithi, holidays and events, a page for each day, and each year's holidays for your calendar app. Built from this repository's `patro/`. |
+| **NepDate for Android and iOS** | Home-screen widgets and the month with tithi and holidays, with no ads, account or network. Coming soon, in [nepdate-mobile](https://github.com/sanamhub/nepdate-mobile). |
 
-| App | What it is | Where |
-|---|---|---|
-| MitiBar | Tray calendar for Windows, macOS and Linux, with a floating date bar on Windows, built on the Rust library | [latest release](https://github.com/sanamhub/mitibar/releases/latest), not code-signed yet, in its own repository [mitibar](https://github.com/sanamhub/mitibar) |
-| NepDate for Android and iOS | Month view, holidays, widgets; no ads, account or network | [nepdate-mobile](https://github.com/sanamhub/nepdate-mobile), in development |
+Tithi, holidays and events cover BS 2077 to 2084. They are informational, not an official calendar.
 
-## How the ports use this repository
+## How the ports stay identical
 
 Each port keeps a read-only copy of `data/` and `spec/` in its own `shared/` directory, with the
-hub commit in `shared/VERSION`, and generates constant tables from it at build time. A check in
-each port fails if `shared/` drifts from the hub
-([ADR-0001](docs/adr/0001-hub-and-spoke-repositories.md)). A port that has not released yet has no
-entry in `spec/versions.json`, and its `shared-check` accepts a version on the current line or a
-later one ([ADR-0008](docs/adr/0008-unreleased-port-version.md)).
+hub commit it came from, and builds its tables from that copy. Its CI fails when the copy drifts
+from the hub ([ADR-0001](docs/adr/0001-hub-and-spoke-repositories.md)) and runs the same vector
+files as every other port.
 
-Calendar data comes from C# NepDate first, then here, then the ports
+Calendar data flows one way: the C# library first, then this hub, then every port
 ([ADR-0002](docs/adr/0002-canonical-data-and-upstream-first.md)). Report a wrong date, holiday or
-tithi with the [data error form](https://github.com/sanamhub/nepdate/issues/new/choose); one fix
-here reaches every port.
+tithi once, with the [data error form](https://github.com/sanamhub/nepdate/issues/new/choose); one
+fix here reaches every language.
 
 ```
-data/            calendar and patro data (JSON), NOTICE
+data/            calendar and patro data (JSON) and its NOTICE
 spec/            algorithm, formatting, parsing, patro, parity, vectors, reference checker
-tools/           C# importer, golden vector generator, data checks
-assets/logo/     the family logo and one per port
+tools/           importer, golden vector generator, data checks
 docs/adr/        decisions that bind every port
-docs/runbooks/   data updates and syncing
-site/            nepdate.com: landing page and docs (ADR-0005)
+docs/runbooks/   data updates, syncing and releases
+site/            nepdate.com: landing page and docs
+patro/           patro.nepdate.com
+assets/logo/     the family logo and one per port
 ```
 
 ## Check the spec and data
@@ -98,16 +96,15 @@ site/            nepdate.com: landing page and docs (ADR-0005)
 Python 3.10 or newer, nothing else:
 
 ```bash
-py spec/reference/verify_vectors.py
+python spec/reference/verify_vectors.py
 ```
 
-It checks the algorithm spec against 7176 month-boundary vectors and 21,126 golden rows recorded
-from C# NepDate, plus the 299-year reference year length, the formatting and parsing specs, and
-the API coverage check. `scripts/ci.sh` runs that and the data checks, the same as CI.
+It checks the algorithm spec against 7,176 month-boundary vectors and 21,126 golden rows recorded
+from C# NepDate, the 299-year reference year lengths, the formatting and parsing specs and the API
+coverage. `scripts/ci.sh` runs that and the data checks, as CI does.
 
 ## Credits and license
 
-Calendar data and algorithm come from [NepDate](https://github.com/RajuPrasai/NepDate) by Raju
-Prasai and contributors, MIT, used with the author's agreement ([data/NOTICE](data/NOTICE)). This
-repository is MIT ([LICENSE](LICENSE)). Not affiliated with the Government of Nepal; holiday data
-is informational.
+The calendar data and the algorithm come from the C# [NepDate](https://github.com/RajuPrasai/NepDate)
+library, MIT, used with its maintainers' agreement ([data/NOTICE](data/NOTICE)). This repository is
+MIT ([LICENSE](LICENSE)). Not affiliated with the Government of Nepal.

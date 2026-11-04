@@ -12,6 +12,9 @@ import LangIcon from "../components/landing/LangIcon.astro";
 import { downloads, formatCount } from "../data/downloads";
 import { competitorCount, formatNs, languages, nearest } from "../data/benchmarks";
 import { DATA_ERROR_FORM, HUB, MITIBAR_RELEASE, MITIBAR_VERSION, PATRO, ports, repoUrl, versionLine } from "../data/ports";
+import { registryId } from "../data/lang-icons";
+import mitibarIcon from "../assets/mitibar-icon.png";
+import nepdateMark from "../assets/nepdate.svg";
 
 // Rendered at build time so the page reads right without JavaScript; the script in
 // scripts/landing.ts replaces it with the visitor's own "today in Nepal" on load.
@@ -69,6 +72,7 @@ const race = languages.map((port) => {
   const next = nearest(port);
   if (next === null) {
     return {
+      id: port.id,
       name: port.name,
       ours: formatNs(port.ops[0]),
       theirs: "",
@@ -80,6 +84,7 @@ const race = languages.map((port) => {
     };
   }
   return {
+    id: port.id,
     name: port.name,
     ours: formatNs(next.ours),
     theirs: formatNs(next.b1),
@@ -95,8 +100,18 @@ const race = languages.map((port) => {
 });
 
 const title = "NepDate: fast Nepali dates for every language you ship";
-const description =
-  "Bikram Sambat (BS) date libraries for C#, Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C, built from one dataset and one spec so every language gives the same answer. Plus MitiBar, a Nepali calendar for your desktop.";
+const languageList = new Intl.ListFormat("en", { type: "conjunction" }).format(ports.map((port) => port.name));
+const description = `Bikram Sambat (BS) date libraries for ${languageList}, built from one dataset and one spec so every language gives the same answer. Plus MitiBar, a Nepali calendar for your desktop, and a free online patro.`;
+
+// The strip near the end of the page: every language, then where the apps run. Two copies scroll as one loop.
+const strip = [
+  ...ports.map((port) => ({ id: port.id, label: port.name })),
+  { id: "windows", label: "Windows" },
+  { id: "macos", label: "macOS" },
+  { id: "linux", label: "Linux" },
+  { id: "android", label: "Android" },
+  { id: "ios", label: "iOS" },
+];
 
 // What search and answer engines read about the page: the site, the libraries and the app. Kept
 // short: the page must stay inside the first network round trip. llms.txt has the install lines.
@@ -155,8 +170,11 @@ const jsonLd = {
                 aria-controls={`panel-${port.id}`}
                 aria-selected={i === 0 ? "true" : "false"}
                 tabindex={i === 0 ? 0 : -1}
+                title={port.name}
+                aria-label={port.name}
               >
-                {port.name}
+                <LangIcon id={port.id} size={17} brand />
+                <span class="tab-name">{port.name}</span>
               </button>
             ))
           }
@@ -179,8 +197,9 @@ const jsonLd = {
       <div class="hero-copy">
         <h1>Nepali dates in nanoseconds, the same in every language.</h1>
         <p class="lede">
-          Bikram Sambat for C#, Rust, Go, TypeScript, Python, Swift, Kotlin, C++ and C. Each port that has a mature
-          library to compare is faster than it, and all of them give the same day for any date from BS 1901 to 2199.
+          Bikram Sambat libraries for {ports.length} languages, built from one dataset and one spec. Every one gives the
+          same day for any date from BS 1901 to 2199, and it matches or beats the most-used library in each language
+          that has one.
         </p>
         <div class="actions">
           <a class="button primary" href="/docs/quickstart/">Get started</a>
@@ -193,7 +212,7 @@ const jsonLd = {
               >
               <span>Patro <small>web</small></span>
             </a>
-            <a href="#mitibar">
+            <a href="/mitibar/">
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
                 ><rect x="3" y="4" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"
                 ></rect><path d="M8 20.5h8M12 17v3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -211,95 +230,87 @@ const jsonLd = {
   <section class="section" id="languages" aria-labelledby="languages-title">
     <div class="wrap">
       <div class="section-head">
-        <h2 id="languages-title">Supported languages</h2>
+        <h2 id="languages-title">Install in your language</h2>
         <p>
-          Each language has two packages on one version line, now <code>{versionLine}</code>: the core for conversion,
-          arithmetic, formatting and parsing, and the patro for tithi, public holidays and events. Take only the core
-          and no almanac data ships with your app. C# NepDate is one package with its own versions.
+          Each language ships two packages on the <code>{versionLine}</code> line: the core for conversion, arithmetic,
+          formatting and parsing, and the patro for tithi, public holidays and events. Install only the core and no
+          almanac data ships with your app. C# NepDate is one package with its own versions.
         </p>
       </div>
       <div class="install" data-tabs>
-        <div class="tabs" role="tablist" aria-label="Install for">
+        <div class="lang-grid" role="tablist" aria-label="Language">
           {
             ports.map((port, i) => (
               <button
                 type="button"
                 role="tab"
+                class="lang-tile"
                 id={`install-tab-${port.id}`}
                 aria-controls={`install-${port.id}`}
                 aria-selected={i === 0 ? "true" : "false"}
                 tabindex={i === 0 ? 0 : -1}
               >
-                {port.name}
+                <LangIcon id={port.id} size={30} brand />
+                <span>{port.name}</span>
               </button>
             ))
           }
         </div>
-        <div class="langs">
-          {
-            ports.map((port, i) => (
-              <div
-                class="lang"
-                role="tabpanel"
-                id={`install-${port.id}`}
-                aria-labelledby={`install-tab-${port.id}`}
-                hidden={i !== 0}
-              >
-                <div class="lang-watermark" aria-hidden="true">
-                  {[port.id, ...(port.alsoFor ?? []).map((also) => also.icon)].map((icon) => (
-                    <LangIcon id={icon} size={96} />
-                  ))}
+        {
+          ports.map((port, i) => (
+            <div
+              class="lang"
+              role="tabpanel"
+              id={`install-${port.id}`}
+              aria-labelledby={`install-tab-${port.id}`}
+              hidden={i !== 0}
+            >
+              <LangIcon id={port.id} size={220} brand class="lang-watermark" />
+              <div class="lang-id">
+                <h3 class="lang-name">{port.name}</h3>
+                {downloads[port.id] && (
+                  <p class="lang-count" title={`${downloads[port.id].registry}, ${downloads[port.id].span}`}>
+                    {formatCount(downloads[port.id].count)} downloads
+                  </p>
+                )}
+              </div>
+              <div class="lang-cmds">
+                <div class="install-cmd">
+                  <span class="install-kind">Core</span>
+                  <code translate="no">{port.install}</code>
+                  <button type="button" class="copy" data-copy={port.install} aria-label={`Copy ${port.name} core`}>
+                    Copy
+                  </button>
                 </div>
-                <div class="lang-id">
-                  <LangIcon id={port.id} size={28} class="lang-mark" />
-                  <div>
-                    <h3 class="lang-name">{port.name}</h3>
-                    {port.alsoFor && <p class="lang-also">Also {port.alsoFor.map((also) => also.name).join(" and ")}</p>}
-                    {downloads[port.id] && (
-                      <p class="lang-count" title={`${downloads[port.id].registry}, ${downloads[port.id].span}`}>
-                        {formatCount(downloads[port.id].count)} downloads
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div class="lang-cmds">
+                {port.patroInstall ? (
                   <div class="install-cmd">
-                    <span class="install-kind">Core</span>
-                    <code translate="no">{port.install}</code>
-                    <button type="button" class="copy" data-copy={port.install} aria-label={`Copy ${port.name} core`}>
+                    <span class="install-kind">Patro</span>
+                    <code translate="no">{port.patroInstall}</code>
+                    <button type="button" class="copy" data-copy={port.patroInstall} aria-label={`Copy ${port.name} patro`}>
                       Copy
                     </button>
                   </div>
-                  {port.patroInstall ? (
-                    <div class="install-cmd">
-                      <span class="install-kind">Patro</span>
-                      <code translate="no">{port.patroInstall}</code>
-                      <button type="button" class="copy" data-copy={port.patroInstall} aria-label={`Copy ${port.name} patro`}>
-                        Copy
-                      </button>
-                    </div>
-                  ) : (
-                    <p class="install-same">The patro is part of the same package.</p>
-                  )}
-                </div>
-                <div class="lang-links">
-                  <a class="chip" href={`/docs/${port.id}/`}>
-                    <LangIcon id="guide" size={15} />
-                    Guide<span class="visually-hidden"> for {port.name}</span>
-                  </a>
-                  <a class="chip" href={port.registry.href}>
-                    <LangIcon id="package" size={15} />
-                    {port.registry.label}
-                  </a>
-                  <a class="chip" href={repoUrl(port)}>
-                    <LangIcon id="source" size={15} />
-                    Source<span class="visually-hidden"> of {port.name}</span>
-                  </a>
-                </div>
+                ) : (
+                  <p class="install-same">The patro is part of the same package.</p>
+                )}
               </div>
-            ))
-          }
-        </div>
+              <div class="lang-links">
+                <a class="chip" href={`/docs/${port.id}/`}>
+                  <LangIcon id="guide" size={16} />
+                  Guide<span class="visually-hidden"> for {port.name}</span>
+                </a>
+                <a class="chip" href={port.registry.href}>
+                  <LangIcon id={registryId(port.registry.label)} size={16} brand />
+                  {port.registry.label}
+                </a>
+                <a class="chip" href={repoUrl(port)}>
+                  <LangIcon id="source" size={16} />
+                  Source<span class="visually-hidden"> of {port.name}</span>
+                </a>
+              </div>
+            </div>
+          ))
+        }
       </div>
       <p class="note">
         Download counts come from {Object.values(downloads).map((d) => `${d.registry} (${d.span})`).join(", ")}, read when
@@ -323,7 +334,10 @@ const jsonLd = {
         {
           race.map((row) => (
             <li>
-              <span class="race-lang">{row.name}</span>
+              <span class="race-lang">
+                <LangIcon id={row.id} size={16} brand />
+                {row.name}
+              </span>
               <span class="race-track" aria-hidden="true">
                 <span class="race-bar theirs" style="--w: 100%" />
                 <span class="race-bar ours" style={`--w: ${row.width}%`} />
@@ -350,6 +364,10 @@ const jsonLd = {
   </section>
 
   <section class="section convert" id="convert" aria-labelledby="convert-title">
+    <div class="convert-numerals" aria-hidden="true">
+      <span lang="ne">{toNepaliDigits(today.year)}</span>
+      <span>{todayAd.year}</span>
+    </div>
     <div class="wrap convert-grid">
       <div class="section-head">
         <h2 id="convert-title">Convert a date</h2>
@@ -397,6 +415,7 @@ const jsonLd = {
                 ></path></svg
               >
             </button>
+            <div class="ad-cal" role="dialog" aria-label="Choose an AD date" hidden data-ad-cal></div>
           </div>
           <p class="result" aria-live="polite" data-ad-result></p>
         </div>
@@ -418,7 +437,24 @@ const jsonLd = {
     </div>
   </section>
 
-  <section class="section" aria-labelledby="patro-title">
+  <section class="section patro" aria-labelledby="patro-title">
+    <svg class="moons" viewBox="0 0 640 40" aria-hidden="true" focusable="false">
+      {
+        Array.from({ length: 15 }, (_, i) => {
+          const x = 20 + i * 43;
+          const lit = (i + 1) / 15;
+          return (
+            <g>
+              <circle cx={x} cy="20" r="13" class="moon-dark" />
+              <path
+                class="moon-lit"
+                d={`M${x} 7a13 13 0 0 1 0 26a${Math.abs(13 * (1 - 2 * lit)).toFixed(2)} 13 0 0 ${lit > 0.5 ? 1 : 0} 0 -26`}
+              />
+            </g>
+          );
+        })
+      }
+    </svg>
     <div class="wrap">
       <div class="section-head">
         <h2 id="patro-title">The patro, in its own package</h2>
@@ -445,13 +481,13 @@ const jsonLd = {
         }
       </ol>
       <p class="note">Holidays in red, events marked with a dot. Patro data is informational, not an official calendar.</p>
-      <div class="actions">
-        <a class="button primary" href={PATRO}>Open the full patro</a>
+      <div class="patro-cta">
+        <a class="button primary" href={PATRO}>Open patro.nepdate.com</a>
+        <p>
+          Every month with tithi, holidays and events, a page for each day, and each year's holidays for your calendar
+          app. Built from these same packages.
+        </p>
       </div>
-      <p class="note">
-        Every month with its tithi, public holidays and events, a page for each day, and each year's holidays for your
-        calendar app, at <a href={PATRO}>patro.nepdate.com</a>. Built from these same packages.
-      </p>
     </div>
   </section>
 
@@ -502,16 +538,53 @@ const jsonLd = {
           the date and time wherever you put it. Win+Shift+N opens it. No network requests.
         </p>
         <div class="actions">
-          <a class="button primary" href={MITIBAR_RELEASE}>Download {MITIBAR_VERSION}</a>
-          <a class="button" href="/mitibar/">About MitiBar</a>
+          <a class="button primary" href="/mitibar/">Get MitiBar</a>
+          <span class="os-marks" role="img" aria-label="Windows, macOS and Linux">
+            <LangIcon id="windows" size={20} brand />
+            <LangIcon id="macos" size={20} brand />
+            <LangIcon id="linux" size={20} brand />
+          </span>
         </div>
-        <p class="note">Windows, macOS and Linux. Not code-signed yet; the release notes say how to open and verify it.</p>
-        <h3>On your phone</h3>
-        <p>
-          NepDate for Android and iOS, with home-screen widgets and no ads, account or network, is in development.{" "}
-          <a href="/docs/apps/mobile/">Follow along</a>.
-        </p>
+        <p class="note">Free for Windows, macOS and Linux. Not code-signed yet; the release notes say how to open and verify it.</p>
+        <div class="phone">
+          <h3>
+            <span class="os-marks" aria-hidden="true">
+              <LangIcon id="android" size={20} brand />
+              <LangIcon id="macos" size={20} brand />
+            </span>
+            On your phone <span class="soon">Coming soon</span>
+          </h3>
+          <p>
+            NepDate for Android and iOS: home-screen widgets, the month with tithi and holidays, and no ads, account or
+            network. <a href="/docs/apps/mobile/">Follow along</a>.
+          </p>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <section class="strip" aria-label="Languages and platforms">
+    <div class="strip-track">
+      {
+        [0, 1].map((copy) => (
+          <ul class="strip-run" aria-hidden={copy === 1 ? "true" : undefined}>
+            {strip.map((item) => (
+              <li>
+                <LangIcon id={item.id} size={22} brand />
+                {item.label}
+              </li>
+            ))}
+            <li>
+              <img src={nepdateMark.src} width="22" height="22" alt="" />
+              Patro
+            </li>
+            <li>
+              <img src={mitibarIcon.src} width="22" height="22" alt="" />
+              MitiBar
+            </li>
+          </ul>
+        ))
+      }
     </div>
   </section>
 

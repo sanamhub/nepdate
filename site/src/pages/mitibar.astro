@@ -71,7 +71,12 @@ const jsonLd = {
 };
 ---
 
-<Landing title="MitiBar: the Nepali date on your desktop" description={description} jsonLd={jsonLd}>
+<Landing
+  title="MitiBar: the Nepali date on your desktop"
+  description={description}
+  jsonLd={jsonLd}
+  image={{ path: "/og-mitibar.png", alt: "MitiBar: today's Nepali date in the tray, with the month calendar open" }}
+>
   <section class="mb-hero" aria-labelledby="mb-title">
     <div class="wrap mb-hero-grid">
       <div class="mb-copy">
@@ -290,7 +295,7 @@ const jsonLd = {
         <h2 id="more-title">Want more than the date?</h2>
         <p>
           MitiBar stays small on purpose. If you want a whole toolbox on your Windows taskbar, try{" "}
-          <a href={NEPDATE_WIDGET}>NepDate Widget</a> by Raju Prasai, who wrote the original NepDate library. Next to its
+          <a href={NEPDATE_WIDGET}>NepDate Widget</a>, from the author of the original C# NepDate library. Next to its
           calendar and converter it has an EMI calculator, Preeti to Unicode, notes and reminders, a QR tool, network
           tools and more. It is open source too, <a href={NEPDATE_WIDGET_REPO}>on GitHub</a>.
         </p>

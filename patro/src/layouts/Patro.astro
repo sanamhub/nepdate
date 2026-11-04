@@ -10,6 +10,7 @@ import FontLoader from "../../../web/FontLoader.astro";
 import logo from "../../../site/src/assets/nepdate.svg";
 import favicon from "../../../site/public/favicon.svg?url";
 import skyline from "../../../site/public/footer-skyline.svg?url";
+import snow from "../../../site/public/footer-snow.svg?url";
 
 interface Props {
   title: string;
@@ -41,6 +42,12 @@ const year = new Date().getFullYear();
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content="https://patro.nepdate.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NepDate Patro: the Nepali calendar with a Kartik 2083 month sheet" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://patro.nepdate.com/og.png" />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <Font cssVariable="--nd-font-noto-deva" />
     <Font cssVariable="--nd-font-noto" />
@@ -126,7 +133,7 @@ const year = new Date().getFullYear();
       <slot />
     </main>
 
-    <footer class="site-footer" style={`--skyline: url("${skyline}")`}>
+    <footer class="site-footer" style={`--skyline: url("${skyline}"); --snow: url("${snow}")`}>
       <div class="wrap footer-row">
         {
           app ? (
@@ -143,6 +150,7 @@ const year = new Date().getFullYear();
         }
       </div>
       <div class="footer-art" aria-hidden="true"></div>
+      <div class="footer-snow" aria-hidden="true"></div>
       <div class="footer-base"><div class="wrap">© {year} NepDate contributors</div></div>
     </footer>
   </body>
