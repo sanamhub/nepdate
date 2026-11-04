@@ -25,9 +25,11 @@ informational, not an official calendar.
 Every port ships two packages, one version: the core (conversion, arithmetic, formatting, parsing)
 and the patro (पात्रो: tithi, holidays, events), so an app that only converts dates carries no
 almanac data ([ADR-0004](docs/adr/0004-patro-in-a-separate-package.md)). The first public line was
-`0.1.0-rc.1`. The current pre-release line is `0.2.0-rc.1`; a port's table entry shows the version
-its registry serves. The API can still change before 0.2.0. Ruby is built at `1.0.0-rc.1` for the
-1.0 release and has no `versions.json` entry until that release ([ADR-0008](docs/adr/0008-unreleased-port-version.md)).
+`0.1.0-rc.1`. The `1.0.0-rc.1` release candidate is the next release for all thirteen ports; a
+port's table entry shows the version its registry serves, so the ten ports on `0.2.0-rc.1` trail
+until each registry serves the new line. The API is stable from 1.0
+([ADR-0009](docs/adr/0009-what-1.0-promises.md)). Ruby, Java and Zig have no `versions.json` entry
+until their first release ([ADR-0008](docs/adr/0008-unreleased-port-version.md)).
 
 | Language | Core | Patro | Version | Repository |
 |---|---|---|---|---|

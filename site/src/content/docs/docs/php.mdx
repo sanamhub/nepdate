@@ -4,7 +4,7 @@ description: Install and use sanamhub/nepdate and sanamhub/nepdate-patro from Pa
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { versions } from "../../../data/ports";
+import { RELEASE_VERSION, versions } from "../../../data/ports";
 
 Bikram Sambat dates, conversion, formatting and parsing for PHP 8.3 and newer. Pure PHP, no
 extension, no FFI and no runtime data file; tested on Linux, macOS and Windows with PHP 8.3, 8.4 and
@@ -17,9 +17,10 @@ what failed.
 - There is no framework coupling: Laravel, Symfony and plain PHP need no bridge and no service
   provider.
 
-:::caution[Pre-release]
-This is <code>{versions.php}</code>, the first release of the PHP port, on Packagist. The API may
-still change before the final 0.2 release.
+:::caution[Release candidate]
+This is <code>{versions.php}</code>, the last release on the 0.2 line, on Packagist.
+<code>{RELEASE_VERSION}</code> is the release candidate on the 1.0 line, and the API is
+stable from 1.0.
 :::
 
 ## Install

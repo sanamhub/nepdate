@@ -4,15 +4,17 @@ description: Use the nepdate-c core and patro libraries from C11 with CMake, pkg
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { versions } from "../../../data/ports";
+import { RELEASE_VERSION, versions } from "../../../data/ports";
 
 Bikram Sambat dates for ISO C11. The core allocates nothing, keeps no global state and needs no
 library beyond a C compiler: no libc call, no `<time.h>` unless you want the `struct tm` bridge.
 Every input, including a `nepdate_date` built from any bit pattern, is free of undefined behaviour.
 `nepdate-c-patro` is a second library on top of it for tithi, public holidays and events.
 
-:::caution[Pre-release]
-This is <code>{versions.c}</code>, a release candidate. The API may still change before the final 0.2 release.
+:::caution[Release candidate]
+This is <code>{versions.c}</code>, the last release on the 0.2 line.
+<code>{RELEASE_VERSION}</code> is the release candidate on the 1.0 line, and the API is
+stable from 1.0.
 :::
 
 ## Install
