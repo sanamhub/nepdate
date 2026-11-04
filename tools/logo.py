@@ -205,6 +205,7 @@ LANGS = {
     "nepdate-dart": ("Dart", "#0175C2", "#FFFFFF"),
     "nepdate-php": ("PHP", "#777BB4", "#FFFFFF"),
     "nepdate-ruby": ("Ruby", "#CC342D", "#FFFFFF"),
+    "nepdate-zig": ("Zig", "#F7A41D", "#1A1A1A"),
     "nepdate-mobile": ("App", "#1F2937", "#FFFFFF"),
 }
 

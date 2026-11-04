@@ -280,11 +280,11 @@ class ReportTest(unittest.TestCase):
         self.assertEqual(report["ports"][0]["install"]["result"], "success")
         self.assertEqual(report["ports"][0]["registry"]["checked"], "2026-10-29")
 
-    def test_the_spec_used_here_lists_every_released_port(self):
+    def test_the_spec_used_here_lists_every_port_the_check_covers(self):
         spec = package_status.load_spec(ROOT / "spec" / "packages.json")
         self.assertEqual(
             [port["id"] for port in spec["ports"]],
-            ["rust", "go", "typescript", "python", "swift", "kotlin", "cpp", "c", "dart", "php", "java", "ruby"],
+            ["rust", "go", "typescript", "python", "swift", "kotlin", "cpp", "c", "dart", "php", "java", "ruby", "zig"],
         )
         for port in spec["ports"]:
             self.assertTrue(port["packages"])

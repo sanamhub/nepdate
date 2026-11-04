@@ -9,7 +9,7 @@
   <a href="https://github.com/sanamhub/nepdate/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT"></a>
 </p>
 
-Bikram Sambat (the Nepali calendar) for twelve libraries, and the shared data and specification
+Bikram Sambat (the Nepali calendar) for thirteen libraries, and the shared data and specification
 behind them. Every library converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD
 1844-04-11 to 2143-04-15), gives the same answer as the others, and checks that against the same
 test vectors. This repository holds no library code: it has what must be identical in every
@@ -44,6 +44,10 @@ its registry serves. The API can still change before 0.2.0. Ruby is built at `1.
 | C++20 | `nepdate::nepdate` | `nepdate::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-cpp?include_prereleases&sort=semver&logo=cplusplus&label=)](https://github.com/sanamhub/nepdate-cpp/releases) | [nepdate-cpp](https://github.com/sanamhub/nepdate-cpp) |
 | C11, Zig | `nepdate-c::nepdate` | `nepdate-c::patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-c?include_prereleases&sort=semver&logo=c&label=)](https://github.com/sanamhub/nepdate-c/releases) | [nepdate-c](https://github.com/sanamhub/nepdate-c) |
 | Dart, Flutter | [`nepdate`](https://pub.dev/packages/nepdate) | [`nepdate_patro`](https://pub.dev/packages/nepdate_patro) | [![pub.dev](https://img.shields.io/pub/v/nepdate?include_prereleases&logo=dart&label=)](https://pub.dev/packages/nepdate) | [nepdate-dart](https://github.com/sanamhub/nepdate-dart) |
+| Zig | `nepdate` | `nepdate_patro` | [![Release](https://img.shields.io/github/v/release/sanamhub/nepdate-zig?include_prereleases&sort=semver&logo=zig&label=)](https://github.com/sanamhub/nepdate-zig/releases) | [nepdate-zig](https://github.com/sanamhub/nepdate-zig) |
+
+The Zig port's first release is `1.0.0-rc.1`. It is not in `spec/versions.json` until that release
+exists, and its package is the tagged source archive rather than a registry entry.
 
 For the web there is also a BS date picker, [`nepdate-datepicker`](https://www.npmjs.com/package/nepdate-datepicker):
 web components built on the TypeScript core that work in plain HTML and any framework

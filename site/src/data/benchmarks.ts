@@ -155,6 +155,17 @@ export const benchmarks: PortBenchmark[] = [
     competitors: [],
     source: blob("nepdate-ruby", "docs/benchmarks.md"),
   },
+  // The comparison is the C core this package wraps, not an independent Zig library. The machine
+  // was sampled for 30 seconds before the run; the background load is recorded in
+  // nepdate-zig docs/benchmarks.md.
+  {
+    id: "zig",
+    name: "Zig",
+    machine: LAPTOP,
+    ops: [13.9, 6.6, 1.7, 3.4, 46.4, 54.2, 9.4, 340.8],
+    competitors: [],
+    source: blob("nepdate-zig", "docs/benchmarks.md"),
+  },
 ];
 
 /** C# NepDate 2.0.7 on .NET 10, the original every port is compared with. `ops` is the hub's

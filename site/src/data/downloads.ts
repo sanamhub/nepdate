@@ -71,6 +71,8 @@ const sources: Record<string, () => Promise<Downloads>> = {
       registry: "pub.dev",
     };
   },
+  // Zig has no registry and no download count. Its release is a tagged source archive, so the
+  // site shows no number rather than a made-up one.
 };
 
 async function load(): Promise<Record<string, Downloads>> {

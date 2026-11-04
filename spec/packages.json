@@ -168,6 +168,20 @@
       "packages": ["nepdate", "nepdate-patro"],
       "managers": ["rubygems", "bundler"],
       "install": "gem install nepdate -v 1.0.0.rc.1"
+    },
+    {
+      "id": "zig",
+      "name": "Zig",
+      "repository": "sanamhub/nepdate-zig",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "GitHub Releases",
+        "url": "https://github.com/sanamhub/nepdate-zig/releases"
+      },
+      "package": "nepdate-zig",
+      "packages": ["nepdate", "nepdate_patro"],
+      "managers": ["zig"],
+      "install": "zig fetch --save https://github.com/sanamhub/nepdate-zig/archive/refs/tags/v1.0.0-rc.1.tar.gz"
     }
   ]
 }
