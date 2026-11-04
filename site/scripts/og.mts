@@ -3,10 +3,11 @@
 // Chrome takes the screenshot, so the cards stay in step with the site and need no design tool.
 //
 //   node scripts/og.mts            writes site/public/og*.png and patro/public/og.png
-//   node scripts/og.mts --github   also writes the GitHub social previews to site/og-github/
+//   node scripts/og.mts --github   also writes the GitHub social previews to assets/social/
 //
 // The GitHub social previews are uploaded by hand (repository Settings, Social preview): GitHub has
-// no API for them. They are not part of the site, so they land outside public/.
+// no API for them. They are not part of the site, so they live in the hub's assets/social/, kept in
+// git as the record of what each repository shows.
 import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -134,19 +135,20 @@ const cards: { out: string; w: number; h: number; html: string }[] = [
 ];
 
 if (process.argv.includes("--github")) {
-  const out = join(site, "og-github");
+  const out = join(hub, "assets/social");
   mkdirSync(out, { recursive: true });
-  const repoCard = (title: string, sub: string, side: string) =>
-    page(1280, 640, `.side { position: absolute; right: 110px; top: 150px; } .copy { width: 700px; top: 190px; }`,
+  // The copy column stops short of the side art: 700 px beside a mark, 560 px beside the sheet.
+  const repoCard = (title: string, sub: string, side: string, copy = 700) =>
+    page(1280, 640, `.side { position: absolute; right: 110px; top: 150px; } .copy { width: ${copy}px; top: 190px; }`,
       `${brand}<div class="copy"><h1>${title}</h1><p class="sub">${sub}</p></div><div class="side">${side}</div>${markRow(42)}`);
-  for (const id of languages.filter((id) => id !== "csharp")) {
+  for (const id of languages) {
     cards.push({
       out: join(out, `nepdate-${id}.png`), w: 1280, h: 640,
       html: repoCard(`NepDate for ${names[id]}`, "Bikram Sambat dates: convert, add, format and parse, with tithi, holidays and events.", mark(id, 260)),
     });
   }
   cards.push(
-    { out: join(out, "nepdate.png"), w: 1280, h: 640, html: repoCard("NepDate", `One calendar dataset and spec for ${languages.length} languages, the patro and the apps.`, sheet(18, "कार्तिक २०८३").replace('class="sheet"', 'class="sheet" style="position:static"')) },
+    { out: join(out, "nepdate.png"), w: 1280, h: 640, html: repoCard("NepDate", `One calendar dataset and spec for ${languages.length} languages, the patro and the apps.`, sheet(18, "कार्तिक २०८३").replace('class="sheet"', 'class="sheet" style="position:static"'), 560) },
     { out: join(out, "nepdate-php-patro.png"), w: 1280, h: 640, html: repoCard("NepDate Patro for PHP", "Tithi, public holidays and events for the NepDate PHP library.", mark("php", 260)) },
     { out: join(out, "mitibar.png"), w: 1280, h: 640, html: cards[2].html.replace("width: 1200px; height: 630px", "width: 1280px; height: 640px") },
     { out: join(out, "nepdate-mobile.png"), w: 1280, h: 640, html: repoCard("NepDate for Android and iOS", "Home-screen widgets and the month with tithi and holidays. Coming soon.", `<div style="display:flex;gap:40px">${mark("android", 200)}${mark("macos", 200)}</div>`) },
