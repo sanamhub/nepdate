@@ -10,6 +10,7 @@ import FontLoader from "../../../web/FontLoader.astro";
 import logo from "../../../site/src/assets/nepdate.svg";
 import favicon from "../../../site/public/favicon.svg?url";
 import skyline from "../../../site/public/footer-skyline.svg?url";
+import snow from "../../../site/public/footer-snow.svg?url";
 
 interface Props {
   title: string;
@@ -132,7 +133,7 @@ const year = new Date().getFullYear();
       <slot />
     </main>
 
-    <footer class="site-footer" style={`--skyline: url("${skyline}")`}>
+    <footer class="site-footer" style={`--skyline: url("${skyline}"); --snow: url("${snow}")`}>
       <div class="wrap footer-row">
         {
           app ? (
@@ -149,6 +150,7 @@ const year = new Date().getFullYear();
         }
       </div>
       <div class="footer-art" aria-hidden="true"></div>
+      <div class="footer-snow" aria-hidden="true"></div>
       <div class="footer-base"><div class="wrap">© {year} NepDate contributors</div></div>
     </footer>
   </body>

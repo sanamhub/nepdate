@@ -819,7 +819,8 @@
   color: var(--nd-ink);
 }
 /* The valley at the foot of the page: the Himalaya behind Nyatapola, Dharahara, Boudhanath under
-   its prayer flags, Newari houses, Krishna Mandir, a porter with his doko and a chorten, drawn in
+   its prayer flags with the Buddha in meditation beside it, Newari houses, Krishna Mandir, a porter
+   with his doko and a chorten, and the sun and moon of the flag at either end, drawn in
    one colour. The drawing (public/footer-skyline.svg) is a mask, so it takes sindoor in either
    theme, and its ground runs straight into the band that holds the copyright line. On a narrow
    screen it is drawn at 66rem and shows the middle of the valley. */
@@ -830,6 +831,19 @@
   background: var(--nd-sindoor);
   -webkit-mask: url("/footer-skyline.svg") bottom center / max(100%, 66rem) auto no-repeat;
   mask: url("/footer-skyline.svg") bottom center / max(100%, 66rem) auto no-repeat;
+}
+/* Snow on the highest peaks. The valley is a one-colour mask, so the snow is its own layer drawn
+   over it at the same size: paper white by day, moonlit and dimmer at night. */
+.footer-snow {
+  height: calc(max(100vw, 66rem) * 0.2125);
+  margin-top: calc(max(100vw, 66rem) * -0.2125);
+  background: #fff;
+  -webkit-mask: url("/footer-snow.svg") bottom center / max(100%, 66rem) auto no-repeat;
+  mask: url("/footer-snow.svg") bottom center / max(100%, 66rem) auto no-repeat;
+  pointer-events: none;
+}
+:root[data-theme="dark"] .footer-snow {
+  background: rgb(233 228 220 / 0.6);
 }
 .footer-base {
   margin-top: -1px;
