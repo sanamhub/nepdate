@@ -4,14 +4,16 @@ description: Use the header-only nepdate core and the nepdate-patro library from
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { versions } from "../../../data/ports";
+import { RELEASE_VERSION, versions } from "../../../data/ports";
 
 Bikram Sambat dates for C++20. The core is header-only with no dependencies, the `to_chars` and
 parse paths allocate nothing, and conversion is `constexpr`, so it also runs at compile time.
 `nepdate-patro` is a compiled library on top of it for tithi, public holidays and events.
 
-:::caution[Pre-release]
-This is <code>{versions.cpp}</code>, a release candidate. The API may still change before the final 0.2 release.
+:::caution[Release candidate]
+This is <code>{versions.cpp}</code>, the last release on the 0.2 line.
+<code>{RELEASE_VERSION}</code> is the release candidate on the 1.0 line, and the API is
+stable from 1.0.
 :::
 
 ## Install

@@ -4,7 +4,7 @@ description: Add io.github.sanamhub:nepdate, nepdate-patro and nepdate-serializa
 ---
 
 import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
-import { versions } from "../../../data/ports";
+import { RELEASE_VERSION, versions } from "../../../data/ports";
 
 Bikram Sambat for Kotlin, Java and Android. Neither `java.time`, ThreeTen-Extra, ICU4J nor
 `android.icu` has a Bikram Sambat calendar.
@@ -17,8 +17,10 @@ Bikram Sambat for Kotlin, Java and Android. Neither `java.time`, ThreeTen-Extra,
 
 All three run on any JVM 11 or later and on Android API 21 or later without desugaring.
 
-:::caution[Pre-release]
-This is <code>{versions.kotlin}</code>, a release candidate. The API may still change before the final 0.2 release.
+:::caution[Release candidate]
+This is <code>{versions.kotlin}</code>, the last release on the 0.2 line.
+<code>{RELEASE_VERSION}</code> is the release candidate on the 1.0 line, and the API is
+stable from 1.0.
 :::
 
 ## Install

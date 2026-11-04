@@ -3,7 +3,7 @@ title: Dart
 description: Install and use nepdate and nepdate_patro from pub.dev.
 ---
 
-import { versions } from "../../../data/ports";
+import { RELEASE_VERSION, versions } from "../../../data/ports";
 
 Bikram Sambat dates, conversion, formatting and parsing for Dart 3.6 and newer, and for Flutter on
 every platform. Pure Dart with no dependencies, including on the web.
@@ -12,9 +12,10 @@ every platform. Pure Dart with no dependencies, including on the web.
 - Tithi, public holidays and events are a separate package, `nepdate_patro`
   (`import 'package:nepdate_patro/nepdate_patro.dart'`). The core has none of that data.
 
-:::caution[Pre-release]
-This is <code>{versions.dart}</code>, the first release of the Dart port, on pub.dev. The API may
-still change before the final 0.2 release.
+:::caution[Release candidate]
+This is <code>{versions.dart}</code>, the last release on the 0.2 line, on pub.dev.
+<code>{RELEASE_VERSION}</code> is the release candidate on the 1.0 line, and the API is
+stable from 1.0.
 :::
 
 ## Install
