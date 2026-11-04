@@ -3,7 +3,7 @@ title: Versions and status
 description: Where every package stands, how versions work across the ports, and what pre-release means here.
 ---
 
-import { CSHARP_VERSION, JAVA_VERSION, MITIBAR_RELEASE, MITIBAR_VERSION, PYPI_VERSION, RELEASE_VERSION, RUBY_VERSION, versionLine, versions } from "../../../../data/ports";
+import { CSHARP_VERSION, MITIBAR_RELEASE, MITIBAR_VERSION, PYPI_VERSION, RELEASE_VERSION, RUBY_VERSION, versionLine, versions } from "../../../../data/ports";
 
 <p>
   Every SDK shares the <code>{versionLine}</code> line: a new minor releases all thirteen on the same
@@ -13,8 +13,8 @@ import { CSHARP_VERSION, JAVA_VERSION, MITIBAR_RELEASE, MITIBAR_VERSION, PYPI_VE
   <code>{PYPI_VERSION}</code> for Python, <code>{versions.php}</code> for PHP,
   <code>{versions.swift}</code> for Swift, <code>{versions.kotlin}</code> for Kotlin,
   <code>{versions.cpp}</code> for C++, <code>{versions.c}</code> for C,
-  <code>{versions.dart}</code> for Dart and <code>{versions.zig}</code> for Zig. Ruby joins at
-  <code>{RUBY_VERSION}</code> and Java at <code>{JAVA_VERSION}</code>. The API is stable from 1.0 (hub
+  <code>{versions.dart}</code> for Dart, <code>{versions.java}</code> for Java and
+  <code>{versions.zig}</code> for Zig. Ruby joins at <code>{RUBY_VERSION}</code>. The API is stable from 1.0 (hub
   ADR-0009), and each release's changelog says what changed. MitiBar has its own version line and is
   at <a href={MITIBAR_RELEASE}><code>{MITIBAR_VERSION}</code></a>. C# NepDate has its own versions and
   is at <code>{CSHARP_VERSION}</code>.
