@@ -137,12 +137,13 @@ export const benchmarks: PortBenchmark[] = [
     source: blob("nepdate-dart", "docs/benchmarks.md"),
   },
   // The comparison is the C core this package wraps, not an independent Zig library. The machine
-  // was checked idle for 30 seconds before the run (nepdate-zig docs/benchmarks.md).
+  // was sampled for 30 seconds before the run; the background load is recorded in
+  // nepdate-zig docs/benchmarks.md.
   {
     id: "zig",
     name: "Zig",
     machine: LAPTOP,
-    ops: [23.4, 15.4, 4.0, 9.0, 234.8, 110.3, 31.4, 1140.0],
+    ops: [13.9, 6.6, 1.7, 3.4, 46.4, 54.2, 9.4, 340.8],
     competitors: [],
     source: blob("nepdate-zig", "docs/benchmarks.md"),
   },
