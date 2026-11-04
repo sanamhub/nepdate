@@ -62,3 +62,11 @@
 
   color-scheme: dark;
 }
+
+/* Brand-coloured marks (LangIcon brand): the published colour on paper, the adjusted one at night. */
+.lang-icon.brand {
+  color: var(--brand-light);
+}
+:root[data-theme="dark"] .lang-icon.brand {
+  color: var(--brand-dark);
+}

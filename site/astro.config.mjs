@@ -32,7 +32,11 @@ export default defineConfig({
       head: [
         { tag: "meta", attrs: { name: "theme-color", content: "#FDFBF8", media: "(prefers-color-scheme: light)" } },
         { tag: "meta", attrs: { name: "theme-color", content: "#16120E", media: "(prefers-color-scheme: dark)" } },
-        { tag: "meta", attrs: { property: "og:image", content: "https://nepdate.com/og.png" } },
+        { tag: "meta", attrs: { property: "og:image", content: "https://nepdate.com/og-docs.png" } },
+        { tag: "meta", attrs: { property: "og:image:width", content: "1200" } },
+        { tag: "meta", attrs: { property: "og:image:height", content: "630" } },
+        { tag: "meta", attrs: { property: "og:image:alt", content: "NepDate documentation for every language" } },
+        { tag: "meta", attrs: { name: "twitter:image", content: "https://nepdate.com/og-docs.png" } },
         { tag: "meta", attrs: { name: "twitter:card", content: "summary_large_image" } },
       ],
       expressiveCode: {
