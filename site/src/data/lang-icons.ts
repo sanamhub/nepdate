@@ -36,8 +36,10 @@ export interface Mark {
   hex: string;
   /** Holes cut out with the even-odd rule (the hand-drawn marks below). */
   evenOdd?: boolean;
-  /** Drawn as a 1.8 unit line instead of filled (the Java cup). */
+  /** Drawn as a 1.8 unit line instead of filled. */
   outline?: boolean;
+  /** A mark in several fixed colours (Java), drawn instead of `path`. */
+  parts?: { d: string; fill?: string; stroke?: string }[];
 }
 
 // Simple Icons has no C# mark, so this one is drawn on the same 24 unit grid: the hexagon with the
@@ -67,12 +69,20 @@ const windows: Mark = {
   path: "M3 5.1 10.4 4v7.2H3Zm8.4-1.2L21 2.5v8.7h-9.6ZM3 12.8h7.4V20L3 18.9Zm8.4 0H21v8.7l-9.6-1.4Z",
 };
 
-// Simple Icons carries no Java cup (only the OpenJDK mascot), so this is the cup and its steam as a
-// line drawing on the same grid, in Java's orange.
+// Simple Icons carries no Java logo (only the OpenJDK mascot), so this one is drawn on the same
+// grid in the logo's manner: an orange flame of steam over a blue cup of curved lines. It keeps its
+// two colours in every theme (both read on paper and at night) and in every context.
 const java: Mark = {
   hex: "E76F00",
-  outline: true,
-  path: "M9.5 2.5c-1.5 1.5 1.5 2.5 0 4M13 3.5c-1.1 1.1 1.1 1.9 0 3M5 10h11v3.5a5.5 5.5 0 0 1-11 0ZM16 11.3h1.1a2.3 2.3 0 0 1 0 4.6H15.5M3.5 21.5h15",
+  path: "",
+  parts: [
+    { d: "M12.9 1c1.3 2.6-1.4 3.8-2 5.6-.5 1.4.4 2.6 1.4 3.6-1.6-.6-3.2-1.9-2.6-3.8.6-1.9 3.5-2.8 3.2-5.4Z", fill: "#E76F00" },
+    { d: "M15.4 4.2c-1.7 1.1-3.1 2.1-2.6 3.7.3.9 1.1 1.5.7 2.5 1-.6 1.8-1.7 1.3-2.8-.4-.9-.7-1.9.6-3.4Z", fill: "#E76F00" },
+    {
+      d: "M6.8 13.1c2.6.8 8.1.8 10-.1M7.4 15.2c2.4.7 6.6.7 8.6-.1M8.2 17.3c1.9.5 5 .5 6.9-.1M17 13.1c1.9-.7 3.1.8 1.6 2.2-.5.5-1.3.8-2.1 1M4.6 19.9c3.4 1.3 11 1.4 14.6 0M8.3 22.2c2.6.5 5.8.5 8 0",
+      stroke: "#5382A1",
+    },
+  ],
 };
 
 /** Language marks, keyed by Port.id. */

@@ -122,22 +122,157 @@ function reason(error: unknown): string {
   }
 }
 
-// The AD field's own calendar button, matching the BS picker's. It opens the browser's calendar
-// with showPicker. Firefox keeps its built-in icon (no ::-webkit-calendar-picker-indicator to
-// hide), so the button is only shown where that pseudo-element exists.
-function adCalendarButton(form: HTMLFormElement, ad: HTMLInputElement) {
+// The AD field's calendar. The browser's own date picker can't be styled, so the AD field opens a
+// month grid drawn like the BS picker's, with each day's BS date under it (the BS picker shows the
+// AD day the same way). Typing in the field still works as before. Firefox draws its own calendar
+// icon inside a date input, which can't be hidden, so there the field keeps the browser's picker.
+const AD_MIN = Date.UTC(1844, 3, 11);
+const AD_MAX = Date.UTC(2143, 3, 15);
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+const DAY = 86_400_000;
+
+function adCalendar(form: HTMLFormElement, ad: HTMLInputElement, pick: () => void) {
   const field = form.querySelector<HTMLElement>("[data-ad-field]");
   const button = form.querySelector<HTMLButtonElement>("[data-ad-button]");
-  if (!field || !button || typeof ad.showPicker !== "function") return;
+  const panel = form.querySelector<HTMLElement>("[data-ad-cal]");
+  if (!field || !button || !panel) return;
   if (!CSS.supports("selector(::-webkit-calendar-picker-indicator)")) return;
   field.classList.add("has-button");
   button.hidden = false;
-  button.addEventListener("click", () => {
-    try {
-      ad.showPicker();
-    } catch {
-      ad.focus();
+
+  // Dates are UTC midnights in milliseconds, so stepping by days never meets a time zone change.
+  const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
+  const parse = (value: string) => {
+    const [y, m, d] = value.split("-").map(Number);
+    return y && m && d ? Date.UTC(y, m - 1, d) : null;
+  };
+  const localToday = () => {
+    const now = new Date();
+    return Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  };
+  let focus = localToday();
+  let view = new Date(focus);
+
+  const control = (label: string, text: string) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = text;
+    b.setAttribute("aria-label", label);
+    return b;
+  };
+  const prev = control("Previous month", "‹");
+  const next = control("Next month", "›");
+  const month = document.createElement("select");
+  month.setAttribute("aria-label", "Month");
+  MONTHS.forEach((name, i) => month.append(new Option(name, String(i))));
+  const year = document.createElement("select");
+  year.setAttribute("aria-label", "Year");
+  for (let y = 1844; y <= 2143; y++) year.append(new Option(String(y), String(y)));
+  const head = document.createElement("div");
+  head.className = "ad-cal-head";
+  head.append(prev, month, year, next);
+  const grid = document.createElement("div");
+  grid.className = "ad-cal-grid";
+  panel.append(head, grid);
+
+  const draw = () => {
+    const y = view.getUTCFullYear();
+    const m = view.getUTCMonth();
+    month.value = String(m);
+    year.value = String(y);
+    grid.replaceChildren();
+    for (const name of ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]) {
+      const cell = document.createElement("span");
+      cell.className = "ad-cal-wd";
+      cell.textContent = name;
+      grid.append(cell);
     }
+    const offset = new Date(Date.UTC(y, m, 1)).getUTCDay();
+    for (let i = 0; i < offset; i++) grid.append(document.createElement("span"));
+    const days = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    const today = iso(localToday());
+    for (let day = 1; day <= days; day++) {
+      const t = Date.UTC(y, m, day);
+      const key = iso(t);
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.dataset.date = key;
+      cell.tabIndex = t === focus ? 0 : -1;
+      cell.disabled = t < AD_MIN || t > AD_MAX;
+      cell.setAttribute("aria-label", `${day} ${MONTHS[m]} ${y}`);
+      if (key === ad.value) cell.setAttribute("aria-pressed", "true");
+      if (key === today) cell.classList.add("today");
+      const top = document.createElement("span");
+      top.textContent = String(day);
+      const bs = document.createElement("small");
+      bs.textContent = cell.disabled ? "" : String(NepaliDate.fromGregorian({ year: y, month: m + 1, day }).day);
+      cell.append(top, bs);
+      grid.append(cell);
+    }
+  };
+  const goTo = (t: number) => {
+    if (t < AD_MIN || t > AD_MAX) return;
+    focus = t;
+    view = new Date(t);
+    draw();
+    grid.querySelector<HTMLButtonElement>(`[data-date="${iso(t)}"]`)?.focus();
+  };
+  const shift = (months: number) => {
+    view = new Date(Date.UTC(view.getUTCFullYear(), view.getUTCMonth() + months, 1));
+    draw();
+  };
+  const outside = (event: PointerEvent) => {
+    const target = event.target as Node;
+    if (!field.contains(target) && !panel.contains(target)) close(false);
+  };
+  const close = (restore: boolean) => {
+    panel.hidden = true;
+    button.setAttribute("aria-expanded", "false");
+    document.removeEventListener("pointerdown", outside);
+    if (restore) button.focus();
+  };
+  const open = () => {
+    focus = parse(ad.value) ?? localToday();
+    view = new Date(focus);
+    draw();
+    panel.hidden = false;
+    button.setAttribute("aria-expanded", "true");
+    document.addEventListener("pointerdown", outside);
+    grid.querySelector<HTMLButtonElement>('[tabindex="0"]')?.focus();
+  };
+
+  button.setAttribute("aria-haspopup", "dialog");
+  button.setAttribute("aria-expanded", "false");
+  button.addEventListener("click", () => (panel.hidden ? open() : close(true)));
+  prev.addEventListener("click", () => shift(-1));
+  next.addEventListener("click", () => shift(1));
+  month.addEventListener("change", () => {
+    view = new Date(Date.UTC(view.getUTCFullYear(), Number(month.value), 1));
+    draw();
+  });
+  year.addEventListener("change", () => {
+    view = new Date(Date.UTC(Number(year.value), view.getUTCMonth(), 1));
+    draw();
+  });
+  grid.addEventListener("click", (event) => {
+    const cell = (event.target as HTMLElement).closest<HTMLButtonElement>("button[data-date]");
+    if (!cell || cell.disabled) return;
+    ad.value = cell.dataset.date!;
+    pick();
+    close(true);
+  });
+  panel.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") return close(true);
+    const cell = (event.target as HTMLElement).closest<HTMLButtonElement>("button[data-date]");
+    if (!cell) return;
+    const steps: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+    const step = steps[event.key];
+    if (step === undefined) return;
+    event.preventDefault();
+    goTo(parse(cell.dataset.date!)! + step * DAY);
   });
 }
 
@@ -149,7 +284,6 @@ function converter(form: HTMLFormElement) {
   const dayOut = form.querySelector<HTMLElement>("[data-day-info]");
   if (!bs || !ad || !bsOut || !adOut || !dayOut) return;
   form.addEventListener("submit", (event) => event.preventDefault());
-  adCalendarButton(form, ad);
 
   const render = (out: HTMLElement, lines: [string, string?], error = false) => {
     out.classList.toggle("error", error);
@@ -214,6 +348,7 @@ function converter(form: HTMLFormElement) {
 
   bs.addEventListener("change", fromBs);
   ad.addEventListener("input", fromAd);
+  adCalendar(form, ad, fromAd);
   // The page may have been built days ago: start from the visitor's own today.
   bs.date = NepaliDate.today();
   fromBs();

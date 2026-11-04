@@ -3,8 +3,14 @@
 import type { APIRoute } from "astro";
 import { linkIcons, marks, type Mark } from "../data/lang-icons";
 
+const part = (p: NonNullable<Mark["parts"]>[number]) =>
+  p.stroke
+    ? `<path fill="none" stroke="${p.stroke}" stroke-width="1.4" stroke-linecap="round" d="${p.d}"/>`
+    : `<path fill="${p.fill}" d="${p.d}"/>`;
 const filled = ([id, mark]: [string, Mark]) =>
-  mark.outline
+  mark.parts
+    ? `<symbol id="${id}" viewBox="0 0 24 24">${mark.parts.map(part).join("")}</symbol>`
+    : mark.outline
     ? outlined([id, mark.path])
     : `<symbol id="${id}" viewBox="0 0 24 24"><path fill="currentColor"${mark.evenOdd ? ' fill-rule="evenodd"' : ""} d="${mark.path}"/></symbol>`;
 const outlined = ([id, path]: [string, string]) =>

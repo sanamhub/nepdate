@@ -1777,3 +1777,32 @@ button {
 .leaf-month {
   display: block;
 }
+
+/* The rail's last block: the NepDate apps and libraries, two quiet links under the holidays. */
+.more {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--nd-hairline);
+}
+.more .rail-title {
+  margin-bottom: 0.35rem;
+}
+.more a {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: var(--nd-radius-m);
+  color: var(--nd-ink);
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+.more a:hover {
+  background: var(--nd-raised);
+}
+.more img {
+  flex: none;
+  border-radius: 7px;
+}

@@ -103,7 +103,7 @@ const title = "NepDate: fast Nepali dates for every language you ship";
 const languageList = new Intl.ListFormat("en", { type: "conjunction" }).format(ports.map((port) => port.name));
 const description = `Bikram Sambat (BS) date libraries for ${languageList}, built from one dataset and one spec so every language gives the same answer. Plus MitiBar, a Nepali calendar for your desktop, and a free online patro.`;
 
-// The strip under the hero: every language, then where the apps run. Two copies scroll as one loop.
+// The strip near the end of the page: every language, then where the apps run. Two copies scroll as one loop.
 const strip = [
   ...ports.map((port) => ({ id: port.id, label: port.name })),
   { id: "windows", label: "Windows" },
@@ -227,31 +227,6 @@ const jsonLd = {
   </section>
 
   <link rel="stylesheet" href={sectionsCss} />
-  <section class="strip" aria-label="Languages and platforms">
-    <div class="strip-track">
-      {
-        [0, 1].map((copy) => (
-          <ul class="strip-run" aria-hidden={copy === 1 ? "true" : undefined}>
-            {strip.map((item) => (
-              <li>
-                <LangIcon id={item.id} size={22} brand />
-                {item.label}
-              </li>
-            ))}
-            <li>
-              <img src={nepdateMark.src} width="22" height="22" alt="" />
-              Patro
-            </li>
-            <li>
-              <img src={mitibarIcon.src} width="22" height="22" alt="" />
-              MitiBar
-            </li>
-          </ul>
-        ))
-      }
-    </div>
-  </section>
-
   <section class="section" id="languages" aria-labelledby="languages-title">
     <div class="wrap">
       <div class="section-head">
@@ -440,6 +415,7 @@ const jsonLd = {
                 ></path></svg
               >
             </button>
+            <div class="ad-cal" role="dialog" aria-label="Choose an AD date" hidden data-ad-cal></div>
           </div>
           <p class="result" aria-live="polite" data-ad-result></p>
         </div>
@@ -563,15 +539,13 @@ const jsonLd = {
         </p>
         <div class="actions">
           <a class="button primary" href="/mitibar/">Get MitiBar</a>
-        </div>
-        <p class="note os-note">
-          <span class="os-marks" aria-hidden="true">
-            <LangIcon id="windows" size={16} brand />
-            <LangIcon id="macos" size={16} brand />
-            <LangIcon id="linux" size={16} brand />
+          <span class="os-marks" role="img" aria-label="Windows, macOS and Linux">
+            <LangIcon id="windows" size={20} brand />
+            <LangIcon id="macos" size={20} brand />
+            <LangIcon id="linux" size={20} brand />
           </span>
-          Windows, macOS and Linux. Not code-signed yet; the release notes say how to open and verify it.
-        </p>
+        </div>
+        <p class="note">Free for Windows, macOS and Linux. Not code-signed yet; the release notes say how to open and verify it.</p>
         <div class="phone">
           <h3>
             <span class="os-marks" aria-hidden="true">
@@ -586,6 +560,31 @@ const jsonLd = {
           </p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="strip" aria-label="Languages and platforms">
+    <div class="strip-track">
+      {
+        [0, 1].map((copy) => (
+          <ul class="strip-run" aria-hidden={copy === 1 ? "true" : undefined}>
+            {strip.map((item) => (
+              <li>
+                <LangIcon id={item.id} size={22} brand />
+                {item.label}
+              </li>
+            ))}
+            <li>
+              <img src={nepdateMark.src} width="22" height="22" alt="" />
+              Patro
+            </li>
+            <li>
+              <img src={mitibarIcon.src} width="22" height="22" alt="" />
+              MitiBar
+            </li>
+          </ul>
+        ))
+      }
     </div>
   </section>
 

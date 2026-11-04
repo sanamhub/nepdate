@@ -32,6 +32,14 @@ const deva = (n: number) => String(n).replace(/\d/g, (d) => "०१२३४५�
 const mark = (id: string, size: number, colour = true) => {
   const m = marks[id];
   const fill = colour ? brandColours(m.hex).light.replace("var(--nd-ink)", "#211c17") : "currentColor";
+  if (m.parts) {
+    const parts = m.parts
+      .map((p) => (p.stroke
+        ? `<path fill="none" stroke="${p.stroke}" stroke-width="1.4" stroke-linecap="round" d="${p.d}"/>`
+        : `<path fill="${p.fill}" d="${p.d}"/>`))
+      .join("");
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24">${parts}</svg>`;
+  }
   const paint = m.outline
     ? `fill="none" stroke="${fill}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"`
     : `fill="${fill}"${m.evenOdd ? ' fill-rule="evenodd"' : ""}`;

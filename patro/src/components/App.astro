@@ -6,6 +6,8 @@
 // lib/render.ts, so the built page and the live one are the same markup.
 import { NepaliDate } from "nepdate-core";
 import { T } from "../lib/i18n";
+import mitibarIcon from "../assets/mitibar-icon.png";
+import nepdateMark from "../assets/nepdate.svg";
 import { day, monthDays, pad } from "../lib/patro";
 import { adSpan, dayCard, monthDetails, monthGrid, monthTitle, moonBand, upcomingList } from "../lib/render";
 
@@ -87,6 +89,17 @@ const options = { todayAd: `${today.ad.year}-${pad(today.ad.month)}-${pad(today.
     <section class="upcoming" aria-labelledby="upcoming-title">
       <h2 id="upcoming-title" class="rail-title" data-t="upcoming">{t.upcoming}</h2>
       <ol data-upcoming set:html={upcomingList(today, "ne")} />
+      <nav class="more" aria-labelledby="more-title">
+        <h2 id="more-title" class="rail-title" data-t="more">{t.more}</h2>
+        <a href="https://nepdate.com/mitibar/">
+          <img src={mitibarIcon.src} width="28" height="28" alt="" loading="lazy" />
+          <span data-t="moreMitibar">{t.moreMitibar}</span>
+        </a>
+        <a href="https://nepdate.com/">
+          <img src={nepdateMark.src} width="28" height="28" alt="" loading="lazy" />
+          <span data-t="moreLibs">{t.moreLibs}</span>
+        </a>
+      </nav>
     </section>
   </aside>
 </div>

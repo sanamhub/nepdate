@@ -62,13 +62,13 @@
   font-weight: 600;
 }
 
-/* The strip under the hero: every language mark and every platform, scrolling slowly as one loop
+/* The strip before the closing line: every language mark, platform and app, scrolling slowly as one loop
    so the whole family is seen without a click. It pauses under the pointer, and with reduced
    motion it stops and wraps into rows instead. */
 
 .strip {
-  border-bottom: 1px solid var(--nd-hairline);
-  padding-block: 1.1rem;
+  border-block: 1px solid var(--nd-hairline);
+  padding-block: 1.4rem;
   overflow: hidden;
   mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
@@ -1239,16 +1239,14 @@
   align-self: flex-start;
 }
 
-.os-note {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
 .os-marks {
   display: inline-flex;
-  gap: 0.45rem;
+  align-items: center;
+  gap: 0.6rem;
   flex: none;
-  padding-top: 0.15rem;
+}
+.actions .os-marks {
+  margin-left: 0.5rem;
 }
 .phone {
   margin-top: 2.5rem;
@@ -1275,4 +1273,114 @@
   color: var(--nd-slate);
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+/* The AD calendar (scripts/landing.ts), drawn like the BS picker's popover: the AD day large and
+   its BS day small under it, the chosen day in slate and today ringed. */
+.ad-field {
+  position: relative;
+}
+.ad-cal {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  width: min(19rem, calc(100vw - 2rem));
+  padding: 0.75rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-l);
+  background: var(--nd-raised);
+  box-shadow: var(--nd-shadow);
+}
+.ad-cal[hidden] {
+  display: none;
+}
+.ad-cal-head {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+.ad-cal-head button {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: var(--nd-radius-s);
+  background: none;
+  color: var(--nd-ink);
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+.ad-cal-head button:hover {
+  background: var(--nd-sunken);
+}
+.ad-cal-head select {
+  flex: 1;
+  min-width: 0;
+  height: 2rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-s);
+  background: var(--nd-raised);
+  color: var(--nd-ink);
+  font: inherit;
+  font-size: 0.85rem;
+}
+.ad-cal-head select + select {
+  flex: 0 0 4.75rem;
+}
+.ad-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+.ad-cal-wd {
+  padding: 0.25rem 0;
+  color: var(--nd-ink-muted);
+  font-size: 0.68rem;
+  text-align: center;
+}
+.ad-cal-grid button {
+  display: grid;
+  justify-items: center;
+  padding: 0.25rem 0 0.2rem;
+  border: 0;
+  border-radius: var(--nd-radius-s);
+  background: none;
+  color: var(--nd-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.ad-cal-grid button span {
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+.ad-cal-grid button small {
+  color: var(--nd-ink-muted);
+  font-size: 0.6rem;
+  line-height: 1.1;
+}
+.ad-cal-grid button:hover {
+  background: var(--nd-sunken);
+}
+.ad-cal-grid button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.ad-cal-grid button.today {
+  box-shadow: inset 0 0 0 1px var(--nd-slate);
+}
+.ad-cal-grid button[aria-pressed="true"] {
+  background: var(--nd-slate);
+  color: var(--nd-raised);
+  font-weight: 700;
+}
+.ad-cal-grid button[aria-pressed="true"] small {
+  color: inherit;
+  opacity: 0.85;
+}
+.ad-cal-grid button:focus-visible {
+  outline: 2px solid var(--nd-slate);
+  outline-offset: 1px;
 }
