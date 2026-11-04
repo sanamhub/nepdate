@@ -154,6 +154,20 @@
       "packages": ["io.github.sanamhub:nepdate-java", "io.github.sanamhub:nepdate-java-patro"],
       "managers": ["gradle", "maven"],
       "install": "implementation(\"io.github.sanamhub:nepdate-java:1.0.0-rc.1\")"
+    },
+    {
+      "id": "ruby",
+      "name": "Ruby",
+      "repository": "sanamhub/nepdate-ruby",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "RubyGems",
+        "url": "https://rubygems.org/gems/nepdate"
+      },
+      "package": "nepdate",
+      "packages": ["nepdate", "nepdate-patro"],
+      "managers": ["rubygems", "bundler"],
+      "install": "gem install nepdate -v 1.0.0.rc.1"
     }
   ]
 }

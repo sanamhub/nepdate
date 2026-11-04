@@ -144,6 +144,17 @@ export const benchmarks: PortBenchmark[] = [
     competitors: [{ name: "nepali_utils", b1: 33526.7, b2: 79675.04, agrees: 31 }],
     source: blob("nepdate-dart", "docs/benchmarks.md"),
   },
+  // Preliminary: measured on the reference laptop while other work was running on it (CPU load
+  // 17.0% before and 19.1% after), so the quiet rerun in the sweep replaces these figures. No
+  // RubyGems candidate passes BENCHMARK.md section 7, so the competitor list is empty.
+  {
+    id: "ruby",
+    name: "Ruby",
+    machine: `${LAPTOP}, Ruby 3.4`,
+    ops: [575.2, 531.8, 630.0, 478.1, 506.1, 1430.8, 123.0, 17828.8],
+    competitors: [],
+    source: blob("nepdate-ruby", "docs/benchmarks.md"),
+  },
 ];
 
 /** C# NepDate 2.0.7 on .NET 10, the original every port is compared with. `ops` is the hub's

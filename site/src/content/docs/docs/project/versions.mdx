@@ -3,18 +3,20 @@ title: Versions and status
 description: Where every package stands, how versions work across the ports, and what pre-release means here.
 ---
 
-import { CSHARP_VERSION, MITIBAR_RELEASE, MITIBAR_VERSION, PYPI_VERSION, versionLine, versions } from "../../../../data/ports";
+import { CSHARP_VERSION, MITIBAR_RELEASE, MITIBAR_VERSION, PYPI_VERSION, RUBY_VERSION, versionLine, versions } from "../../../../data/ports";
 
 <p>
-  Every SDK shares the <code>{versionLine}</code> line: a new minor releases all ten on the same
+  Every released SDK shares the <code>{versionLine}</code> line: a new minor releases all ten on the same
   day, while a fix can ship as a patch of one port. <code>{versions.dart}</code> is the release for this
   line; each entry below names the version its registry serves and moves once that release is
   published. That is <code>{versions.rust}</code> for Rust, <code>{versions.go}</code> for Go,
   <code>{versions.typescript}</code> for TypeScript, <code>{PYPI_VERSION}</code> for Python,
   <code>{versions.php}</code> for PHP, <code>{versions.swift}</code> for Swift,
   <code>{versions.kotlin}</code> for Kotlin, <code>{versions.cpp}</code> for C++,
-  <code>{versions.c}</code> for C and <code>{versions.dart}</code> for Dart. The API can still change
-  before the final 0.2 release, and each release's changelog says what changed. MitiBar has its own
+  <code>{versions.c}</code> for C and <code>{versions.dart}</code> for Dart. Ruby is built at
+  <code>{RUBY_VERSION}</code> for the 1.0 release and has no <code>{versionLine}</code> entry until
+  then. The API can still change before the final 0.2 release, and each release's changelog says
+  what changed. MitiBar has its own
   version line and is at <a href={MITIBAR_RELEASE}><code>{MITIBAR_VERSION}</code></a>. C# NepDate has
   its own versions and is at <code>{CSHARP_VERSION}</code>.
 </p>
@@ -48,6 +50,7 @@ files.
 | TypeScript | [npmjs.com/package/nepdate-core](https://www.npmjs.com/package/nepdate-core?activeTab=versions) |
 | Python | [pypi.org/project/nepdate-core](https://pypi.org/project/nepdate-core/#history) |
 | PHP | [packagist.org/packages/sanamhub/nepdate](https://packagist.org/packages/sanamhub/nepdate) |
+| Ruby | [rubygems.org/gems/nepdate](https://rubygems.org/gems/nepdate) |
 | Swift | [GitHub releases](https://github.com/sanamhub/nepdate-swift/releases) |
 | Kotlin and Java | [Maven Central](https://central.sonatype.com/artifact/io.github.sanamhub/nepdate/versions) |
 | C++ | [GitHub releases](https://github.com/sanamhub/nepdate-cpp/releases) |

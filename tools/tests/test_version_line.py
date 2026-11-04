@@ -105,6 +105,26 @@ class SpellingTest(unittest.TestCase):
         with self.assertRaisesRegex(version_line.VersionError, 'allowed pre-release'):
             version_line.check_sdk(DOCUMENT, 'rust', '0.1.0b1')
 
+    def test_ruby_accepts_the_rubygems_spelling(self):
+        self.assertEqual(version_line.check_sdk(DOCUMENT, 'ruby', '0.1.0.rc.1'), '0.1.0-rc.1')
+        self.assertEqual(version_line.check_sdk(DOCUMENT, 'ruby', '0.1.0'), '0.1.0')
+
+    def test_ruby_still_accepts_the_semver_spelling(self):
+        self.assertEqual(version_line.check_sdk(DOCUMENT, 'ruby', '0.1.0-rc.1'), '0.1.0-rc.1')
+
+    def test_the_ruby_mapping_goes_both_ways(self):
+        for semver, rubygems in (
+            ('0.1.0-beta.1', '0.1.0.beta.1'),
+            ('0.1.0-rc.1', '0.1.0.rc.1'),
+            ('0.1.0', '0.1.0'),
+        ):
+            self.assertEqual(version_line.semver_spelling('ruby', rubygems), semver)
+            self.assertEqual(version_line.rubygems_spelling(semver), rubygems)
+
+    def test_another_registry_does_not_accept_the_rubygems_spelling(self):
+        with self.assertRaisesRegex(version_line.VersionError, 'allowed pre-release'):
+            version_line.check_sdk(DOCUMENT, 'rust', '0.1.0.rc.1')
+
 
 class CommandLineTest(unittest.TestCase):
     def run_tool(self, *args):
@@ -127,6 +147,12 @@ class CommandLineTest(unittest.TestCase):
         code, out, _ = self.run_tool('--sdk', 'python', '--version', '0.2.0rc1')
         self.assertEqual(code, 0)
         self.assertIn('0.2.0-rc.1', out)
+
+    def test_the_ruby_spelling_passes_the_command(self):
+        code, out, _ = self.run_tool('--sdk', 'ruby', '--version', '1.0.0.rc.1')
+        self.assertEqual(code, 0)
+        self.assertIn('1.0.0-rc.1', out)
+        self.assertIn('ahead of the 0.2 line', out)
 
     def test_an_unreleased_port_on_a_later_line_passes_the_command(self):
         code, out, _ = self.run_tool('--sdk', 'java', '--version', '1.0.0-rc.1')
