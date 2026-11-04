@@ -1,3 +1,6 @@
 tools/*/bin/
 tools/*/obj/
 __pycache__/
+
+# GitHub social previews, made by site/scripts/og.mts --github
+assets/social/
