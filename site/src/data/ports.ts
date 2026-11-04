@@ -81,6 +81,8 @@ export interface Port {
 
 const gh = (repo: string) => `https://github.com/sanamhub/${repo}`;
 
+// The order every list on the site and in the docs follows: C# first as the original, then by how
+// widely each language is used in Nepal (web and enterprise, then mobile, then systems).
 export const ports: Port[] = [
   {
     id: "csharp",
@@ -102,46 +104,6 @@ Console.WriteLine(date.EnglishDate.ToString("yyyy-MM-dd"));
 // Shrawan 15, 2081
 Console.WriteLine(date.ToLongDateString());`,
     upstream: { href: "https://github.com/RajuPrasai/NepDate", docs: "https://nepdate.rajuprasai.com.np/" },
-  },
-  {
-    id: "rust",
-    name: "Rust",
-    lang: "rust",
-    repo: "nepdate-rust",
-    core: "nepdate",
-    patro: "nepdate-patro",
-    install: `cargo add nepdate@=${versions.rust}`,
-    patroInstall: `cargo add nepdate-patro@=${versions.rust}`,
-    installLang: "sh",
-    registry: { label: "crates.io", href: "https://crates.io/crates/nepdate" },
-    api: { label: "docs.rs", href: "https://docs.rs/nepdate" },
-    sample: `use nepdate::{Lang, LongDate, NepaliDate};
-
-let date = NepaliDate::new(2081, 4, 15)?;
-let ad = date.to_gregorian(); // 2024-07-30
-// Shrawan 15, 2081
-println!("{}", date.long(LongDate::default(), Lang::En));`,
-  },
-  {
-    id: "go",
-    name: "Go",
-    lang: "go",
-    repo: "nepdate-go",
-    core: "github.com/sanamhub/nepdate-go",
-    patro: "github.com/sanamhub/nepdate-go/patro",
-    install: `go get github.com/sanamhub/nepdate-go@v${versions.go}`,
-    patroInstall: `import "github.com/sanamhub/nepdate-go/patro"`,
-    installLang: "sh",
-    registry: { label: "pkg.go.dev", href: "https://pkg.go.dev/github.com/sanamhub/nepdate-go" },
-    api: { label: "pkg.go.dev", href: "https://pkg.go.dev/github.com/sanamhub/nepdate-go" },
-    sample: `d, err := nepdate.New(2081, nepdate.Shrawan, 15)
-if err != nil {
-	log.Fatal(err)
-}
-y, m, day := d.Gregorian()
-fmt.Println(y, int(m), day) // 2024 7 30
-// Shrawan 15, 2081
-fmt.Println(d.Format("MMMM d, yyyy", nepdate.English))`,
   },
   {
     id: "typescript",
@@ -198,41 +160,40 @@ $date->toLongString();                // 'Shrawan 15, 2081'
 $date->isoformat();                   // '2081-04-15'`,
   },
   {
-    id: "ruby",
-    name: "Ruby",
-    lang: "ruby",
-    repo: "nepdate-ruby",
-    core: "nepdate",
-    patro: "nepdate-patro",
-    install: `gem install nepdate -v ${RUBYGEMS_VERSION}`,
-    patroInstall: `gem install nepdate-patro -v ${RUBYGEMS_VERSION}`,
-    installLang: "sh",
-    registry: { label: "RubyGems", href: "https://rubygems.org/gems/nepdate" },
-    api: { label: "API.md", href: `${gh("nepdate-ruby")}/blob/main/docs/API.md` },
-    sample: `require "nepdate"
+    id: "java",
+    name: "Java",
+    lang: "java",
+    repo: "nepdate-java",
+    core: "io.github.sanamhub:nepdate-java",
+    patro: "io.github.sanamhub:nepdate-java-patro",
+    install: `implementation("io.github.sanamhub:nepdate-java:${JAVA_VERSION}")`,
+    patroInstall: `implementation("io.github.sanamhub:nepdate-java-patro:${JAVA_VERSION}")`,
+    installLang: "kotlin",
+    registry: { label: "Maven Central", href: "https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-java" },
+    api: { label: "API.md", href: `${gh("nepdate-java")}/blob/main/docs/API.md` },
+    sample: `import io.github.sanamhub.nepdate.java.NepaliDate;
 
-date = NepDate::Date.from_bs(2081, 4, 15)
-date.to_date.iso8601;                 # "2024-07-30"
-date.to_long_string(weekday: true);   # "Tuesday, Shrawan 15, 2081"
-date.iso8601;                         # "2081-04-15"`,
+NepaliDate date = NepaliDate.of(2081, 4, 15);
+date.toLocalDate();   // 2024-07-30
+date.toLongString();  // "Shrawan 15, 2081"`,
   },
   {
-    id: "swift",
-    name: "Swift",
-    lang: "swift",
-    repo: "nepdate-swift",
-    core: "NepDate",
-    patro: "NepDatePatro",
-    install: `.package(url: "https://github.com/sanamhub/nepdate-swift", exact: "${versions.swift}")`,
-    patroInstall: `.product(name: "NepDatePatro", package: "nepdate-swift")`,
-    installLang: "swift",
-    registry: { label: "Swift Package Index", href: "https://swiftpackageindex.com/sanamhub/nepdate-swift" },
-    api: { label: "API.md", href: `${gh("nepdate-swift")}/blob/main/docs/API.md` },
-    sample: `import NepDate
+    id: "dart",
+    name: "Dart",
+    lang: "dart",
+    repo: "nepdate-dart",
+    core: "nepdate",
+    patro: "nepdate_patro",
+    install: `dart pub add nepdate:${versions.dart}`,
+    patroInstall: `dart pub add nepdate_patro:${versions.dart}`,
+    installLang: "sh",
+    registry: { label: "pub.dev", href: "https://pub.dev/packages/nepdate" },
+    api: { label: "API.md", href: `${gh("nepdate-dart")}/blob/main/docs/API.md` },
+    sample: `import 'package:nepdate/nepdate.dart';
 
-let date = try NepaliDate(year: 2081, month: 4, day: 15)
-print(date.gregorian) // (year: 2024, month: 7, day: 30)
-print(date.long())    // Shrawan 15, 2081`,
+final date = NepaliDate.fromBs(2081, 4, 15);
+date.toDateTime();          // 2024-07-30 00:00:00.000Z
+date.toLongString();        // "Shrawan 15, 2081"`,
   },
   {
     id: "kotlin",
@@ -253,22 +214,43 @@ val d = date.gregorianDay    // 30
 println(date.toLongString()) // Shrawan 15, 2081`,
   },
   {
-    id: "java",
-    name: "Java",
-    lang: "java",
-    repo: "nepdate-java",
-    core: "io.github.sanamhub:nepdate-java",
-    patro: "io.github.sanamhub:nepdate-java-patro",
-    install: `implementation("io.github.sanamhub:nepdate-java:${JAVA_VERSION}")`,
-    patroInstall: `implementation("io.github.sanamhub:nepdate-java-patro:${JAVA_VERSION}")`,
-    installLang: "kotlin",
-    registry: { label: "Maven Central", href: "https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-java" },
-    api: { label: "API.md", href: `${gh("nepdate-java")}/blob/main/docs/API.md` },
-    sample: `import io.github.sanamhub.nepdate.java.NepaliDate;
+    id: "go",
+    name: "Go",
+    lang: "go",
+    repo: "nepdate-go",
+    core: "github.com/sanamhub/nepdate-go",
+    patro: "github.com/sanamhub/nepdate-go/patro",
+    install: `go get github.com/sanamhub/nepdate-go@v${versions.go}`,
+    patroInstall: `import "github.com/sanamhub/nepdate-go/patro"`,
+    installLang: "sh",
+    registry: { label: "pkg.go.dev", href: "https://pkg.go.dev/github.com/sanamhub/nepdate-go" },
+    api: { label: "pkg.go.dev", href: "https://pkg.go.dev/github.com/sanamhub/nepdate-go" },
+    sample: `d, err := nepdate.New(2081, nepdate.Shrawan, 15)
+if err != nil {
+	log.Fatal(err)
+}
+y, m, day := d.Gregorian()
+fmt.Println(y, int(m), day) // 2024 7 30
+// Shrawan 15, 2081
+fmt.Println(d.Format("MMMM d, yyyy", nepdate.English))`,
+  },
+  {
+    id: "swift",
+    name: "Swift",
+    lang: "swift",
+    repo: "nepdate-swift",
+    core: "NepDate",
+    patro: "NepDatePatro",
+    install: `.package(url: "https://github.com/sanamhub/nepdate-swift", exact: "${versions.swift}")`,
+    patroInstall: `.product(name: "NepDatePatro", package: "nepdate-swift")`,
+    installLang: "swift",
+    registry: { label: "Swift Package Index", href: "https://swiftpackageindex.com/sanamhub/nepdate-swift" },
+    api: { label: "API.md", href: `${gh("nepdate-swift")}/blob/main/docs/API.md` },
+    sample: `import NepDate
 
-NepaliDate date = NepaliDate.of(2081, 4, 15);
-date.toLocalDate();   // 2024-07-30
-date.toLongString();  // "Shrawan 15, 2081"`,
+let date = try NepaliDate(year: 2081, month: 4, day: 15)
+print(date.gregorian) // (year: 2024, month: 7, day: 30)
+print(date.long())    // Shrawan 15, 2081`,
   },
   {
     id: "cpp",
@@ -308,22 +290,42 @@ nepdate_from_bs(2081, 4, 15, &d);
 nepdate_to_ad(d, &ad);                   // 2024-07-30`,
   },
   {
-    id: "dart",
-    name: "Dart",
-    lang: "dart",
-    repo: "nepdate-dart",
+    id: "rust",
+    name: "Rust",
+    lang: "rust",
+    repo: "nepdate-rust",
     core: "nepdate",
-    patro: "nepdate_patro",
-    install: `dart pub add nepdate:${versions.dart}`,
-    patroInstall: `dart pub add nepdate_patro:${versions.dart}`,
+    patro: "nepdate-patro",
+    install: `cargo add nepdate@=${versions.rust}`,
+    patroInstall: `cargo add nepdate-patro@=${versions.rust}`,
     installLang: "sh",
-    registry: { label: "pub.dev", href: "https://pub.dev/packages/nepdate" },
-    api: { label: "API.md", href: `${gh("nepdate-dart")}/blob/main/docs/API.md` },
-    sample: `import 'package:nepdate/nepdate.dart';
+    registry: { label: "crates.io", href: "https://crates.io/crates/nepdate" },
+    api: { label: "docs.rs", href: "https://docs.rs/nepdate" },
+    sample: `use nepdate::{Lang, LongDate, NepaliDate};
 
-final date = NepaliDate.fromBs(2081, 4, 15);
-date.toDateTime();          // 2024-07-30 00:00:00.000Z
-date.toLongString();        // "Shrawan 15, 2081"`,
+let date = NepaliDate::new(2081, 4, 15)?;
+let ad = date.to_gregorian(); // 2024-07-30
+// Shrawan 15, 2081
+println!("{}", date.long(LongDate::default(), Lang::En));`,
+  },
+  {
+    id: "ruby",
+    name: "Ruby",
+    lang: "ruby",
+    repo: "nepdate-ruby",
+    core: "nepdate",
+    patro: "nepdate-patro",
+    install: `gem install nepdate -v ${RUBYGEMS_VERSION}`,
+    patroInstall: `gem install nepdate-patro -v ${RUBYGEMS_VERSION}`,
+    installLang: "sh",
+    registry: { label: "RubyGems", href: "https://rubygems.org/gems/nepdate" },
+    api: { label: "API.md", href: `${gh("nepdate-ruby")}/blob/main/docs/API.md` },
+    sample: `require "nepdate"
+
+date = NepDate::Date.from_bs(2081, 4, 15)
+date.to_date.iso8601;                 # "2024-07-30"
+date.to_long_string(weekday: true);   # "Tuesday, Shrawan 15, 2081"
+date.iso8601;                         # "2081-04-15"`,
   },
   {
     id: "zig",

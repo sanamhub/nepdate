@@ -88,18 +88,18 @@ const java: Mark = {
 /** Language marks, keyed by Port.id. */
 export const langIcons: Record<string, Mark> = {
   csharp,
-  rust: siRust,
-  go: siGo,
   typescript: siTypescript,
   python: siPython,
   php: siPhp,
-  ruby: siRuby,
-  swift: siSwift,
-  kotlin: siKotlin,
   java,
+  dart: siDart,
+  kotlin: siKotlin,
+  go: siGo,
+  swift: siSwift,
   cpp: siCplusplus,
   c: siC,
-  dart: siDart,
+  rust: siRust,
+  ruby: siRuby,
   zig: siZig,
 };
 
