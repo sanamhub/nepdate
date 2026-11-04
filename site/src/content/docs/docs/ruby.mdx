@@ -4,7 +4,7 @@ description: Install and use the nepdate and nepdate-patro gems from RubyGems.
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { RUBY_VERSION } from "../../../data/ports";
+import { RUBYGEMS_VERSION, RUBY_VERSION } from "../../../data/ports";
 
 Bikram Sambat dates, conversion, formatting and parsing for Ruby 3.4 and newer. Pure Ruby, no native
 extension and no runtime dependency; tested on Linux, macOS and Windows with Ruby 3.4, Ruby 4.0 and
@@ -24,8 +24,11 @@ The API may still change before the final 1.0 release.
 
 ## Install
 
-<Code lang="sh" code={`gem install nepdate -v ${RUBY_VERSION}
-gem install nepdate-patro -v ${RUBY_VERSION}`} />
+<Code lang="sh" code={`gem install nepdate -v ${RUBYGEMS_VERSION}
+gem install nepdate-patro -v ${RUBYGEMS_VERSION}`} />
+
+RubyGems spells this candidate <code>{RUBYGEMS_VERSION}</code>; the tag and changelog keep the
+family spelling <code>{RUBY_VERSION}</code>.
 
 ```ruby
 require "nepdate"

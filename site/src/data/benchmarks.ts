@@ -142,8 +142,8 @@ export const benchmarks: PortBenchmark[] = [
   {
     id: "ruby",
     name: "Ruby",
-    machine: `${LAPTOP}, Ruby 3.4 (preliminary)`,
-    ops: [506.4, 2359.4, 2025.4, 1478.4, 3560.0, 3199.6, 2838.5, 151507.2],
+    machine: `${LAPTOP}, Ruby 3.4`,
+    ops: [575.2, 531.8, 630.0, 478.1, 506.1, 1430.8, 123.0, 17828.8],
     competitors: [],
     source: blob("nepdate-ruby", "docs/benchmarks.md"),
   },

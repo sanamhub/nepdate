@@ -18,11 +18,23 @@ export type Sdk = keyof typeof versions;
 export const PYPI_VERSION = pep440(versions.python);
 /** The Ruby port has no `sdks` entry until its first release (hub ADR-0008). */
 export const RUBY_VERSION = "1.0.0-rc.1";
+/**
+ * The same version as RubyGems spells it (the Ruby convention): 1.0.0-rc.1 is 1.0.0.rc.1.
+ * The tag, changelog and displayed family version keep the hyphen, but the install line must use
+ * the version the registry serves. This is the site's copy of tools/version_line.py.
+ */
+export const RUBYGEMS_VERSION = rubygems(RUBY_VERSION);
 
 function pep440(version: string): string {
   const found = /^(.*)-(beta|rc)\.(\d+)$/.exec(version);
   if (!found) return version;
   return `${found[1]}${found[2] === "beta" ? "b" : "rc"}${found[3]}`;
+}
+
+function rubygems(version: string): string {
+  const found = /^(.*)-(beta|rc)\.(\d+)$/.exec(version);
+  if (!found) return version;
+  return `${found[1]}.${found[2]}.${found[3]}`;
 }
 
 /** The date picker is a UI component outside the SDK line and keeps its own version (ADR-0007 decision 6). */
@@ -189,8 +201,8 @@ $date->isoformat();                   // '2081-04-15'`,
     repo: "nepdate-ruby",
     core: "nepdate",
     patro: "nepdate-patro",
-    install: `gem install nepdate -v ${RUBY_VERSION}`,
-    patroInstall: `gem install nepdate-patro -v ${RUBY_VERSION}`,
+    install: `gem install nepdate -v ${RUBYGEMS_VERSION}`,
+    patroInstall: `gem install nepdate-patro -v ${RUBYGEMS_VERSION}`,
     installLang: "sh",
     registry: { label: "RubyGems", href: "https://rubygems.org/gems/nepdate" },
     api: { label: "API.md", href: `${gh("nepdate-ruby")}/blob/main/docs/API.md` },
