@@ -9,7 +9,7 @@
   <a href="https://github.com/sanamhub/nepdate/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT"></a>
 </p>
 
-Bikram Sambat (the Nepali calendar) for twelve libraries, and the shared data and specification
+Bikram Sambat (the Nepali calendar) for eleven libraries, and the shared data and specification
 behind them. Every library converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD
 1844-04-11 to 2143-04-15), gives the same answer as the others, and checks that against the same
 test vectors. This repository holds no library code: it has what must be identical in every
@@ -25,9 +25,8 @@ informational, not an official calendar.
 Every port ships two packages, one version: the core (conversion, arithmetic, formatting, parsing)
 and the patro (पात्रो: tithi, holidays, events), so an app that only converts dates carries no
 almanac data ([ADR-0004](docs/adr/0004-patro-in-a-separate-package.md)). The first public line was
-`0.1.0-rc.1`. The current line is `1.0.0-rc.1`; a port's table entry shows the version its registry
-serves, so the ports released on `0.2.0-rc.1` trail until each one releases on the new line. The API
-can still change before 1.0.0.
+`0.1.0-rc.1`. The current pre-release line is `0.2.0-rc.1`; a port's table entry shows the version
+its registry serves. The API can still change before 0.2.0.
 
 | Language | Core | Patro | Version | Repository |
 |---|---|---|---|---|
@@ -104,4 +103,3 @@ Calendar data and algorithm come from [NepDate](https://github.com/RajuPrasai/Ne
 Prasai and contributors, MIT, used with the author's agreement ([data/NOTICE](data/NOTICE)). This
 repository is MIT ([LICENSE](LICENSE)). Not affiliated with the Government of Nepal; holiday data
 is informational.
-

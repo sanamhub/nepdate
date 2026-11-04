@@ -34,10 +34,10 @@ def document(**overrides):
 class FileTest(unittest.TestCase):
     def test_the_hub_file_is_valid_and_lists_the_ports_in_hub_order(self):
         found = version_line.load(ROOT / 'spec' / 'versions.json')
-        self.assertEqual(found['line'], '1.0')
+        self.assertEqual(found['line'], '0.2')
         self.assertEqual(
             list(found['sdks']),
-            ['rust', 'go', 'typescript', 'python', 'swift', 'kotlin', 'cpp', 'c', 'dart', 'php', 'java'],
+            ['rust', 'go', 'typescript', 'python', 'swift', 'kotlin', 'cpp', 'c', 'dart', 'php'],
         )
 
     def test_entries_may_trail_a_line_that_moved_first(self):
@@ -116,28 +116,28 @@ class CommandLineTest(unittest.TestCase):
     def test_check_accepts_the_hub_file(self):
         code, out, _ = self.run_tool('--check')
         self.assertEqual(code, 0)
-        self.assertIn('11 SDKs, line 1.0', out)
+        self.assertIn('10 SDKs, line 0.2', out)
 
     def test_a_version_on_another_line_fails_with_a_clear_message(self):
         code, _, err = self.run_tool('--sdk', 'rust', '--version', '0.3.0-beta.1')
         self.assertEqual(code, 1)
-        self.assertIn('major.minor 0.3 is not the hub line 1.0', err)
+        self.assertIn('major.minor 0.3 is not the hub line 0.2', err)
 
     def test_the_python_spelling_passes_the_command(self):
-        code, out, _ = self.run_tool('--sdk', 'python', '--version', '1.0.0rc1')
+        code, out, _ = self.run_tool('--sdk', 'python', '--version', '0.2.0rc1')
         self.assertEqual(code, 0)
-        self.assertIn('1.0.0-rc.1', out)
+        self.assertIn('0.2.0-rc.1', out)
 
     def test_an_unreleased_port_on_a_later_line_passes_the_command(self):
-        code, out, _ = self.run_tool('--sdk', 'ruby', '--version', '2.0.0-rc.1')
+        code, out, _ = self.run_tool('--sdk', 'java', '--version', '1.0.0-rc.1')
         self.assertEqual(code, 0)
-        self.assertIn('ahead of the 1.0 line', out)
+        self.assertIn('ahead of the 0.2 line', out)
         self.assertIn('has not released yet', out)
 
     def test_an_unreleased_port_on_an_earlier_line_fails_the_command(self):
-        code, _, err = self.run_tool('--sdk', 'ruby', '--version', '0.2.0-rc.1')
+        code, _, err = self.run_tool('--sdk', 'java', '--version', '0.1.0-rc.1')
         self.assertEqual(code, 1)
-        self.assertIn('behind the hub line 1.0', err)
+        self.assertIn('behind the hub line 0.2', err)
 
 
 if __name__ == '__main__':

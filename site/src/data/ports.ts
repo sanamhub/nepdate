@@ -29,6 +29,8 @@ export const DATEPICKER_VERSION = "0.1.0-beta.2";
 export const MITIBAR_VERSION = "1.0.0";
 /** C# NepDate, the original library the ports are checked against (hub ADR-0003). */
 export const CSHARP_VERSION = "2.0.7";
+/** The Java port has no `sdks` entry until its first release (hub ADR-0008). */
+export const JAVA_VERSION = "1.0.0-rc.1";
 export const MITIBAR_REPO = "https://github.com/sanamhub/mitibar";
 export const MITIBAR_RELEASE = `${MITIBAR_REPO}/releases/tag/v${MITIBAR_VERSION}`;
 
@@ -227,8 +229,8 @@ println(date.toLongString()) // Shrawan 15, 2081`,
     repo: "nepdate-java",
     core: "io.github.sanamhub:nepdate-java",
     patro: "io.github.sanamhub:nepdate-java-patro",
-    install: `implementation("io.github.sanamhub:nepdate-java:${versions.java}")`,
-    patroInstall: `implementation("io.github.sanamhub:nepdate-java-patro:${versions.java}")`,
+    install: `implementation("io.github.sanamhub:nepdate-java:${JAVA_VERSION}")`,
+    patroInstall: `implementation("io.github.sanamhub:nepdate-java-patro:${JAVA_VERSION}")`,
     installLang: "kotlin",
     registry: { label: "Maven Central", href: "https://central.sonatype.com/artifact/io.github.sanamhub/nepdate-java" },
     api: { label: "API.md", href: `${gh("nepdate-java")}/blob/main/docs/API.md` },

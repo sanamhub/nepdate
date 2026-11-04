@@ -3,7 +3,7 @@ title: Java
 description: Install nepdate-java and nepdate-java-patro from Maven Central.
 ---
 
-import { versions } from "../../../data/ports";
+import { JAVA_VERSION } from "../../../data/ports";
 import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
 
 Bikram Sambat dates, conversion, formatting and parsing for Java 17 and newer, with no runtime
@@ -16,9 +16,9 @@ dependency and a real JPMS module.
 - The Kotlin port stays for Kotlin and Android; this one is for a classpath without the Kotlin
   standard library.
 
-:::caution[Pre-release]
-This is the first public pre-release, <code>{versions.java}</code> on Maven Central. The API may
-still change before 1.0.0.
+:::caution[Release candidate]
+This is <code>{JAVA_VERSION}</code>, the release candidate for Java on Maven Central. The API is
+stable from 1.0.
 :::
 
 ## Install
@@ -29,8 +29,8 @@ still change before 1.0.0.
       lang="kotlin"
       title="build.gradle.kts"
       code={`dependencies {
-    implementation("io.github.sanamhub:nepdate-java:${versions.java}")
-    implementation("io.github.sanamhub:nepdate-java-patro:${versions.java}") // tithi, holidays, events
+    implementation("io.github.sanamhub:nepdate-java:${JAVA_VERSION}")
+    implementation("io.github.sanamhub:nepdate-java-patro:${JAVA_VERSION}") // tithi, holidays, events
 }`}
     />
   </TabItem>
@@ -41,7 +41,7 @@ still change before 1.0.0.
       code={`<dependency>
   <groupId>io.github.sanamhub</groupId>
   <artifactId>nepdate-java</artifactId>
-  <version>${versions.java}</version>
+  <version>${JAVA_VERSION}</version>
 </dependency>`}
     />
   </TabItem>
