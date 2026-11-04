@@ -4,7 +4,7 @@ description: Install nepdate and nepdate_patro from the tagged source archive an
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { ZIG_VERSION } from "../../../data/ports";
+import { versions } from "../../../data/ports";
 
 Bikram Sambat dates, conversion, arithmetic, formatting, parsing, ranges and fiscal years for Zig
 0.17.0. The core and the patro are two modules of one package, released together from one tag. They
@@ -18,12 +18,12 @@ every other port.
   `build.zig.zon`.
 
 :::caution[Release candidate]
-This is <code>{ZIG_VERSION}</code>, the release candidate for the Zig package. The API is stable from 1.0 (hub ADR-0009).
+This is <code>{versions.zig}</code>, the release candidate for the Zig package. The API is stable from 1.0 (hub ADR-0009).
 :::
 
 ## Install
 
-<Code code={`zig fetch --save https://github.com/sanamhub/nepdate-zig/archive/refs/tags/v${ZIG_VERSION}.tar.gz`} lang="sh" />
+<Code code={`zig fetch --save https://github.com/sanamhub/nepdate-zig/archive/refs/tags/v${versions.zig}.tar.gz`} lang="sh" />
 
 `zig fetch` adds the dependency and its hash to your `build.zig.zon`. Add both modules to your
 executable:
