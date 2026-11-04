@@ -9,7 +9,7 @@
   <a href="https://github.com/sanamhub/nepdate/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT"></a>
 </p>
 
-Bikram Sambat (the Nepali calendar) for eleven libraries, and the shared data and specification
+Bikram Sambat (the Nepali calendar) for twelve libraries, and the shared data and specification
 behind them. Every library converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD
 1844-04-11 to 2143-04-15), gives the same answer as the others, and checks that against the same
 test vectors. This repository holds no library code: it has what must be identical in every
