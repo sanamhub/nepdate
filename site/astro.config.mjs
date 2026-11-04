@@ -76,7 +76,7 @@ export default defineConfig({
             { label: "Java", link: "/docs/java/" },
             { label: "Dart", link: "/docs/dart/" },
             { label: "Kotlin", link: "/docs/kotlin/" },
-            { label: "Go", link: "/docs/go/" },
+            { label: "Go (Golang)", link: "/docs/go/" },
             { label: "Swift", link: "/docs/swift/" },
             { label: "C++", link: "/docs/cpp/" },
             { label: "C", link: "/docs/c/" },
