@@ -17,7 +17,7 @@ export default defineConfig({
     starlight({
       title: "NepDate",
       description:
-        "Bikram Sambat (Nepali calendar) libraries for C#, Rust, Go, TypeScript, Python, PHP, Ruby, Swift, Kotlin, C++, C and Dart, and the MitiBar desktop calendar.",
+        "Bikram Sambat (Nepali calendar) libraries for C#, Rust, Go, TypeScript, Python, PHP, Ruby, Swift, Kotlin, Java, C++, C and Dart, and the MitiBar desktop calendar.",
       // The title text beside the logo names the site, so the logo itself is decorative.
       logo: { src: "./src/assets/nepdate.svg", alt: "" },
       favicon: "/favicon.svg",
@@ -73,7 +73,8 @@ export default defineConfig({
             { label: "PHP", link: "/docs/php/" },
             { label: "Ruby", link: "/docs/ruby/" },
             { label: "Swift", link: "/docs/swift/" },
-            { label: "Kotlin and Java", link: "/docs/kotlin/" },
+            { label: "Kotlin and Android", link: "/docs/kotlin/" },
+            { label: "Java", link: "/docs/java/" },
             { label: "C++", link: "/docs/cpp/" },
             { label: "C", link: "/docs/c/" },
             { label: "Dart and Flutter", link: "/docs/dart/" },
@@ -116,7 +117,7 @@ export default defineConfig({
         starlightLlmsTxt({
           projectName: "NepDate",
           description:
-            "Bikram Sambat (Nepali calendar) date libraries for C#, Rust, Go, TypeScript, Python, PHP, Ruby, Swift, Kotlin, C++, C and Dart with the same behaviour in every language, built from one shared dataset and spec.",
+            "Bikram Sambat (Nepali calendar) date libraries for C#, Rust, Go, TypeScript, Python, PHP, Ruby, Swift, Kotlin, Java, C++, C and Dart with the same behaviour in every language, built from one shared dataset and spec.",
           details: [
             `Every port converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to 2143-04-15). Each ships a core package and a separate patro package (tithi, public holidays, events). Every released SDK shares the ${versionLine} version line; Ruby joins at ${RUBY_VERSION} with the 1.0 release. C# NepDate is the original library, one package with its own versions.`,
             "",

@@ -45,4 +45,4 @@ if (typed.length > 0) {
   for (const problem of typed) console.error(`  ${problem}`);
 }
 if (unknown.length > 0 || typed.length > 0) process.exit(1);
-console.log("check-versions: every version comes from spec/versions.json, or the unreleased Ruby constant, through src/data/ports.ts");
+console.log("check-versions: every version comes from spec/versions.json, or an unreleased port's constant, through src/data/ports.ts");
