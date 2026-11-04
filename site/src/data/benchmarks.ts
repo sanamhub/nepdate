@@ -92,6 +92,14 @@ export const benchmarks: PortBenchmark[] = [
     source: blob("nepdate-kotlin", "docs/benchmarks.md"),
   },
   {
+    id: "java",
+    name: "Java",
+    machine: `${LAPTOP}, JDK 17`,
+    ops: [14.03, 6.7, 5.23, 5.32, 91.99, 27.41, 1.29, 55.81],
+    competitors: [{ name: "shivathapaa", b1: 919.34, b2: 682.02, agrees: 61 }],
+    source: blob("nepdate-java", "docs/benchmarks.md"),
+  },
+  {
     id: "typescript",
     name: "TypeScript",
     machine: `${LAPTOP}, Node.js`,
@@ -194,3 +202,4 @@ export function formatNs(ns: number): string {
   if (ns < 1e6) return `${(ns / 1000).toFixed(ns < 1e4 ? 2 : 1)} µs`;
   return `${(ns / 1e6).toFixed(2)} ms`;
 }
+
