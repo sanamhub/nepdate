@@ -4,7 +4,7 @@ description: What NepDate is, which languages it covers, and how the libraries a
 ---
 
 import { LinkCard, CardGrid } from "@astrojs/starlight/components";
-import { RUBY_VERSION, versionLine } from "../../../data/ports";
+import { versionLine } from "../../../data/ports";
 
 NepDate is the Bikram Sambat calendar (BS, the official calendar of Nepal) as a family of libraries
 that behave the same in every language, and a few apps built on them.
@@ -16,9 +16,8 @@ vectors in each repository.
 
 ## The libraries
 
-Each of the thirteen languages ships two packages on one version line, now
-<code>{versionLine}</code>. Ruby, Java and Zig join at <code>{RUBY_VERSION}</code> with the 1.0
-release:
+Each of the thirteen ported languages ships two packages on one version line, now
+<code>{versionLine}</code>:
 
 - **The core**: conversion, arithmetic, fiscal year, formatting and parsing. No dependencies and no
   almanac data.
@@ -26,19 +25,19 @@ release:
   It depends on the core, never the other way round.
 
 <CardGrid>
-  <LinkCard title="C# and .NET" description="NepDate on NuGet, the original library" href="/docs/csharp/" />
+  <LinkCard title="C#" description="NepDate on NuGet, the original library" href="/docs/csharp/" />
   <LinkCard title="Rust" description="nepdate and nepdate-patro on crates.io" href="/docs/rust/" />
-  <LinkCard title="Go (Golang)" description="github.com/sanamhub/nepdate-go" href="/docs/go/" />
-  <LinkCard title="TypeScript and JavaScript" description="nepdate-core and nepdate-patro on npm" href="/docs/typescript/" />
+  <LinkCard title="Go" description="github.com/sanamhub/nepdate-go" href="/docs/go/" />
+  <LinkCard title="TypeScript" description="nepdate-core and nepdate-patro on npm" href="/docs/typescript/" />
   <LinkCard title="Python" description="nepdate-core and nepdate-patro on PyPI" href="/docs/python/" />
   <LinkCard title="PHP" description="sanamhub/nepdate and sanamhub/nepdate-patro on Packagist" href="/docs/php/" />
   <LinkCard title="Ruby" description="nepdate and nepdate-patro on RubyGems" href="/docs/ruby/" />
   <LinkCard title="Swift" description="NepDate and NepDatePatro with SwiftPM" href="/docs/swift/" />
-  <LinkCard title="Kotlin and Android" description="io.github.sanamhub on Maven Central" href="/docs/kotlin/" />
+  <LinkCard title="Kotlin" description="io.github.sanamhub on Maven Central" href="/docs/kotlin/" />
   <LinkCard title="Java" description="io.github.sanamhub on Maven Central" href="/docs/java/" />
   <LinkCard title="C++" description="Header-only core, CMake FetchContent" href="/docs/cpp/" />
   <LinkCard title="C" description="C11, no allocation, amalgamation and Zig" href="/docs/c/" />
-  <LinkCard title="Dart and Flutter" description="nepdate and nepdate_patro on pub.dev" href="/docs/dart/" />
+  <LinkCard title="Dart" description="nepdate and nepdate_patro on pub.dev" href="/docs/dart/" />
   <LinkCard title="Zig" description="nepdate and nepdate_patro from a tagged archive" href="/docs/zig/" />
 </CardGrid>
 
