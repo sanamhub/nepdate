@@ -15,9 +15,11 @@ it never names a version a registry does not serve yet.
     py tools/version_line.py --check
     py tools/version_line.py --sdk rust --version 0.1.0-beta.1
     py tools/version_line.py --sdk python --version 0.1.0b1
+    py tools/version_line.py --sdk ruby --version 1.0.0.rc.1
 
-Python is the one registry that spells a pre-release the PEP 440 way. The mapping lives in
-semver_spelling() and pep440_spelling() so the site can use the same rule (ADR-0007 decision 4).
+Python spells a pre-release the PEP 440 way and RubyGems spells it the Ruby way. The mappings live
+in semver_spelling(), pep440_spelling() and rubygems_spelling() so the site can use the same rule
+(ADR-0007 decision 4).
 """
 import argparse
 import json
@@ -33,6 +35,8 @@ SEMVER = re.compile(
     r'^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(beta|rc)\.([1-9]\d*))?$')
 PEP440 = re.compile(
     r'^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:(a|b|rc)([1-9]\d*))?$')
+RUBYGEMS = re.compile(
+    r'^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:\.(beta|rc)\.([1-9]\d*))?$')
 SDK = re.compile(r'^[a-z][a-z0-9-]*$')
 PEP440_KINDS = {'a': 'alpha', 'b': 'beta', 'rc': 'rc'}
 
@@ -51,15 +55,19 @@ def read(path=VERSIONS):
 
 
 def semver_spelling(sdk, version):
-    """The SemVer spelling of a port's version. Python also accepts the PEP 440 spelling."""
-    if sdk != 'python':
+    """The SemVer spelling of a port's version. Python and Ruby also accept their own spelling."""
+    pattern = PEP440 if sdk == 'python' else RUBYGEMS if sdk == 'ruby' else None
+    if pattern is None:
         return version
-    found = PEP440.match(version)
+    found = pattern.match(version)
     if not found:
         return version
     major, minor, patch, kind, number = found.groups()
     core = f'{major}.{minor}.{patch}'
-    return f'{core}-{PEP440_KINDS[kind]}.{number}' if kind else core
+    if not kind:
+        return core
+    named = PEP440_KINDS[kind] if sdk == 'python' else kind
+    return f'{core}-{named}.{number}'
 
 
 def pep440_spelling(version):
@@ -72,6 +80,18 @@ def pep440_spelling(version):
     if not kind:
         return core
     return f'{core}{"b" if kind == "beta" else "rc"}{number}'
+
+
+def rubygems_spelling(version):
+    """The RubyGems spelling of a SemVer version: 1.0.0-rc.1 is 1.0.0.rc.1."""
+    found = SEMVER.match(version)
+    if not found:
+        raise VersionError(f'{version}: not a SemVer version')
+    major, minor, patch, kind, number = found.groups()
+    core = f'{major}.{minor}.{patch}'
+    if not kind:
+        return core
+    return f'{core}.{kind}.{number}'
 
 
 def parse_version(sdk, version):

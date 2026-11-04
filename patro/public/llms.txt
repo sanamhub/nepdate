@@ -14,5 +14,5 @@ Built from the [NepDate](https://nepdate.com/) libraries. Dates cover BS 1901 to
 
 ## Optional
 
-- [NepDate libraries and docs](https://nepdate.com/llms.txt): the same calendar for C#, Rust, Go, TypeScript, Python, Swift, Kotlin and C++
+- [NepDate libraries and docs](https://nepdate.com/llms.txt): the same calendar for C#, Rust, Go, TypeScript, Python, PHP, Ruby, Swift, Kotlin, C++ and C
 - [Calendar data and credits](https://nepdate.com/docs/project/data/): where the month lengths, tithi and holidays come from

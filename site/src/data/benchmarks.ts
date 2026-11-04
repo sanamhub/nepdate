@@ -92,6 +92,14 @@ export const benchmarks: PortBenchmark[] = [
     source: blob("nepdate-kotlin", "docs/benchmarks.md"),
   },
   {
+    id: "java",
+    name: "Java",
+    machine: `${LAPTOP}, JDK 17`,
+    ops: [14.03, 6.7, 5.23, 5.32, 91.99, 27.41, 1.29, 55.81],
+    competitors: [{ name: "shivathapaa", b1: 919.34, b2: 682.02, agrees: 61 }],
+    source: blob("nepdate-java", "docs/benchmarks.md"),
+  },
+  {
     id: "typescript",
     name: "TypeScript",
     machine: `${LAPTOP}, Node.js`,
@@ -135,6 +143,17 @@ export const benchmarks: PortBenchmark[] = [
     ops: [67.37, 121.59, 19.35, 17.11, 854.73, 102.36, 42.48, 1698.46],
     competitors: [{ name: "nepali_utils", b1: 33526.7, b2: 79675.04, agrees: 31 }],
     source: blob("nepdate-dart", "docs/benchmarks.md"),
+  },
+  // Preliminary: measured on the reference laptop while other work was running on it (CPU load
+  // 17.0% before and 19.1% after), so the quiet rerun in the sweep replaces these figures. No
+  // RubyGems candidate passes BENCHMARK.md section 7, so the competitor list is empty.
+  {
+    id: "ruby",
+    name: "Ruby",
+    machine: `${LAPTOP}, Ruby 3.4`,
+    ops: [575.2, 531.8, 630.0, 478.1, 506.1, 1430.8, 123.0, 17828.8],
+    competitors: [],
+    source: blob("nepdate-ruby", "docs/benchmarks.md"),
   },
   // The comparison is the C core this package wraps, not an independent Zig library. The machine
   // was sampled for 30 seconds before the run; the background load is recorded in
@@ -205,3 +224,4 @@ export function formatNs(ns: number): string {
   if (ns < 1e6) return `${(ns / 1000).toFixed(ns < 1e4 ? 2 : 1)} µs`;
   return `${(ns / 1e6).toFixed(2)} ms`;
 }
+

@@ -55,6 +55,12 @@ const sources: Record<string, () => Promise<Downloads>> = {
       registry: "Packagist",
     };
   },
+  ruby: async () => {
+    const packages = await Promise.all(
+      ["nepdate", "nepdate-patro"].map((p) => json(`https://rubygems.org/api/v1/gems/${p}.json`)),
+    );
+    return { count: sum(packages.map((p) => p.downloads)), span: "all time", registry: "RubyGems" };
+  },
   dart: async () => {
     const packages = await Promise.all(
       ["nepdate", "nepdate_patro"].map((p) => json(`https://pub.dev/api/packages/${p}/score`)),
