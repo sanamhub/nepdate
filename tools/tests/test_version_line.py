@@ -37,7 +37,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(found['line'], '1.0')
         self.assertEqual(
             list(found['sdks']),
-            ['rust', 'go', 'typescript', 'python', 'swift', 'kotlin', 'cpp', 'c', 'dart', 'php', 'java', 'zig'],
+            ['rust', 'go', 'typescript', 'python', 'swift', 'kotlin', 'cpp', 'c', 'dart', 'php', 'java', 'ruby', 'zig'],
         )
 
     def test_entries_may_trail_a_line_that_moved_first(self):
@@ -68,15 +68,15 @@ class FileTest(unittest.TestCase):
                 version_line.read(Path(tmp) / 'versions.json')
 
     def test_a_port_with_no_entry_may_declare_the_current_line(self):
-        self.assertEqual(version_line.check_sdk(DOCUMENT, 'ruby', '0.1.0-rc.1'), '0.1.0-rc.1')
+        self.assertEqual(version_line.check_sdk(DOCUMENT, 'scala', '0.1.0-rc.1'), '0.1.0-rc.1')
 
     def test_a_port_with_no_entry_may_declare_a_later_line(self):
         self.assertEqual(
-            version_line.check_sdk(document(line='0.2'), 'ruby', '1.0.0-rc.1'), '1.0.0-rc.1')
+            version_line.check_sdk(document(line='0.2'), 'scala', '1.0.0-rc.1'), '1.0.0-rc.1')
 
     def test_a_port_with_no_entry_may_not_declare_an_earlier_line(self):
         with self.assertRaisesRegex(version_line.VersionError, 'behind the hub line 0.2'):
-            version_line.check_sdk(document(line='0.2'), 'ruby', '0.1.0-rc.1')
+            version_line.check_sdk(document(line='0.2'), 'scala', '0.1.0-rc.1')
 
     def test_a_released_port_still_may_not_lead_the_line(self):
         with self.assertRaisesRegex(version_line.VersionError, 'rust 0.2.0-rc.1.*not the hub line 0.1'):
@@ -136,7 +136,7 @@ class CommandLineTest(unittest.TestCase):
     def test_check_accepts_the_hub_file(self):
         code, out, _ = self.run_tool('--check')
         self.assertEqual(code, 0)
-        self.assertIn('12 SDKs, line 1.0', out)
+        self.assertIn('13 SDKs, line 1.0', out)
 
     def test_a_version_on_another_line_fails_with_a_clear_message(self):
         code, _, err = self.run_tool('--sdk', 'rust', '--version', '0.3.0-beta.1')
@@ -155,13 +155,13 @@ class CommandLineTest(unittest.TestCase):
         self.assertIn('is on the 1.0 line', out)
 
     def test_an_unreleased_port_on_a_later_line_passes_the_command(self):
-        code, out, _ = self.run_tool('--sdk', 'ruby', '--version', '2.0.0-rc.1')
+        code, out, _ = self.run_tool('--sdk', 'scala', '--version', '2.0.0-rc.1')
         self.assertEqual(code, 0)
         self.assertIn('ahead of the 1.0 line', out)
         self.assertIn('has not released yet', out)
 
     def test_an_unreleased_port_on_an_earlier_line_fails_the_command(self):
-        code, _, err = self.run_tool('--sdk', 'ruby', '--version', '0.2.0-rc.1')
+        code, _, err = self.run_tool('--sdk', 'scala', '--version', '0.2.0-rc.1')
         self.assertEqual(code, 1)
         self.assertIn('behind the hub line 1.0', err)
 

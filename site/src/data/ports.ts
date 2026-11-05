@@ -18,8 +18,8 @@ export const RELEASE_VERSION = "1.0.0-rc.1";
  * This is the site's copy of the mapping in tools/version_line.py.
  */
 export const PYPI_VERSION = pep440(versions.python);
-/** The Ruby port has no `sdks` entry until its first release (hub ADR-0008). */
-export const RUBY_VERSION = "1.0.0-rc.1";
+/** The Ruby family version, with the hyphen; RubyGems spells it differently (below). */
+export const RUBY_VERSION = versions.ruby;
 /**
  * The same version as RubyGems spells it (the Ruby convention): 1.0.0-rc.1 is 1.0.0.rc.1.
  * The tag, changelog and displayed family version keep the hyphen, but the install line must use
