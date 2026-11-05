@@ -2,8 +2,12 @@
    on the landing page's type scale and colours. */
 
 .info {
-  max-width: calc(42rem + 2 * var(--nd-gutter));
   padding-block: var(--nd-section);
+}
+/* The page keeps the site's width, so its left edge lines up with the header and the footer; the
+   text inside it stops at a reading width. */
+.info > * {
+  max-width: 42rem;
 }
 .info h1 {
   margin: 0 0 1.5rem;

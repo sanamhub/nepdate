@@ -3,6 +3,9 @@
 // reading width, the page title as the only h1.
 import Landing from "../layouts/Landing.astro";
 import "../styles/info.css";
+// The footer (and its valley drawing) is styled by this sheet, linked in the body as on the
+// landing and MitiBar pages.
+import sectionsCss from "../styles/landing-sections.css?url";
 
 interface Props {
   title: string;
@@ -19,4 +22,5 @@ const { title, heading, description, jsonLd } = Astro.props;
     <h1 id="info-title">{heading}</h1>
     <slot />
   </article>
+  <link rel="stylesheet" href={sectionsCss} />
 </Landing>
