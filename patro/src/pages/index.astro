@@ -9,13 +9,34 @@ const today = NepaliDate.today();
 const title = "नेपाली पात्रो: आजको मिति, तिथि र बिदा | NepDate Patro";
 const description =
   "The Nepali calendar (Bikram Sambat) with tithi, paksha, public holidays and events for every day, and the AD date beside each. In Nepali and English. Fast, clean, no ads.";
+// The site, and the project behind it: the same Organization as nepdate.com, so agents can tie the
+// two hosts together and find the contact page.
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "NepDate Patro",
-  url: "https://patro.nepdate.com/",
-  description,
-  inLanguage: ["ne", "en"],
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: "NepDate Patro",
+      url: "https://patro.nepdate.com/",
+      description,
+      inLanguage: ["ne", "en"],
+      publisher: { "@id": "https://nepdate.com/#org" },
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://nepdate.com/#org",
+      name: "NepDate",
+      url: "https://nepdate.com/",
+      logo: "https://nepdate.com/favicon.svg",
+      sameAs: ["https://github.com/sanamhub/nepdate"],
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "technical support",
+        url: "https://nepdate.com/contact/",
+        availableLanguage: ["English", "Nepali"],
+      },
+    },
+  ],
 };
 ---
 

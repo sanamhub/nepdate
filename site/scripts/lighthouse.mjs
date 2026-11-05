@@ -11,7 +11,7 @@ import { run } from "../../web/lighthouse.mjs";
 await run({
   site: "nepdate.com",
   dist: fileURLToPath(new URL("../dist/", import.meta.url)),
-  pages: ["/", "/mitibar/", "/docs/quickstart/", "/docs/project/performance/"],
+  pages: ["/", "/mitibar/", "/privacy/", "/docs/quickstart/", "/docs/project/performance/"],
   lighthouse,
   chromeLauncher,
   desktopConfig,

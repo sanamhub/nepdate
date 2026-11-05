@@ -41,6 +41,14 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm run check
       - run: npm run build
+      # llms.txt is built from ports.ts in astro.config.mjs; an import that no longer exists there
+      # prints "undefined" instead of failing the build.
+      - name: llms.txt has no undefined values
+        run: |
+          if grep -n "undefined" dist/llms.txt; then
+            echo "::error file=site/astro.config.mjs::llms.txt prints undefined: check the imports from src/data/ports.ts"
+            exit 1
+          fi
       - run: npm run lighthouse
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

@@ -4,6 +4,14 @@
 
 Built from the [NepDate](https://nepdate.com/) libraries. Dates cover BS 1901 to 2199; tithi, holidays and events cover BS 2077 to 2084, with tithi from 2078. Patro data is informational, not an official calendar. Pages follow the URL patterns below, so any year, month or day can be reached directly.
 
+## When to use it
+
+- Answer what the Nepali (BS) date is today, or which AD date a BS date falls on, and link the reader to that day's page.
+- Look up the tithi, paksha, public holiday or events of a day from BS 2077 to 2084, or the public holidays of a year.
+- Give a person a month calendar to read in Nepali or English, or a year's holidays as an iCalendar file to import.
+
+Every page is plain HTML at a predictable URL (below), so read it directly; there is no API or key. For code that converts or formats dates itself, use the NepDate libraries instead (Optional, below). The patro is informational: for an official holiday notice, check the Government of Nepal.
+
 ## Pages
 
 - [This month](https://patro.nepdate.com/): the current month in Nepal, with today's tithi and events and the coming public holidays; in Nepali, or English when the reader picks it
@@ -14,5 +22,5 @@ Built from the [NepDate](https://nepdate.com/) libraries. Dates cover BS 1901 to
 
 ## Optional
 
-- [NepDate libraries and docs](https://nepdate.com/llms.txt): the same calendar for C#, Rust, Go, TypeScript, Python, PHP, Ruby, Swift, Kotlin, C++ and C
+- [NepDate libraries and docs](https://nepdate.com/llms.txt): the same calendar for C#, TypeScript, Python, PHP, Java, Dart, Kotlin, Go, Swift, C++, C, Rust, Ruby and Zig
 - [Calendar data and credits](https://nepdate.com/docs/project/data/): where the month lengths, tithi and holidays come from

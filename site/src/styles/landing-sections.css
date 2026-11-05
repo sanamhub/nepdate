@@ -62,9 +62,9 @@
   font-weight: 600;
 }
 
-/* The strip before the closing line: every language mark, platform and app, scrolling slowly as one loop
-   so the whole family is seen without a click. It pauses under the pointer, and with reduced
-   motion it stops and wraps into rows instead. */
+/* The strip above the footer: every language mark, runtime, framework, platform and app,
+   scrolling slowly as one loop so the whole family is seen without a click. It pauses under the
+   pointer, and with reduced motion it stops and wraps into rows instead. */
 
 .strip {
   border-block: 1px solid var(--nd-hairline);

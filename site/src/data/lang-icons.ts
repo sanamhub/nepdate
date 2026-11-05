@@ -9,25 +9,34 @@ import {
   siAndroid,
   siApachemaven,
   siApple,
+  siBlazor,
+  siBun,
   siC,
   siCplusplus,
   siDart,
+  siDeno,
+  siDotnet,
+  siFlutter,
   siGithub,
   siGo,
   siIos,
   siKotlin,
   siLinux,
+  siNodedotjs,
   siNpm,
   siNuget,
   siPackagist,
   siPhp,
   siPypi,
   siPython,
+  siReact,
   siRuby,
   siRubygems,
   siRust,
   siSwift,
   siTypescript,
+  siVuedotjs,
+  siWebcomponentsdotorg,
   siZig,
 } from "simple-icons";
 
@@ -119,7 +128,7 @@ export const registryIcons: Record<string, Mark> = {
   "GitHub Releases": siGithub,
 };
 
-/** Platforms, and the source link's GitHub mark. */
+/** Platforms, runtimes and frameworks, and the source link's GitHub mark. */
 export const platformIcons: Record<string, Mark> = {
   windows,
   macos: siApple,
@@ -127,6 +136,17 @@ export const platformIcons: Record<string, Mark> = {
   android: siAndroid,
   ios: siIos,
   source: siGithub,
+  // Runtimes and frameworks the guides name: .NET for C#, Node, Deno and Bun for TypeScript,
+  // Flutter for Dart, and the date picker's web components with React, Vue and Blazor.
+  dotnet: siDotnet,
+  node: siNodedotjs,
+  deno: siDeno,
+  bun: siBun,
+  flutter: siFlutter,
+  webcomponents: siWebcomponentsdotorg,
+  react: siReact,
+  vue: siVuedotjs,
+  blazor: siBlazor,
 };
 
 /** Outline glyphs on the same 24 unit grid: an open book for the guide, a box for a package. */

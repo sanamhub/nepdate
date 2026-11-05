@@ -5,7 +5,10 @@ import { defineConfig, fontProviders } from "astro/config";
 import starlightLinksValidator from "starlight-links-validator";
 import starlightLlmsTxt from "starlight-llms-txt";
 import { fontsFor } from "./fonts.mjs";
-import { JAVA_VERSION, RUBY_VERSION, versionLine, ports, ZIG_VERSION } from "./src/data/ports";
+import { versionLine, ports } from "./src/data/ports";
+
+// Every language in family order (ports.ts), for the descriptions below.
+const languageList = new Intl.ListFormat("en", { type: "conjunction" }).format(ports.map((port) => port.name));
 
 export default defineConfig({
   site: "https://nepdate.com",
@@ -16,8 +19,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "NepDate",
-      description:
-        "Bikram Sambat (Nepali calendar) libraries for C#, Rust, Go, TypeScript, Python, PHP, Ruby, Swift, Kotlin, Java, C++, C, Dart and Zig, and the MitiBar desktop calendar.",
+      description: `Bikram Sambat (Nepali calendar) libraries for ${languageList}, and the MitiBar desktop calendar.`,
       // The title text beside the logo names the site, so the logo itself is decorative.
       logo: { src: "./src/assets/nepdate.svg", alt: "" },
       favicon: "/favicon.svg",
@@ -121,10 +123,24 @@ export default defineConfig({
         starlightLinksValidator({ errorOnLocalLinks: true, exclude: ["/", "/#convert", "/#languages", "/#mitibar", "/#performance"] }),
         starlightLlmsTxt({
           projectName: "NepDate",
-          description:
-            "Bikram Sambat (Nepali calendar) date libraries for C#, Rust, Go, TypeScript, Python, PHP, Ruby, Swift, Kotlin, Java, C++, C, Dart and Zig with the same behaviour in every language, built from one shared dataset and spec.",
+          description: `Bikram Sambat (Nepali calendar) date libraries for ${languageList} with the same behaviour in every language, built from one shared dataset and spec.`,
           details: [
-            `Every port converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to 2143-04-15). Each ships a core package and a separate patro package (tithi, public holidays, events). Every SDK shares the ${versionLine} version line; Ruby joins at ${RUBY_VERSION}, Java at ${JAVA_VERSION} and Zig at ${ZIG_VERSION}. C# NepDate is the original library, one package with its own versions.`,
+            `Every port converts between BS and AD for BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to 2143-04-15). Each ships a core package and a separate patro package (tithi, public holidays, events). Every SDK shares the ${versionLine} version line. C# NepDate is the original library, one package with its own versions.`,
+            "",
+            "## When to use NepDate",
+            "",
+            "Reach for NepDate when code has to work with Bikram Sambat (BS, Nepali calendar) dates:",
+            "",
+            "- Convert a BS date to AD (Gregorian) or back, for any day from BS 1901-01-01 to 2199-12-30, without a network call.",
+            "- Show today's date in Nepal, a BS month calendar, or a BS date picker in a web form.",
+            "- Format a BS date in Nepali (Devanagari digits and month names) or English, or parse one typed by a user.",
+            "- Add days or months to a BS date, find the days between two dates, or the start and end of a BS month or fiscal year.",
+            "- Look up the tithi, public holidays and events of a day from BS 2077 to 2084 (the separate patro package).",
+            "- Get the same answer in several languages: every port is tested against the same 109,212 days and the C# library.",
+            "",
+            "How to call it: install the core package for the project's language (below), then follow that language's guide at https://nepdate.com/docs/<language>/. Each guide's first example converts a date. For a browser date picker, see https://nepdate.com/docs/datepicker/. For a day's tithi or holidays without code, link a page on https://patro.nepdate.com/ (`/YYYY/MM/DD/`).",
+            "",
+            "Not a fit: Nepal Sambat or other calendars, and official government holiday notices (the patro data is informational).",
             "",
             "Install the core:",
             "",

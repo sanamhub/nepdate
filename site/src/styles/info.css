@@ -1,0 +1,44 @@
+/* About, Contact and Privacy (components/InfoPage.astro): one column of prose at a reading width,
+   on the landing page's type scale and colours. */
+
+.info {
+  max-width: calc(42rem + 2 * var(--nd-gutter));
+  padding-block: var(--nd-section);
+}
+.info h1 {
+  margin: 0 0 1.5rem;
+  font-size: var(--nd-step-2);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.info h2 {
+  margin: 2.5rem 0 0.75rem;
+  font-size: 1.15rem;
+  font-weight: 650;
+}
+.info p,
+.info li {
+  color: var(--nd-ink-muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+.info p {
+  margin: 0 0 1rem;
+}
+.info ul {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+}
+.info li + li {
+  margin-top: 0.4rem;
+}
+.info strong {
+  color: var(--nd-ink);
+}
+.info .info-lede {
+  color: var(--nd-ink);
+  font-size: 1.15rem;
+}

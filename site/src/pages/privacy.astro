@@ -1,0 +1,62 @@
+---
+// Privacy: what nepdate.com and patro.nepdate.com store and send. Kept in step with the code: the
+// Content-Security-Policy in public/_headers, the localStorage keys in web/ and patro/, and
+// ADR-0005's no-tracking rule.
+import InfoPage from "../components/InfoPage.astro";
+import { HUB, PATRO } from "../data/ports";
+
+const description =
+  "NepDate's privacy notice: no accounts, cookies, analytics or advertising on nepdate.com and patro.nepdate.com, and what the apps and libraries do with your data.";
+const site = Astro.site?.href ?? "https://nepdate.com/";
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Privacy",
+  url: new URL("/privacy/", site).href,
+  description,
+  about: { "@id": `${site}#org` },
+};
+---
+
+<InfoPage title="Privacy | NepDate" heading="Privacy" description={description} jsonLd={jsonLd}>
+  <p class="info-lede">
+    nepdate.com and <a href={PATRO}>patro.nepdate.com</a> have no accounts, no cookies, no analytics and no advertising.
+    Nothing you do on them is collected by NepDate.
+  </p>
+
+  <h2>What the websites keep in your browser</h2>
+  <p>A few settings stay in your browser's local storage, on your device only, and are never sent anywhere:</p>
+  <ul>
+    <li>your light or dark theme (<code>starlight-theme</code>);</li>
+    <li>whether the web fonts have loaded once, so the next page shows them sooner;</li>
+    <li>on the patro, whether you read it in Nepali or English (<code>patro-lang</code>).</li>
+  </ul>
+  <p>Clearing the site's data in your browser removes them. The date converter and the search run in your browser too.</p>
+
+  <h2>Hosting</h2>
+  <p>
+    Both sites are static pages served by Cloudflare. Like any web host, Cloudflare handles your IP address and request
+    details to deliver the pages and protect them from abuse, under the{" "}
+    <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare privacy policy</a>. NepDate does not turn on request
+    logging. The pages load no scripts, fonts or images from other sites; their Content-Security-Policy allows only the
+    site's own files.
+  </p>
+
+  <h2>Links to GitHub</h2>
+  <p>
+    Reporting a wrong date, asking a question and reading the source all happen on GitHub. What you write there is
+    public and is covered by the GitHub privacy statement, not by this page.
+  </p>
+
+  <h2>The apps and libraries</h2>
+  <p>
+    MitiBar makes no network requests and sends nothing about you anywhere. The NepDate libraries run inside your own
+    program, read only the calendar data they ship with, and make no network requests either.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    If any of this changes, for example if a site starts counting visits, this page changes first, in a public pull
+    request in the <a href={HUB}>hub repository</a>. Questions go through <a href="/contact/">Contact</a>.
+  </p>
+</InfoPage>
