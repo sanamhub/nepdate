@@ -41,6 +41,8 @@ src/styles/hero-motion.css  the hero's opening sequence, inlined with the page
 src/styles/landing-sections.css  everything below the hero, linked in the body to keep the HTML small
 public/_headers             security headers and asset caching
 wrangler.jsonc              the Worker that serves dist/
+worker.js                   its code: Markdown and JSON for agents (ADR-0010, logic in ../web/agent-worker.js)
+src/pages/index.md.ts       the home page as Markdown, and 404.md.ts the Markdown "not found"
 ```
 
 ## Rules
@@ -57,6 +59,9 @@ wrangler.jsonc              the Worker that serves dist/
   [Web Interface Guidelines](https://github.com/vercel-labs/web-interface-guidelines). Sindoor red
   is for today and holidays only.
 - No analytics script and no cookies (ADR-0005).
+- A page an agent should read as Markdown gets an `index.md` endpoint next to it; the Worker serves
+  it to `Accept: text/markdown`. Check with
+  `curl -i -H 'Accept: text/markdown' http://localhost:8787/` under `npx wrangler dev` after a build.
 
 ## Deploy
 

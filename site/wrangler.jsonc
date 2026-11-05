@@ -1,12 +1,32 @@
-// nepdate.com (ADR-0005): the static files Astro builds into dist/, served by a Cloudflare Worker
-// with no code of its own. Workers Builds runs `npm ci && npm run build` in site/ and then
-// `npx wrangler deploy` on main; pull requests run `wrangler preview`, which needs the previews
-// block (empty is enough) and preview_urls to be reachable. www.nepdate.com redirects here through a zone redirect rule.
+// nepdate.com (ADR-0005, ADR-0010): the static files Astro builds into dist/, served by a
+// Cloudflare Worker whose only code (worker.js) picks Markdown or JSON for agents. Workers Builds
+// runs `npm ci && npm run build` in site/ and then `npx wrangler deploy` on main; pull requests run
+// `wrangler preview`, which needs the previews block (empty is enough) and preview_urls to be
+// reachable. www.nepdate.com redirects here through a zone redirect rule.
 {
   "name": "nepdate",
   "compatibility_date": "2026-10-01",
+  // ADR-0010: page requests go through worker.js, which serves Markdown or a JSON error to agents
+  // that ask for them; every other file goes straight to the static assets.
+  "main": "./worker.js",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/*",
+      "!/_astro/*",
+      "!/pagefind/*",
+      "!/*.css",
+      "!/*.js",
+      "!/*.svg",
+      "!/*.png",
+      "!/*.ico",
+      "!/*.woff2",
+      "!/*.txt",
+      "!/*.xml",
+      "!/*.ics",
+      "!/*.webmanifest"
+    ],
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash"
   },
