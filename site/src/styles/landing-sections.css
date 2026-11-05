@@ -67,7 +67,8 @@
    pointer, and with reduced motion it stops and wraps into rows instead. */
 
 .strip {
-  border-block: 1px solid var(--nd-hairline);
+  /* The footer's top border closes the strip below. */
+  border-top: 1px solid var(--nd-hairline);
   padding-block: 1.4rem;
   overflow: hidden;
   mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
@@ -769,7 +770,7 @@
 
 .site-footer {
   border-top: 1px solid var(--nd-hairline);
-  padding-top: 3.5rem;
+  padding-top: 2.75rem;
   font-size: 0.9rem;
 }
 .footer-grid {
@@ -800,6 +801,17 @@
   max-width: 24rem;
   color: var(--nd-ink-muted);
 }
+/* The copyright line and the small links under it, in place of a band below the valley, so the
+   footer and the strip above it fit on one screen at the end of the page. */
+.footer-brand .footer-legal {
+  font-size: var(--nd-step--1);
+}
+.footer-legal a {
+  color: inherit;
+}
+.footer-legal a:hover {
+  color: var(--nd-ink);
+}
 .site-footer h2 {
   margin: 0 0 0.75rem;
   font-size: var(--nd-step--1);
@@ -822,12 +834,12 @@
    its prayer flags with the Buddha in meditation beside it, Newari houses, Krishna Mandir, a porter
    with his doko and a chorten, and the sun and moon of the flag at either end, drawn in
    one colour. The drawing (public/footer-skyline.svg) is a mask, so it takes sindoor in either
-   theme, and its ground runs straight into the band that holds the copyright line. On a narrow
+   theme, and its ground is the foot of the page. On a narrow
    screen it is drawn at 66rem and shows the middle of the valley. */
 .footer-art {
   /* The drawing's own aspect (1600 by 340) at the width it is drawn, so no part is cut off. */
   height: calc(max(100vw, 66rem) * 0.2125);
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
   background: var(--nd-sindoor);
   -webkit-mask: url("/footer-skyline.svg") bottom center / max(100%, 66rem) auto no-repeat;
   mask: url("/footer-skyline.svg") bottom center / max(100%, 66rem) auto no-repeat;
@@ -844,13 +856,6 @@
 }
 :root[data-theme="dark"] .footer-snow {
   background: rgb(233 228 220 / 0.6);
-}
-.footer-base {
-  margin-top: -1px;
-  padding-block: 0.4rem 1.1rem;
-  background: var(--nd-sindoor);
-  color: var(--nd-on-sindoor);
-  font-size: 0.8rem;
 }
 
 
