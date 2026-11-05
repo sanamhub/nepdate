@@ -62,13 +62,12 @@
   font-weight: 600;
 }
 
-/* The strip above the footer: every language mark, runtime, framework, platform and app,
+/* The strip before the closing line: every language mark, runtime, framework, platform and app,
    scrolling slowly as one loop so the whole family is seen without a click. It pauses under the
    pointer, and with reduced motion it stops and wraps into rows instead. */
 
 .strip {
-  /* The footer's top border closes the strip below. */
-  border-top: 1px solid var(--nd-hairline);
+  border-block: 1px solid var(--nd-hairline);
   padding-block: 1.4rem;
   overflow: hidden;
   mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);

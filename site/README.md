@@ -62,6 +62,8 @@ src/pages/index.md.ts       the home page as Markdown, and 404.md.ts the Markdow
 - A page an agent should read as Markdown gets an `index.md` endpoint next to it; the Worker serves
   it to `Accept: text/markdown`. Check with
   `curl -i -H 'Accept: text/markdown' http://localhost:8787/` under `npx wrangler dev` after a build.
+- `npm run agent-check` after a build runs the agent readiness checks (web/agent-check.mjs) against
+  the Worker; CI runs it on every pull request and adds the table to the Lighthouse comment.
 
 ## Deploy
 

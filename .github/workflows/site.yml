@@ -53,6 +53,10 @@ jobs:
             exit 1
           fi
       - run: npm run lighthouse
+      # Is Agentic scores only the live site, so the same checks run here on the built site and its
+      # Worker (web/agent-check.mjs); the result goes in the Lighthouse comment.
+      - if: ${{ !cancelled() }}
+        run: npm run agent-check
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

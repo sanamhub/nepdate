@@ -1,7 +1,7 @@
 name: lighthouse-comment
 
-# Posts a site's Lighthouse table (web/lighthouse.mjs) as one pull request comment, updated on each
-# push. site.yml and patro.yml call it after their build, so the build never holds a token that can
+# Posts a site's Lighthouse table (web/lighthouse.mjs), and under it the agent readiness table
+# (web/agent-check.mjs), as one pull request comment, updated on each push. site.yml and patro.yml call it after their build, so the build never holds a token that can
 # write; the caller runs it only for pull requests from this repository.
 
 on:
@@ -36,7 +36,10 @@ jobs:
           script: |
             const { existsSync, readFileSync } = await import("node:fs");
             if (!existsSync("lighthouse/summary.md")) return core.notice("No Lighthouse summary: the build stopped before it.");
-            const body = readFileSync("lighthouse/summary.md", "utf8");
+            // The agent readiness table (web/agent-check.mjs) goes under Lighthouse's, when the build got that far.
+            const agentFile = "lighthouse/agent-readiness.md";
+            const agent = existsSync(agentFile) ? `\n${readFileSync(agentFile, "utf8")}` : "";
+            const body = readFileSync("lighthouse/summary.md", "utf8") + agent;
             const marker = `<!-- ${process.env.SITE}-lighthouse -->`;
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
