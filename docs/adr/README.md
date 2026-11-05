@@ -14,6 +14,7 @@ repository. Immutable once accepted; supersede with a new ADR.
 | [0007](0007-one-version-line-for-every-sdk.md) | One version line for every NepDate SDK | Accepted |
 | [0008](0008-unreleased-port-version.md) | A port may declare a later line before its first release | Accepted (amends 0007 decision 3) |
 | [0009](0009-what-1.0-promises.md) | What 1.0 promises | Accepted |
+| [0010](0010-worker-for-agents.md) | A small Worker in front of both websites, for agents | Accepted (amends 0005 decision 5 and 0006) |
 
 New ADR: copy the shape of 0001 (Status, Date, Approved by, Context, Decision, Consequences,
 Alternatives considered) as `NNNN-kebab-title.md`.
