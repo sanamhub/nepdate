@@ -8,7 +8,8 @@ updates:
     open-pull-requests-limit: 5
     cooldown:
       default-days: 14
-  # The site's npm packages (ADR-0005), grouped so one PR carries a week's updates.
+  # The site's npm packages (ADR-0005), grouped so one PR carries a week's updates. NepDate's own
+  # packages skip the cooldown, so the site shows a new release as soon as it is published.
   - package-ecosystem: npm
     directory: /site
     schedule:
@@ -16,6 +17,7 @@ updates:
     open-pull-requests-limit: 5
     cooldown:
       default-days: 14
+      exclude: ["nepdate-core", "nepdate-patro", "nepdate-datepicker"]
     groups:
       site:
         patterns: ["*"]
@@ -23,3 +25,15 @@ updates:
     ignore:
       - dependency-name: typescript
         update-types: ["version-update:semver-major"]
+  # The patro site's npm packages (ADR-0006), on the same terms as the site's.
+  - package-ecosystem: npm
+    directory: /patro
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 14
+      exclude: ["nepdate-core", "nepdate-patro"]
+    groups:
+      patro:
+        patterns: ["*"]
