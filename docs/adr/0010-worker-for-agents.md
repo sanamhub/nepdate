@@ -1,8 +1,8 @@
 # ADR-0010: A small Worker in front of both websites, for agents
 
-- **Status:** proposed
+- **Status:** accepted
 - **Date:** 2026-11-05
-- **Approved by:** pending
+- **Approved by:** Sanam
 
 ## Context
 
