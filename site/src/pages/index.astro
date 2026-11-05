@@ -103,9 +103,19 @@ const title = "NepDate: fast Nepali dates for every language you ship";
 const languageList = new Intl.ListFormat("en", { type: "conjunction" }).format(ports.map((port) => port.name));
 const description = `Bikram Sambat (BS) date libraries for ${languageList}, built from one dataset and one spec so every language gives the same answer. Plus MitiBar, a Nepali calendar for your desktop, and a free online patro.`;
 
-// The strip near the end of the page: every language, then where the apps run. Two copies scroll as one loop.
+// The strip just above the footer: every language, the runtimes and frameworks the guides cover, then
+// where the apps run. Two copies scroll as one loop.
 const strip = [
   ...ports.map((port) => ({ id: port.id, label: port.name })),
+  { id: "dotnet", label: ".NET" },
+  { id: "node", label: "Node.js" },
+  { id: "deno", label: "Deno" },
+  { id: "bun", label: "Bun" },
+  { id: "flutter", label: "Flutter" },
+  { id: "webcomponents", label: "Web Components" },
+  { id: "react", label: "React" },
+  { id: "vue", label: "Vue" },
+  { id: "blazor", label: "Blazor" },
   { id: "windows", label: "Windows" },
   { id: "macos", label: "macOS" },
   { id: "linux", label: "Linux" },
@@ -119,17 +129,33 @@ const site = Astro.site?.href ?? "https://nepdate.com/";
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "WebSite", "@id": `${site}#site`, name: "NepDate", url: site, description },
+    { "@type": "WebSite", "@id": `${site}#site`, name: "NepDate", url: site, description, publisher: { "@id": `${site}#org` } },
+    {
+      "@type": "Organization",
+      "@id": `${site}#org`,
+      name: "NepDate",
+      url: site,
+      logo: new URL("/favicon.svg", site).href,
+      sameAs: [HUB],
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "technical support",
+        url: new URL("/contact/", site).href,
+        availableLanguage: ["English", "Nepali"],
+      },
+    },
     {
       "@type": "SoftwareSourceCode",
       name: "NepDate",
       programmingLanguage: ports.map((port) => port.name),
+      url: new URL("/docs/", site).href,
       codeRepository: HUB,
       license: "MIT",
     },
     {
       "@type": "SoftwareApplication",
       name: "MitiBar",
+      url: new URL("/mitibar/", site).href,
       description: "Today's Bikram Sambat date in the tray and taskbar, with a month calendar, tithi and public holidays.",
       applicationCategory: "UtilitiesApplication",
       operatingSystem: "Windows, macOS, Linux",
@@ -563,6 +589,16 @@ const jsonLd = {
     </div>
   </section>
 
+  <section class="section closing" aria-labelledby="data-title">
+    <div class="wrap closing-row">
+      <h2 id="data-title">Found a wrong date?</h2>
+      <p>
+        Report a wrong date, holiday or tithi once, with the <a href={DATA_ERROR_FORM}>data error form</a>. One fix in the
+        hub reaches every language.
+      </p>
+    </div>
+  </section>
+
   <section class="strip" aria-label="Languages and platforms">
     <div class="strip-track">
       {
@@ -585,16 +621,6 @@ const jsonLd = {
           </ul>
         ))
       }
-    </div>
-  </section>
-
-  <section class="section closing" aria-labelledby="data-title">
-    <div class="wrap closing-row">
-      <h2 id="data-title">Found a wrong date?</h2>
-      <p>
-        Report a wrong date, holiday or tithi once, with the <a href={DATA_ERROR_FORM}>data error form</a>. One fix in the
-        hub reaches every language.
-      </p>
     </div>
   </section>
 </Landing>

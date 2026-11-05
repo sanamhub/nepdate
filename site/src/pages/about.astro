@@ -1,0 +1,65 @@
+---
+// About: what NepDate is, where its data comes from and who stands behind it. Agents and readers
+// check this page before recommending the project.
+import InfoPage from "../components/InfoPage.astro";
+import { HUB, MITIBAR_REPO, PATRO, ports } from "../data/ports";
+
+const languages = new Intl.ListFormat("en", { type: "conjunction" }).format(ports.map((port) => port.name));
+const description =
+  "About NepDate: open source Bikram Sambat (Nepali calendar) libraries for every major language, a free online patro and the MitiBar desktop calendar, built from one dataset and one specification.";
+const site = Astro.site?.href ?? "https://nepdate.com/";
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  name: "About NepDate",
+  url: new URL("/about/", site).href,
+  description,
+  about: { "@id": `${site}#org` },
+};
+---
+
+<InfoPage title="About NepDate" heading="About NepDate" description={description} jsonLd={jsonLd}>
+  <p class="info-lede">
+    NepDate is a family of open source libraries and apps for the Bikram Sambat (BS) calendar, the official calendar of
+    Nepal. It answers the same question the same way in every language: which day is it, in BS and in AD.
+  </p>
+
+  <h2>What it is</h2>
+  <ul>
+    <li>
+      <strong>Libraries for {ports.length} languages:</strong>
+      {languages}. Each converts between BS and AD for every day from BS 1901 to 2199, formats and parses dates in
+      Nepali and English, and works with months, ranges and fiscal years. A separate patro package adds tithi, public
+      holidays and events. See the <a href="/docs/">documentation</a>.
+    </li>
+    <li>
+      <strong>A free online patro</strong> at <a href={PATRO}>patro.nepdate.com</a>, with a page for every month and
+      day.
+    </li>
+    <li><strong>MitiBar</strong>, a <a href="/mitibar/">desktop calendar</a> for Windows, macOS and Linux.</li>
+  </ul>
+
+  <h2>Where it comes from</h2>
+  <p>
+    NepDate started from the C# <a href="https://github.com/RajuPrasai/NepDate">NepDate</a> library, which remains the
+    reference: every other language is tested against answers recorded from it. The calendar data and the
+    specification live once, in the <a href={HUB}>hub repository</a>, and every language builds from that copy. Where
+    the month lengths, tithi and holidays come from is written down in{" "}
+    <a href="/docs/project/data/">Data and credits</a>.
+  </p>
+
+  <h2>How it is run</h2>
+  <p>
+    NepDate is maintained in the open on GitHub by its contributors. All code is MIT licensed, every change goes
+    through a public pull request with tests in each language, and releases are published to each language's own
+    registry from those repositories. There is no company, paid tier or advertising behind it. The{" "}
+    <a href={MITIBAR_REPO}>MitiBar source</a> is public too.
+  </p>
+
+  <h2>What it is not</h2>
+  <p>
+    NepDate is not affiliated with the Government of Nepal. Holiday and tithi data is informational: for an official
+    notice, check the government's own publication. To report a wrong date, or to reach the project, see{" "}
+    <a href="/contact/">Contact</a>.
+  </p>
+</InfoPage>

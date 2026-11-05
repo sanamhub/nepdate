@@ -1,0 +1,50 @@
+name: agent-readiness
+
+# How ready nepdate.com and patro.nepdate.com are for AI agents, as scored by Is Agentic
+# (is-agentic.com, the is-agentic CLI). The CLI reads the latest completed public report for a live
+# domain, so it cannot score a pull request's preview; the pull request gates are the site and
+# patro workflows. This one runs weekly and on demand, writes each score and its open issues to the
+# job summary, and never blocks anything.
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  score:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        site: [nepdate.com, patro.nepdate.com]
+    steps:
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - name: Score ${{ matrix.site }}
+        env:
+          SITE: ${{ matrix.site }}
+          NO_COLOR: "1"
+        run: |
+          set -euo pipefail
+          npx --yes is-agentic@1.0.1 "$SITE" --json > report.json
+          node -e '
+            const r = JSON.parse(require("fs").readFileSync("report.json", "utf8"));
+            const lines = [
+              `### ${r.display_target ?? process.env.SITE}: ${r.score}/100 (${r.score_label})`,
+              "",
+              `Scanned ${r.scanned_at}. [Full report](${r.report_url})`,
+              "",
+            ];
+            for (const issue of r.issues ?? []) {
+              const name = issue.name ?? issue.id;
+              const level = [issue.result, issue.tier].filter(Boolean).join(", ");
+              lines.push(`- ${name}${level ? ` (${level})` : ""}`);
+            }
+            require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");
+          '

@@ -1,0 +1,53 @@
+---
+// Contact: every way to reach the project, all public and on GitHub.
+import InfoPage from "../components/InfoPage.astro";
+import { DATA_ERROR_FORM, HUB } from "../data/ports";
+
+const description =
+  "How to reach NepDate: report a wrong date or holiday, ask a question, report a bug in a language library, or report a security problem privately.";
+const site = Astro.site?.href ?? "https://nepdate.com/";
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  name: "Contact NepDate",
+  url: new URL("/contact/", site).href,
+  description,
+  about: { "@id": `${site}#org` },
+};
+---
+
+<InfoPage title="Contact NepDate" heading="Contact" description={description} jsonLd={jsonLd}>
+  <p class="info-lede">
+    NepDate is run in the open on GitHub, so every way to reach the project goes through it. You need a free GitHub
+    account to open an issue. The maintainers read every issue.
+  </p>
+
+  <h2>A wrong date, holiday or tithi</h2>
+  <p>
+    Use the <a href={DATA_ERROR_FORM}>data error form</a> and choose "Data error". Say the BS date, what NepDate shows
+    and what it should show, with a source if you have one. One fix in the hub reaches every language, the patro and
+    MitiBar.
+  </p>
+
+  <h2>A question or a bug</h2>
+  <p>
+    For a question about the calendar, the documentation or the project, open an issue in the{" "}
+    <a href={`${HUB}/issues`}>hub repository</a>. A bug in one language's library goes to that library's repository,
+    linked from its guide (for example, the <a href="/docs/python/">Python guide</a> links to{" "}
+    <code>sanamhub/nepdate-python</code>). Include the version, the code you ran and what you expected.
+  </p>
+
+  <h2>A security problem</h2>
+  <p>
+    Do not open a public issue. Report it privately through{" "}
+    <a href={`${HUB}/security/advisories/new`}>GitHub security advisories</a>, or through the advisories of the
+    affected language's repository. Expect a first reply within a week. The{" "}
+    <a href={`${HUB}/blob/main/SECURITY.md`}>security policy</a> has the details.
+  </p>
+
+  <h2>Contributing</h2>
+  <p>
+    Fixes, translations and new examples are welcome. <a href="/docs/project/contributing/">Contributing</a> explains
+    how the repositories fit together and what a pull request needs.
+  </p>
+</InfoPage>
