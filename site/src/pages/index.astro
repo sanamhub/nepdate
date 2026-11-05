@@ -103,8 +103,8 @@ const title = "NepDate: fast Nepali dates for every language you ship";
 const languageList = new Intl.ListFormat("en", { type: "conjunction" }).format(ports.map((port) => port.name));
 const description = `Bikram Sambat (BS) date libraries for ${languageList}, built from one dataset and one spec so every language gives the same answer. Plus MitiBar, a Nepali calendar for your desktop, and a free online patro.`;
 
-// The strip just above the footer: every language, the runtimes and frameworks the guides cover, then
-// where the apps run. Two copies scroll as one loop.
+// The strip before the closing line: every language, the runtimes and frameworks the guides cover,
+// then where the apps run. Two copies scroll as one loop.
 const strip = [
   ...ports.map((port) => ({ id: port.id, label: port.name })),
   { id: "dotnet", label: ".NET" },
@@ -589,16 +589,6 @@ const jsonLd = {
     </div>
   </section>
 
-  <section class="section closing" aria-labelledby="data-title">
-    <div class="wrap closing-row">
-      <h2 id="data-title">Found a wrong date?</h2>
-      <p>
-        Report a wrong date, holiday or tithi once, with the <a href={DATA_ERROR_FORM}>data error form</a>. One fix in the
-        hub reaches every language.
-      </p>
-    </div>
-  </section>
-
   <section class="strip" aria-label="Languages and platforms">
     <div class="strip-track">
       {
@@ -621,6 +611,16 @@ const jsonLd = {
           </ul>
         ))
       }
+    </div>
+  </section>
+
+  <section class="section closing" aria-labelledby="data-title">
+    <div class="wrap closing-row">
+      <h2 id="data-title">Found a wrong date?</h2>
+      <p>
+        Report a wrong date, holiday or tithi once, with the <a href={DATA_ERROR_FORM}>data error form</a>. One fix in the
+        hub reaches every language.
+      </p>
     </div>
   </section>
 </Landing>
