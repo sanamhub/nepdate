@@ -9,7 +9,8 @@ import { MITIBAR_RELEASE, MITIBAR_VERSION } from "../../../../data/ports";
 MitiBar keeps today's BS date in the tray, with a month grid, tithi, public holidays, a converter and
 settings one click away. On Windows a small floating bar shows the date and time wherever you put it.
 The popup opens from the tray, the bar or a global shortcut, Win+Shift+N, and closes when it loses
-focus. It makes no network requests.
+focus. It connects to the internet only when you press Check for updates, or, if you turn on automatic
+checks, when Settings opens, at most once a day.
 
 It is built on the [Rust library](/docs/rust/) and lives in its own repository,
 [sanamhub/mitibar](https://github.com/sanamhub/mitibar), with its own version line.
