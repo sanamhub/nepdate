@@ -55,7 +55,7 @@ const shots = [
 ];
 
 const description =
-  "MitiBar is a small Nepali date widget for Windows, macOS and Linux. Today's Bikram Sambat date stays on your screen, and the month with tithi and holidays is one click away. Open source, no network access.";
+  "MitiBar is a small Nepali date widget for Windows, macOS and Linux. Today's Bikram Sambat date stays on your screen, and the month with tithi and holidays is one click away. Open source, no account and no tracking.";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -214,7 +214,7 @@ const jsonLd = {
         </div>
         <div>
           <dt>0</dt>
-          <dd>Network connections. No account, no ads, no tracking.</dd>
+          <dd>Network connections while it waits. No account, no ads, no tracking.</dd>
         </div>
       </dl>
       <p class="mb-fine">
@@ -282,7 +282,9 @@ const jsonLd = {
           approved by hand, for a release built from a tagged commit.
         </p>
         <p>
-          Privacy: MitiBar makes no network connections and sends nothing to any other computer. It keeps a settings file
+          Privacy: MitiBar sends nothing about you to any other computer. It connects to the internet only when you press
+          Check for updates, or, if you turn on automatic checks, when Settings opens, at most once a day, and then asks
+          GitHub only for the latest version number. It keeps a settings file
           and a log on your own machine. The list of everything inside each build is in its{" "}
           <a href={SBOM.url}>software bill of materials</a>.
         </p>

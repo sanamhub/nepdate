@@ -42,7 +42,7 @@ function rubygems(version: string): string {
 /** The date picker is a UI component outside the SDK line and keeps its own version (ADR-0007 decision 6). */
 export const DATEPICKER_VERSION = "0.1.0-beta.3";
 /** MitiBar's release, tagged in its own repository (it has its own version line). */
-export const MITIBAR_VERSION = "1.0.0";
+export const MITIBAR_VERSION = "1.1.0";
 /** C# NepDate, the original library the ports are checked against (hub ADR-0003). */
 export const CSHARP_VERSION = "2.0.7";
 export const MITIBAR_REPO = "https://github.com/sanamhub/mitibar";
