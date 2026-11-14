@@ -21,7 +21,7 @@
     "@fontsource-variable/jetbrains-mono": "5.3.0",
     "@fontsource-variable/noto-sans": "5.3.0",
     "@fontsource-variable/noto-sans-devanagari": "5.3.0",
-    "astro": "7.4.1",
+    "astro": "7.4.12",
     "nepdate-core": "0.1.0-rc.1",
     "nepdate-datepicker": "0.1.0-beta.1",
     "nepdate-patro": "0.1.0-rc.1",
