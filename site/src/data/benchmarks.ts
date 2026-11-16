@@ -49,7 +49,7 @@ export const benchmarks: PortBenchmark[] = [
     id: "rust",
     name: "Rust",
     machine: LAPTOP,
-    ops: [2.98, 3.31, 3.25, 2.11, 14.92, 12.84, 3.46, 204.65],
+    ops: [2.95, 3.89, 3.34, 2.17, 15.97, 13.07, 3.42, 219.14],
     competitors: [],
     source: blob("nepdate-rust", "docs/benchmarks.md"),
   },
