@@ -11,7 +11,7 @@ import sectionsCss from "../styles/landing-sections.css?url";
 import appIcon from "../assets/mitibar-icon.png";
 import OsIcon from "../components/landing/OsIcon.astro";
 import { line, presets } from "../scripts/mitibar-bar";
-import { MITIBAR_REPO, MITIBAR_VERSION, PATRO } from "../data/ports";
+import { MITIBAR_REPO, MITIBAR_VERSION, PATRO, ports } from "../data/ports";
 import {
   BENCHMARKS,
   NEPDATE_WIDGET,
@@ -306,7 +306,7 @@ const jsonLd = {
       <div>
         <h2>Need the calendar in your own code?</h2>
         <p>
-          MitiBar is built on the <a href="/">NepDate libraries</a>, which convert dates the same way in nine languages.
+          MitiBar is built on the <a href="/">NepDate libraries</a>, which convert dates the same way in {ports.length} languages.
           The full calendar, with every month's holidays, is on <a href={PATRO}>Patro</a>.
         </p>
       </div>

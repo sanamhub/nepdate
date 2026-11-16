@@ -1,6 +1,6 @@
 // Download counts, read from each registry's public API when the site is built. Only registries
-// that publish counts appear: Go modules, SwiftPM, Maven Central and CMake FetchContent have no
-// public count, so those languages show none. A failed or slow request leaves its language
+// that publish counts appear: Go modules, SwiftPM, Maven Central, CMake FetchContent and Zig
+// packages have no public count, so those languages show none. A failed or slow request leaves its language
 // without a count; it never fails the build and never falls back to a made-up number.
 
 export interface Downloads {

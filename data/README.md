@@ -12,7 +12,7 @@ files at runtime.
 | `NOTICE` | MIT notice of the upstream NepDate project, rendered from `tools/NOTICE.template` by the importer |
 
 Rules:
-- Data comes from C# NepDate through the weekly sync PR. Hand edits only when upstream can't
+- Data comes from C# NepDate through the upstream sync PR. Hand edits only when upstream can't
   take a fix in time, with a source for every change. Procedure, sources and one-time setup:
   [`docs/runbooks/data-update.md`](https://github.com/sanamhub/nepdate/blob/main/docs/runbooks/data-update.md).
 - After any change: `py tools/make_vectors.py`, then `py spec/reference/verify_vectors.py`.
@@ -40,4 +40,4 @@ Known correct anchors all match: 2000-01-01 = 1943-04-14, 2065-02-15 = 2008-05-2
 
 Schema gap: holidays for some people only (Kathmandu Valley, women employees, one community) are
 marked only in the event name, and holidays the government announces late are missing until the
-next sync. Proposed fix: schema 2 with `scope` and `tbd` fields (`docs/plan/00-ROADMAP.md`).
+next sync. Proposed fix: schema 2 with `scope` and `tbd` fields.

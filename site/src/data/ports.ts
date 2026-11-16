@@ -14,7 +14,7 @@ export type Sdk = keyof typeof versions;
 /** The release candidate every port publishes at the 1.0 line. */
 export const RELEASE_VERSION = "1.0.0-rc.1";
 /**
- * The same version as PyPI spells it (PEP 440): 0.1.0-beta.1 is 0.1.0b1, 0.1.0-rc.1 is 0.1.0rc1.
+ * The same version as PyPI spells it (PEP 440): 1.0.0-rc.1 is 1.0.0rc1, 1.1.0-beta.1 is 1.1.0b1.
  * This is the site's copy of the mapping in tools/version_line.py.
  */
 export const PYPI_VERSION = pep440(versions.python);

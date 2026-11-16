@@ -1,7 +1,8 @@
-# Runbook: release day for a minor version
+# Runbook: release day for a minor or major version
 
 Decided in ADR-0007. A minor version releases every SDK on the same day, so the line moves in one
-hub pull request before any port releases. A patch release does not use this runbook: one port
+hub pull request before any port releases. A major version, and the stable release that follows a
+release candidate, use the same steps. A patch release does not use this runbook: one port
 bumps its own manifest, releases, and then its entry in `spec/versions.json` is updated, which
 redeploys nepdate.com.
 
@@ -21,11 +22,12 @@ that, the equality rule of ADR-0007 applies to it.
 - [ ] Each port's changelog has its `Unreleased` section ready. A port with no change gets the line
       "No change in this port; released to keep every SDK on one version."
 - [ ] Pick the pre-release suffix, `-beta.N` for the first public builds or `-rc.N` for a release
-      candidate. The same suffix goes in every SDK (ADR-0007 decision 4).
+      candidate, or none for the stable release. The same suffix goes in every SDK (ADR-0007
+      decision 4). Between a release candidate and its stable release only fixes land (ADR-0009).
 
 ## The hub pull request
 
-- [ ] In `spec/versions.json`, set `line` to the new `MAJOR.MINOR`, for example `0.2`. Leave the
+- [ ] In `spec/versions.json`, set `line` to the new `MAJOR.MINOR`, for example `1.1`. Leave the
       `sdks` entries on the versions each port has released: an entry may trail the line, never
       lead it, and the site shows the entries, so it never names a version a registry does not
       serve yet.
@@ -40,15 +42,18 @@ For every port that has released, in any order, and for a new port making its fi
       port's `shared-check` fails until its own version is on the new line. That failure is the
       intended reminder.
 - [ ] In the same PR, bump the port's manifest and changelog to the new version, for example
-      `0.2.0-beta.1`: the Cargo workspace, the core `package.json`, `pyproject.toml`,
-      `gradle.properties`, the CMake `project(VERSION)` or the Conan recipe, and the C CMake or
-      `build.zig.zon`. The core and the patro of one port carry the same version (ADR-0004
-      decision 3).
+      `1.1.0-beta.1`. Each port's `docs/runbooks/release.md` names its manifests: the Cargo
+      workspace, the `package.json` files, `pyproject.toml`, `gradle.properties` (Kotlin and
+      Java), the CMake `project(VERSION)` with the Conan and vcpkg recipes (C++ and C),
+      `pubspec.yaml`, `composer.json`, the Ruby `version.rb` files and `build.zig.zon`. The core
+      and the patro of one port carry the same version (ADR-0004 decision 3).
 - [ ] Run the port's full CI command until it passes, then merge the PR.
 - [ ] Release with the port's own release workflow, after its approval gate.
-- [ ] Tag and name the version as ADR-0007 decision 4 says. Rust, Go, TypeScript, Kotlin, C and C++ tags
-      start with `v` (`v0.2.0-beta.1`), the Swift package tag has no `v` (`0.2.0-beta.1`), and PyPI
-      receives the PEP 440 spelling (`0.2.0b1`). Rust's older `nepdate-v*` tags stay as they are.
+- [ ] Tag and name the version as ADR-0007 decision 4 says. Every tag starts with `v`
+      (`v1.1.0-beta.1`) except the Swift package tag, which has none (`1.1.0-beta.1`). PyPI
+      receives the PEP 440 spelling (`1.1.0b1`) and RubyGems the Ruby one (`1.1.0.beta.1`);
+      `tools/version_line.py` holds both mappings. Rust's older `nepdate-v*` tags stay as they
+      are. The GitHub release is titled with the tag.
 - [ ] If a port's tag shape changes, update the `production` environment's deployment tag rules in
       that repository too. A tag the rules do not match waits at the approval gate until it is added.
 - [ ] Once the release is on the registry, update that port's entry in `spec/versions.json` in a
@@ -58,4 +63,7 @@ For every port that has released, in any order, and for a new port making its fi
 ## After the releases
 
 - [ ] `py tools/version_line.py --check` lists no port as "not yet released" on the new line.
-- [ ] Open the site's Versions page and check each version, including the Python spelling.
+- [ ] Open the site's Versions page and check each version, including the Python and Ruby
+      spellings.
+- [ ] For a stable release, remove the release-candidate note from each language page of the
+      site and the pre-release flags from its install lines (`site/src/data/ports.ts`).
