@@ -1,4 +1,4 @@
-# tools/: one-off importers (not part of the build)
+# tools/: importers, generators and checks
 
 | Tool | Run from repo root | Purpose |
 |---|---|---|
@@ -6,7 +6,7 @@
 | `csharp-golden/` | `bash tools/csharp-golden/regenerate.sh` (or `dotnet run --project tools/csharp-golden -- spec/vectors/csharp-golden` followed by `py tools/make_vectors.py`) | Records the behaviour of the NepDate NuGet package (version pinned in the `.csproj`) as golden TSV files (ADR-0003, `spec/PARITY.md`). The `regenerate.sh` wrapper also writes the reference-only `year-length.tsv` and the data vectors. Needs the .NET 10 SDK, because the serialization rows use the package's `System.Text.Json` version. Regenerating against a new NepDate version is a maintainer decision. |
 | `api_coverage.py` | `py tools/api_coverage.py` or `py tools/api_coverage.py --check` | Fails when a row of `spec/API.md` has no vector, clock note or decision, when a named vector file is missing, when the group counts do not match the tables, or when one of the new vector files is not named by any row. |
 | `csharp-exhaustive/` | `dotnet run -c Release --project tools/csharp-exhaustive -p:NepDateSource=<NepDate-clone> -- <out-dir>` | Builds C# NepDate from source and writes what it computes for every BS day, every AD day and every metadata day. Needs the .NET 8 SDK. |
-| `compare_exhaustive.py` | `py tools/compare_exhaustive.py <out-dir>` | Compares that output with `data/` using only Python's `datetime`. Exits 1 on any difference. Last run: 0 differences on `cb05cb65`. |
+| `compare_exhaustive.py` | `py tools/compare_exhaustive.py <out-dir>` | Compares that output with `data/` using only Python's `datetime`. Exits 1 on any difference. |
 | `make_vectors.py` | `py tools/make_vectors.py [--check]` | Regenerates `spec/vectors/month-boundaries.csv`, the reference-only `spec/vectors/year-length.tsv` and `spec/vectors/patro-summary.json` from `data/` with the calendar functions in `spec/reference/nepcal.py`. The year length is the sum of the twelve month lengths (D-12). The summary holds the patro counts every port reads. `--check` exits 1 when a committed file differs. |
 | `dotnet-bench/` | `dotnet run -c Release -f net10.0 --project tools/dotnet-bench -- --filter "*" --artifacts <dir>` | C# NepDate baseline for `spec/BENCHMARK.md` B1–B8 (BenchmarkDotNet, pinned to logical CPU 2). Results: `docs/benchmarks/dotnet.md`. |
 | `data_sanity.py` | `py tools/data_sanity.py` | Runs the checks behind `data/README.md` "Known data questions"; exits 1 on a finding not in `data/known-questions.json`. |
@@ -16,6 +16,7 @@
 | `upstream_sync.py` | `py tools/upstream_sync.py <command> [options]`, `--help` per command | The reporting half of `.github/workflows/upstream-sync.yml`: compares the newest NepDate release on nuget.org with the one `csharp-golden` pins, lists the upstream commits outside `Core/Dictionaries`, and folds the checks' logs into `report.md`, the PR body and one body per issue. `issue` opens the labelled issue or comments on it when its body changed, through `gh`, and `issues` does that for each row of the artifact's `issues.tsv` after checking it; `apply` puts the check job's artifact into a checkout and writes the PR step's outputs. |
 | `data_status.py` | `py tools/data_status.py [--strict] [--today YYYY-MM-DD]` | Prints how far tithi, holiday and event data reach; exits 1 when holidays end within 183 days, and with `--strict` also when tithi or events do. `--today` (AD) replaces today's date. CI runs it as information only. |
 | `package_status.py` | `py tools/package_status.py [--json <file>] [--md <file>]` | Reads `spec/packages.json` and asks the public GitHub API for each port's newest scheduled install check (the `weekly` job) and newest scheduled registry check (the `metadata` job), walking the workflow's scheduled runs newest first and reading a run's jobs only until both checks are found. Writes the status JSON (an `install` and a `registry` object per port, each with version, result, day and run URL) and a Markdown table. A check with no scheduled run in the window is "not checked". `GITHUB_TOKEN` is used only to raise the rate limit. |
+| `logo.py` | `py tools/logo.py assets/logo <path-to-NotoSans-Variable.ttf>` | Draws the family logo and the one per port as SVG and PNG. Run only when a logo changes or a port is added. |
 
 Tests for the tools live in `tools/tests/` (`py -m unittest discover -s tools/tests`, run by `scripts/ci.sh`).
 

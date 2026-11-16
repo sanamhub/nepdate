@@ -33,7 +33,7 @@ events). The API is stable from 1.0 ([ADR-0009](docs/adr/0009-what-1.0-promises.
 
 | Language | Core | Patro | Latest | Repository |
 |---|---|---|---|---|
-| C# | [`NepDate`](https://www.nuget.org/packages/NepDate) | in the same package | [![NuGet](https://img.shields.io/nuget/v/NepDate?logo=nuget&label=)](https://www.nuget.org/packages/NepDate) | [RajuPrasai/NepDate](https://github.com/RajuPrasai/NepDate) |
+| C# | [`NepDate`](https://www.nuget.org/packages/NepDate) | in the same package | [![NuGet](https://img.shields.io/nuget/v/NepDate?logo=nuget&label=)](https://www.nuget.org/packages/NepDate) | [NepDate](https://github.com/RajuPrasai/NepDate) |
 | TypeScript | [`nepdate-core`](https://www.npmjs.com/package/nepdate-core) | [`nepdate-patro`](https://www.npmjs.com/package/nepdate-patro) | [![npm](https://img.shields.io/npm/v/nepdate-core/rc?logo=npm&label=)](https://www.npmjs.com/package/nepdate-core) | [nepdate-typescript](https://github.com/sanamhub/nepdate-typescript) |
 | Python | [`nepdate-core`](https://pypi.org/project/nepdate-core/) | [`nepdate-patro`](https://pypi.org/project/nepdate-patro/) | [![PyPI](https://img.shields.io/pypi/v/nepdate-core?include_prereleases&logo=python&logoColor=white&label=)](https://pypi.org/project/nepdate-core/) | [nepdate-python](https://github.com/sanamhub/nepdate-python) |
 | PHP | [`sanamhub/nepdate`](https://packagist.org/packages/sanamhub/nepdate) | [`sanamhub/nepdate-patro`](https://packagist.org/packages/sanamhub/nepdate-patro) | [![Packagist](https://img.shields.io/packagist/v/sanamhub/nepdate?include_prereleases&logo=packagist&logoColor=white&label=)](https://packagist.org/packages/sanamhub/nepdate) | [nepdate-php](https://github.com/sanamhub/nepdate-php) |
@@ -86,8 +86,10 @@ spec/            algorithm, formatting, parsing, patro, parity, vectors, referen
 tools/           importer, golden vector generator, data checks
 docs/adr/        decisions that bind every port
 docs/runbooks/   data updates, syncing and releases
+scripts/         the CI command
 site/            nepdate.com: landing page and docs
 patro/           patro.nepdate.com
+web/             code the two sites share
 assets/logo/     the family logo and one per port
 ```
 
@@ -99,7 +101,7 @@ Python 3.10 or newer, nothing else:
 python spec/reference/verify_vectors.py
 ```
 
-It checks the algorithm spec against 7,176 month-boundary vectors and 21,126 golden rows recorded
+It checks the algorithm spec against 7,176 month-boundary vectors and 21,129 golden rows recorded
 from C# NepDate, the 299-year reference year lengths, the formatting and parsing specs and the API
 coverage. `scripts/ci.sh` runs that and the data checks, as CI does.
 

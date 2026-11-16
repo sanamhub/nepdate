@@ -36,7 +36,7 @@ on:
         type: string
         default: ubuntu-24.04
       dart-sdk:
-        description: Install the pinned Dart SDK before the regenerate step, for a Dart spoke whose generator needs one the runner image does not carry.
+        description: Install the stable Dart SDK before the regenerate step, for a Dart spoke whose generator needs one the runner image does not carry.
         type: boolean
         default: false
       ci-workflow:

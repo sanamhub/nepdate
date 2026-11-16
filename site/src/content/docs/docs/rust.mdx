@@ -4,7 +4,7 @@ description: Install and use the nepdate and nepdate-patro crates.
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { RELEASE_VERSION, versions } from "../../../data/ports";
+import { versions } from "../../../data/ports";
 
 `nepdate` converts between BS and AD, formats and parses Nepali dates, does date arithmetic,
 inclusive ranges and fiscal years. `nepdate-patro` adds tithi, public holidays and events. The core
@@ -12,9 +12,8 @@ is `no_std` with no dependencies by default, its core operations allocate nothin
 no `unsafe` code.
 
 :::caution[Release candidate]
-This is <code>{versions.rust}</code>, the last release on the 0.2 line.
-<code>{RELEASE_VERSION}</code> is the release candidate on the 1.0 line, and the API is
-stable from 1.0.
+This is <code>{versions.rust}</code>, the release candidate for Rust on crates.io. The API is stable
+from 1.0 (hub ADR-0009).
 :::
 
 ## Install

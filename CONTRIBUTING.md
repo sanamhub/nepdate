@@ -9,7 +9,7 @@ described in [SECURITY.md](SECURITY.md), not in a public issue.
 ## Scope
 
 A bug in one port's code goes to that port's repository. This repository takes changes to the
-data, the spec, the vectors and the Python tools.
+data, the spec, the vectors, the Python tools and the two websites.
 
 **Data goes upstream first.** Calendar data comes from C# [NepDate](https://github.com/RajuPrasai/NepDate)
 (ADR-0002). To fix a month length, holiday or tithi, send the fix to NepDate. A hand edit here is
@@ -53,7 +53,7 @@ checks them:
 ## Commit messages
 
 [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): summary`, imperative,
-lower case, no trailing period. Scopes: `data`, `spec`, `tools`, `ci`. The body says why, not
+lower case, no trailing period. Scopes: `data`, `spec`, `tools`, `site`, `patro`, `ci`. The body says why, not
 what.
 
 By contributing you agree that your contribution is licensed under the MIT license

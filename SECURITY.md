@@ -1,7 +1,8 @@
 # Security policy
 
-This repository holds data, specs and Python tools; it ships no package. A security problem here
-is most likely in a workflow (`.github/workflows/`) or in data that every port vendors.
+This repository holds data, specs, Python tools and the two websites (`site/`, `patro/` and their
+shared `web/` code); it ships no package. A security problem here is most likely in a workflow
+(`.github/workflows/`), in a site's Worker, or in data that every port vendors.
 
 ## Reporting a vulnerability
 

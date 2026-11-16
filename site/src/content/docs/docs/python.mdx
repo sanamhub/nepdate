@@ -4,7 +4,7 @@ description: Install and use nepdate-core and nepdate-patro from PyPI.
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { PYPI_VERSION, RELEASE_VERSION } from "../../../data/ports";
+import { PYPI_VERSION } from "../../../data/ports";
 
 Bikram Sambat dates, conversion, formatting, parsing, ranges and fiscal years for Python 3.11 and
 newer. Pure Python, zero runtime dependencies (except `tzdata` on Windows, for `today()`), typed
@@ -18,9 +18,8 @@ newer. Pure Python, zero runtime dependencies (except `tzdata` on Windows, for `
   the other ports.
 
 :::caution[Release candidate]
-This is <code>{PYPI_VERSION}</code>, the last release on the 0.2 line, on PyPI.
-<code>{RELEASE_VERSION}</code> is the release candidate on the 1.0 line, and the API is
-stable from 1.0.
+This is <code>{PYPI_VERSION}</code>, the release candidate for Python on PyPI. The API is stable
+from 1.0 (hub ADR-0009).
 :::
 
 ## Install

@@ -4,7 +4,7 @@ description: Install and use nepdate-core and nepdate-patro from npm, in Node, D
 ---
 
 import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
-import { RELEASE_VERSION, versions } from "../../../data/ports";
+import { versions } from "../../../data/ports";
 
 Two npm packages, released together with the same version:
 
@@ -21,9 +21,8 @@ Pure TypeScript, no WASM and no time zone guessing. Node 22.12.0 and later, Deno
 browsers.
 
 :::caution[Release candidate]
-This is <code>{versions.typescript}</code>, the last release on the 0.2 line, on the `rc` dist-tag.
-<code>{RELEASE_VERSION}</code> is the release candidate on the 1.0 line, and the API is
-stable from 1.0.
+This is <code>{versions.typescript}</code>, the release candidate for TypeScript, on npm under
+the `rc` dist-tag. The API is stable from 1.0 (hub ADR-0009).
 :::
 
 :::note[Why not `nepdate`?]

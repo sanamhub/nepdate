@@ -11,7 +11,7 @@ no releases; ports pin a commit in `shared/VERSION` (ADR-0001). Format:
 - Calendar and patro data imported from C# NepDate at `cb05cb65` and cross-validated:
   `data/calendar/bs-calendar.json` and `data/patro/2077.json` to `2084.json`.
 - Specs for the algorithm, formatting, parsing, patro data and C# parity, with deviations D-01 to
-  D-15.
+  D-16.
 - Conformance vectors: month boundaries, parse cases, and golden rows recorded from NepDate 2.0.7.
 - A catalogue of C# NepDate's own tests (`spec/vectors/csharp-tests/catalog.tsv`, 542 rows), each
   mapped to the porting phase that covers it.
@@ -43,6 +43,15 @@ no releases; ports pin a commit in `shared/VERSION` (ADR-0001). Format:
   version. `tools/version_line.py` validates the file and checks one port's version, and
   `shared-check` runs that check when a port passes `sdk` and `version` (ADR-0007). The site reads
   the versions from the file, and `docs/runbooks/release-minor.md` is the release-day checklist.
+- `spec/API.md` lists every public operation with its name in each language, and golden vectors
+  cover the whole API; `tools/api_coverage.py` fails when a row has no vector, clock note or
+  decision.
+- Ports for C, PHP, Dart, Java, Ruby and Zig joined the version line, `spec/versions.json` and
+  `spec/packages.json`.
+- ADR-0008 (a port that has not released may sit on a later line) and ADR-0009 (what 1.0
+  promises). The version line is `1.0`.
+- nepdate.com (`site/`) and patro.nepdate.com (`patro/`), with the code they share in `web/`
+  (ADR-0006, ADR-0010), and a public Nepal holidays calendar feed.
 
 ### Changed
 

@@ -4,7 +4,7 @@ description: Add the NepDate and NepDatePatro products with Swift Package Manage
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { RELEASE_VERSION, versions } from "../../../data/ports";
+import { versions } from "../../../data/ports";
 
 One SwiftPM package with two products: `NepDate` (dates, conversion, arithmetic, formatting,
 parsing, ranges, fiscal years and errors) and `NepDatePatro` (tithi, public holidays and events for
@@ -16,9 +16,8 @@ need Foundation; `Date` interop and `FormatStyle` compile in where Foundation ex
 for widget and watch extensions. Apple platforms, Linux and Windows are all built in CI.
 
 :::caution[Release candidate]
-This is <code>{versions.swift}</code>, the last release on the 0.2 line.
-<code>{RELEASE_VERSION}</code> is the release candidate on the 1.0 line, and the API is
-stable from 1.0.
+This is <code>{versions.swift}</code>, the release candidate for Swift. The API is stable
+from 1.0 (hub ADR-0009).
 :::
 
 :::note[Not `Calendar.Identifier.vikram`]

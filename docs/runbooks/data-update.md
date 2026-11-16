@@ -2,9 +2,9 @@
 
 Decided in ADR-0001 §3 (spokes vendor the hub) and ADR-0002 §6 (upstream first).
 
-**Why this matters:** tithi data ends at **BS 2083-12-30** (≈ 13 April 2027) and 2084 has 7
-days of data. After that every port shows no tithi and no holidays. Nothing crashes, but apps
-like the widget look broken. Month lengths beyond the officially published years are
+**Why this matters:** tithi data ends at **BS 2083-12-30** (≈ 13 April 2027), and holidays and
+events end at **BS 2084-08-20** (`spec/vectors/patro-summary.json`). After those days every port
+shows no tithi and then no holidays. Nothing crashes, but apps like MitiBar look broken. Month lengths beyond the officially published years are
 projections carried over from NepDate.
 
 ## How data flows
@@ -18,8 +18,8 @@ nuget.org ───┐
                                                                            │
             ┌───────────(Tue) shared-sync.yml in each spoke──────────┐
             ▼                                ▼                        ▼
-   nepdate-rust PR "chore(shared): …"  nepdate-go PR …     nepdate-typescript, -python,
-   shared/ + regenerated tables        (same workflow)      -swift, -kotlin PRs …
+   nepdate-rust PR "chore(shared): …"  nepdate-go PR …     the same PR in every
+   shared/ + regenerated tables        (same workflow)      other port
             │ review, CI, merge, patch release
 ```
 
