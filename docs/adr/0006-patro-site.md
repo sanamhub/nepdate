@@ -1,8 +1,8 @@
 # ADR-0006: patro.nepdate.com, a calendar site built from patro/ in the hub
 
-- **Status:** proposed
+- **Status:** accepted
 - **Date:** 2026-10-29
-- **Approved by:** pending (Sanam)
+- **Approved by:** Sanam
 - **Amends:** [ADR-0005](0005-website-on-nepdate-com.md) decision 3 (one host)
 
 ## Context

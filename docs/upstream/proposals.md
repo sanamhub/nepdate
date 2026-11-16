@@ -83,6 +83,10 @@ published. If the terms don't allow redistribution, rebuild the metadata from pr
 government's public holiday notice and the Nepal Panchanga Nirnayak Samiti's panchang. A longer-term option is for NepDate to
 generate its C# files from the hub's `data/` JSON, giving one reviewed source for every language.
 
+Hub decision, 2026-11-16: the owner approved shipping `nepdate-patro` in public releases while
+this question is open, because the family is free, open source and not commercial, and its code
+and data are public. The question to upstream stays.
+
 ## U-05 Docs: metadata range
 
 The changelog (2.0.0, 2.0.7) and the XML docs on `CalendarInfo` say metadata covers BS 2001–2089.

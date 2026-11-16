@@ -50,6 +50,11 @@ no releases; ports pin a commit in `shared/VERSION` (ADR-0001). Format:
   `spec/packages.json`.
 - ADR-0008 (a port that has not released may sit on a later line) and ADR-0009 (what 1.0
   promises). The version line is `1.0`.
+- ADR-0011: the performance changes merged after `1.0.0-rc.1` ship in `1.0.0`, as a one-time
+  exception to ADR-0009 decision 4.
+- `spec/BENCHMARK.md` has targets and usage floors for Java, Ruby, C, Dart, PHP and Zig, and
+  `spec/PARITY.md` D-11 and `spec/API.md` O-07 name the serialization hooks of Java, Ruby and
+  Zig.
 - nepdate.com (`site/`) and patro.nepdate.com (`patro/`), with the code they share in `web/`
   (ADR-0006, ADR-0010), and a public Nepal holidays calendar feed.
 

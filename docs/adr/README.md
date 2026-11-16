@@ -10,11 +10,12 @@ repository. Immutable once accepted; supersede with a new ADR.
 | [0003](0003-parity-with-csharp.md) | Parity with C# NepDate, one set of deviations for every port | Accepted |
 | [0004](0004-patro-in-a-separate-package.md) | Patro (tithi, holidays, events) in a separate package | Accepted |
 | [0005](0005-website-on-nepdate-com.md) | The website on nepdate.com, built from site/ in the hub | Accepted |
-| [0006](0006-patro-site.md) | patro.nepdate.com, a calendar site built from patro/ in the hub | Proposed (amends 0005 decision 3) |
+| [0006](0006-patro-site.md) | patro.nepdate.com, a calendar site built from patro/ in the hub | Accepted (amends 0005 decision 3) |
 | [0007](0007-one-version-line-for-every-sdk.md) | One version line for every NepDate SDK | Accepted |
 | [0008](0008-unreleased-port-version.md) | A port may declare a later line before its first release | Accepted (amends 0007 decision 3) |
 | [0009](0009-what-1.0-promises.md) | What 1.0 promises | Accepted |
 | [0010](0010-worker-for-agents.md) | A small Worker in front of both websites, for agents | Accepted (amends 0005 decision 5 and 0006) |
+| [0011](0011-performance-work-before-1.0.md) | Performance work lands between 1.0.0-rc.1 and 1.0.0 | Accepted (amends 0009 decision 4 for 1.0.0 only) |
 
 New ADR: copy the shape of 0001 (Status, Date, Approved by, Context, Decision, Consequences,
 Alternatives considered) as `NNNN-kebab-title.md`.
