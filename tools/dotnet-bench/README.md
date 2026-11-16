@@ -18,7 +18,7 @@ dotnet run -c Release -f net10.0 --project tools/dotnet-bench -- --filter "*" --
 The config runs every benchmark twice, once on .NET 10 and once on .NET 8 (both runtimes must be
 installed). Each job is pinned to logical CPU 2 (`WithAffinity(0x4)`) and to the machine's Ultimate
 Performance GUID, as BENCHMARK §1 asks, so no `start /affinity` wrapper is needed. A full run took
-6 min 5 s on the reference machine. BenchmarkDotNet writes Markdown, CSV and HTML reports to
+5 min 50 s on the reference machine. BenchmarkDotNet writes Markdown, CSV and HTML reports to
 `<out-dir>/results/`; copy the `.md` and `.csv` files to `docs/benchmarks/raw/`.
 
 To run only the other libraries, with NepDate's B1 and B2 in the same session:
