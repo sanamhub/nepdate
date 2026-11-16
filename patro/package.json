@@ -4,7 +4,7 @@
   "type": "module",
   "description": "patro.nepdate.com: the Nepali calendar with tithi, public holidays and events",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.23.4"
   },
   "scripts": {
     "dev": "astro dev",
