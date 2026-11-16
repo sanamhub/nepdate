@@ -367,9 +367,10 @@ pub fn main() !void {
 
 ## Speed
 
-On the same laptop as the other ports, C converts BS to AD in about 4.9 ns and AD to BS in about
-6.1 ns, 2.7 times faster on BS to AD and 3.3 times faster on AD to BS than C# NepDate. The Rust port
-is faster on every operation, so the other ports keep their own code instead of calling into C. The
+On the same laptop as the other ports, C converts BS to AD in about 5.4 ns and AD to BS in about
+7.4 ns, 2.5 times faster on BS to AD and 2.5 times faster on AD to BS than C# NepDate. The Rust port
+is faster on seven of the eight operations (C is ahead on the strict parse), so the other ports keep
+their own code instead of calling into C. The
 numbers and how they were measured are on the [performance page](/docs/project/performance/).
 
 ## Reference

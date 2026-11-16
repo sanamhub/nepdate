@@ -49,7 +49,7 @@ export const benchmarks: PortBenchmark[] = [
     id: "rust",
     name: "Rust",
     machine: LAPTOP,
-    ops: [2.95, 3.31, 3.24, 2.11, 14.67, 12.6, 3.38, 199.49],
+    ops: [2.98, 3.31, 3.25, 2.11, 14.92, 12.84, 3.46, 204.65],
     competitors: [],
     source: blob("nepdate-rust", "docs/benchmarks.md"),
   },
@@ -57,7 +57,7 @@ export const benchmarks: PortBenchmark[] = [
     id: "cpp",
     name: "C++",
     machine: `${LAPTOP}, MSVC`,
-    ops: [6.46, 7.65, 6.68, 4.91, 21.7, 11.84, 11.25, 423.53],
+    ops: [6.58, 7.84, 6.81, 4.77, 22.41, 10.01, 11.64, 503.55],
     competitors: [],
     source: blob("nepdate-cpp", "docs/benchmarks.md"),
   },
@@ -65,7 +65,7 @@ export const benchmarks: PortBenchmark[] = [
     id: "c",
     name: "C",
     machine: `${LAPTOP}, MSVC`,
-    ops: [4.94, 6.05, 7.47, 9.14, 40.76, 23.7, 16.55, 577.1],
+    ops: [5.4, 7.42, 8.29, 11.08, 32.75, 11.92, 16.57, 540.18],
     competitors: [],
     source: blob("nepdate-c", "docs/benchmarks.md"),
   },
@@ -73,8 +73,8 @@ export const benchmarks: PortBenchmark[] = [
     id: "go",
     name: "Go",
     machine: LAPTOP,
-    ops: [5.14, 4.09, 3.97, 3.56, 24.21, 7.63, 6.91, 246.05],
-    competitors: [{ name: "go-nepali", b1: 110.35, b2: 48.27, agrees: 60 }],
+    ops: [5.24, 4.2, 4.03, 3.64, 24.79, 7.84, 7.11, 255.55],
+    competitors: [{ name: "go-nepali", b1: 111.85, b2: 49.05, agrees: 60 }],
     source: blob("nepdate-go", "docs/benchmarks.md"),
   },
   {
@@ -89,41 +89,39 @@ export const benchmarks: PortBenchmark[] = [
     id: "kotlin",
     name: "Kotlin",
     machine: `${LAPTOP}, JDK 17`,
-    ops: [15.63, 6.93, 3.33, 5.08, 111.42, 26.4, 2.3, 72.99],
-    competitors: [{ name: "shivathapaa", b1: 696.95, b2: 694.7, agrees: 61 }],
+    ops: [14.36, 6.48, 3.15, 4.78, 29.72, 23.75, 2.13, 67.91],
+    competitors: [{ name: "shivathapaa", b1: 649.4, b2: 628.51, agrees: 61 }],
     source: blob("nepdate-kotlin", "docs/benchmarks.md"),
   },
   {
     id: "java",
     name: "Java",
     machine: `${LAPTOP}, JDK 17`,
-    ops: [14.03, 6.7, 5.23, 5.32, 91.99, 27.41, 1.29, 55.81],
-    competitors: [{ name: "shivathapaa", b1: 919.34, b2: 682.02, agrees: 61 }],
+    ops: [12.23, 5.78, 4.55, 4.56, 30.18, 23.46, 1.1, 48.94],
+    competitors: [{ name: "shivathapaa", b1: 641.89, b2: 656.91, agrees: 61 }],
     source: blob("nepdate-java", "docs/benchmarks.md"),
   },
   {
     id: "typescript",
     name: "TypeScript",
     machine: `${LAPTOP}, Node.js`,
-    ops: [26.3, 24.2, 12.98, 12.04, 262.3, 76.5, 5.1, 383.1],
+    ops: [24.3, 22.8, 12.0, 11.4, 136.9, 63.3, 4.8, 351.4],
     competitors: [
-      { name: "world-calendars", b1: 778.8, b2: 832.9 },
-      { name: "nepali-date-converter", b1: 2111.4, b2: 2250.6 },
-      { name: "bikram-sambat", b1: 2751.2, b2: 1482.6 },
+      { name: "world-calendars", b1: 712.2, b2: 757.3 },
+      { name: "nepali-date-converter", b1: 1961.4, b2: 2108.3 },
+      { name: "bikram-sambat", b1: 1917.0, b2: 1372.8 },
     ],
     source: blob("nepdate-typescript", "docs/benchmarks.md"),
   },
-  // Preliminary: measured on the reference laptop while other work was running on it, so the quiet
-  // rerun in the sweep replaces these figures (nepdate-php docs/benchmarks.md says the same). The
-  // two competitors are the ones BENCHMARK.md §7 selects for PHP.
+  // The two competitors are the ones BENCHMARK.md §7 selects for PHP.
   {
     id: "php",
     name: "PHP",
     machine: `${LAPTOP}, PHP 8.3`,
-    ops: [1456, 2427, 2235, 1793, 1067, 2525, 2105, 115490],
+    ops: [986, 785, 935, 726, 554, 963, 323, 20888],
     competitors: [
-      { name: "laravel-nepali-date", b1: 1470822, b2: 1676688, agrees: 60 },
-      { name: "ernilambar/nepali-date", b1: 5773987, b2: 4913110, agrees: 60 },
+      { name: "laravel-nepali-date", b1: 1516771, b2: 1534718, agrees: 60 },
+      { name: "ernilambar/nepali-date", b1: 3661036, b2: 3178989, agrees: 60 },
     ],
     source: blob("nepdate-php", "docs/benchmarks.md"),
   },
@@ -131,40 +129,37 @@ export const benchmarks: PortBenchmark[] = [
     id: "python",
     name: "Python",
     machine: `${LAPTOP}, CPython`,
-    ops: [671.2, 569.87, 517.52, 472.77, 476.4, 1261.36, 130.58, 17178.66],
+    ops: [612.77, 518.85, 474.25, 431.25, 433.35, 1157.1, 118.91, 15840.07],
     competitors: [
-      { name: "nepali-datetime", b1: 2043.93, b2: 6613.95, agrees: 62 },
-      { name: "nepali", b1: 12457.04, b2: 6545.16, agrees: 60 },
+      { name: "nepali-datetime", b1: 1888.81, b2: 6152.13, agrees: 62 },
+      { name: "nepali", b1: 11540.27, b2: 6125.01, agrees: 60 },
     ],
     source: blob("nepdate-python", "docs/benchmarks.md"),
   },
   {
     id: "dart",
     name: "Dart",
-    machine: `${LAPTOP}, Dart AOT (preliminary)`,
-    ops: [67.37, 121.59, 19.35, 17.11, 854.73, 102.36, 42.48, 1698.46],
-    competitors: [{ name: "nepali_utils", b1: 33526.7, b2: 79675.04, agrees: 31 }],
+    machine: `${LAPTOP}, Dart AOT`,
+    ops: [51.55, 38.5, 10.42, 8.62, 154.65, 33.66, 3.66, 291.19],
+    competitors: [{ name: "nepali_utils", b1: 23556.34, b2: 56007.51, agrees: 31 }],
     source: blob("nepdate-dart", "docs/benchmarks.md"),
   },
-  // Preliminary: measured on the reference laptop while other work was running on it (CPU load
-  // 17.0% before and 19.1% after), so the quiet rerun in the sweep replaces these figures. No
-  // RubyGems candidate passes BENCHMARK.md section 7, so the competitor list is empty.
+  // No RubyGems candidate passes BENCHMARK.md section 7, so the competitor list is empty.
   {
     id: "ruby",
     name: "Ruby",
     machine: `${LAPTOP}, Ruby 3.4`,
-    ops: [575.2, 531.8, 630.0, 478.1, 506.1, 1430.8, 123.0, 17828.8],
+    ops: [462.7, 430.4, 458.2, 438.1, 475.8, 1211.3, 108.1, 16324.6],
     competitors: [],
     source: blob("nepdate-ruby", "docs/benchmarks.md"),
   },
-  // The comparison is the C core this package wraps, not an independent Zig library. The machine
-  // was sampled for 30 seconds before the run; the background load is recorded in
-  // nepdate-zig docs/benchmarks.md.
+  // The comparison is the C core this package wraps, not an independent Zig library. The idle gate
+  // and the load during the run are recorded in nepdate-zig docs/benchmarks.md.
   {
     id: "zig",
     name: "Zig",
     machine: LAPTOP,
-    ops: [13.9, 6.6, 1.7, 3.4, 46.4, 54.2, 9.4, 340.8],
+    ops: [11.2, 5.1, 1.4, 2.9, 37.5, 42.7, 7.6, 278.8],
     competitors: [],
     source: blob("nepdate-zig", "docs/benchmarks.md"),
   },
@@ -177,11 +172,11 @@ export const csharp: PortBenchmark = {
   id: "csharp",
   name: "C#",
   machine: `${LAPTOP}, .NET 10`,
-  ops: [13.5, 20.1, 19.05, 20.19, 150.41, 22.42, 48.21, 3112.76],
+  ops: [13.27, 18.7, 20.06, 19.3, 139.04, 21.13, 48.63, 3274.5],
   competitors: [
-    { name: "DateConverterNepali", b1: 405.99, b2: 590.1, agrees: 61 },
-    { name: "NepaliCalendarBS", b1: 13047.6, b2: 184.97, agrees: 63 },
-    { name: "NepaliDateConverter.NETCORE", b1: 21730.5, b2: 46302.6, agrees: 60 },
+    { name: "DateConverterNepali", b1: 393.6, b2: 561.4, agrees: 61 },
+    { name: "NepaliCalendarBS", b1: 12991.9, b2: 182.2, agrees: 63 },
+    { name: "NepaliDateConverter.NETCORE", b1: 21924.7, b2: 45688.7, agrees: 60 },
   ],
   source: blob("nepdate", "docs/benchmarks/dotnet.md"),
 };
