@@ -16,19 +16,19 @@
     "agent-check": "node scripts/agent-check.mjs"
   },
   "dependencies": {
-    "@astrojs/sitemap": "3.7.4",
+    "@astrojs/sitemap": "3.7.5",
     "@fontsource-variable/noto-sans": "5.3.0",
     "@fontsource-variable/noto-sans-devanagari": "5.3.0",
-    "astro": "7.4.7",
+    "astro": "7.4.12",
     "nepdate-core": "0.1.0-beta.1",
     "nepdate-patro": "0.1.0-beta.1"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.10",
-    "chrome-launcher": "1.2.2",
-    "lighthouse": "13.5.0",
+    "@astrojs/check": "0.9.12",
+    "chrome-launcher": "1.2.3",
+    "lighthouse": "13.6.0",
     "typescript": "6.0.3",
-    "wrangler": "4.151.1"
+    "wrangler": "4.163.0"
   },
   "overrides": {
     "undici@7": "7.30.1",
