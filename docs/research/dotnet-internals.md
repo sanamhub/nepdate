@@ -41,7 +41,7 @@ Each entry is 16 bytes, so the two tables hold about 115 KB on the heap after st
 **BS to AD** (`Core/Dictionaries/DictionaryBridge.cs:42-52`): one bounds check, one array read,
 `new DateTime(adY, adM, adD)` (which converts civil to ticks), then `.AddDays(day - monthLength)`
 through a `double`. The constructor first runs `ValidateAndThrow` (`NepaliDate.cs:31-50`), which
-reads the same table entry once more for `MonthEndDay` (`Properties.cs:122`). B1: 13.5 ns, 0 bytes.
+reads the same table entry once more for `MonthEndDay` (`Properties.cs:122`). B1: 13.27 ns, 0 bytes.
 
 **AD to BS** (`DictionaryBridge.cs:117-122`, `:138-156`): one array read gives the BS date of the
 AD month's last day, then `SubtractNepaliDays` walks back `adMonthLength - day` days, stepping
@@ -49,7 +49,7 @@ into the previous BS month (one more `NepaliToEnglish` read) while the day is `<
 most 30 days crosses at most one or two BS month boundaries, so the loop is short and the whole
 thing is O(1). The constructor (`NepaliDate.cs:233-252`) also compares against
 `MinValue.EnglishDate` and `MaxValue.EnglishDate` (static readonly structs, `Properties.cs:156`,
-`:162`) and calls `ValidateAndThrow` again. B2: 19.5 ns, 0 bytes.
+`:162`) and calls `ValidateAndThrow` again. B2: 18.70 ns, 0 bytes.
 
 **How the tables are built.** The C# compiler can embed a primitive array (`byte[]`, `ushort[]`)
 as a raw data blob and copy it with one `RuntimeHelpers.InitializeArray` call. It can't do that for
@@ -72,17 +72,17 @@ further 31 ms (three runs, 37.8 to 39.4 ms and 31.3 to 33.8 ms; scratch program,
 ## 3. Arithmetic on top of the tables
 
 - `AddDays` (`NepaliDate.cs:456-459`): `EnglishDate.AddDays(days).ToNepaliDate()`. One
-  `DateTime` add through `double`, then the full AD to BS constructor. B3: 19.8 ns, 0 bytes.
+  `DateTime` add through `double`, then the full AD to BS constructor. B3: 20.06 ns, 0 bytes.
 - `AddMonths` (`NepaliDate.cs:316-366`): month arithmetic in a `while` loop, then
   `new NepaliDate(year, month, 1)` only to read the target month's length (`:340`), then a second
   `new NepaliDate` for the result (`:365`). Each constructor validates and converts to AD, so one
   call does two full BS to AD conversions. Negative values go through `SubtractMonths`
-  (`:383-433`). B4: 21.7 ns, 0 bytes.
+  (`:383-433`). B4: 19.30 ns, 0 bytes.
 - `DayOfYear` (`Properties.cs:103-114`) loops over the earlier months of the year, one table read
   each.
 - `TryParse` (`Abilities/Parsing.cs:13-25`): a hand-written, allocation-free split
   (`NepaliDate.cs:675-727`), then `IsValidDate` (`:63-74`, a table read), then the constructor
-  (validates again and converts). B6: 25.7 ns, 0 bytes.
+  (validates again and converts). B6: 21.13 ns, 0 bytes.
 
 ## 4. `CalendarOffsets` and the patro arrays
 
@@ -153,7 +153,7 @@ from enum `ToString()` (cached by the runtime) and a `Dictionary<string, string>
 8. **Do better: patro lookups without allocation.** Return event names as a borrowed slice, view or
    iterator over the static pool (Rust `&'static [Event]`, C++ `std::span`, Go a sub-slice, Kotlin
    or Java an index-based view), never a new array per call. Target for B7: 0 bytes.
-9. **Do better: formatting into a caller buffer.** B5 is the slowest core operation at 208 ns and
+9. **Do better: formatting into a caller buffer.** B5 is the slowest core operation at 139 ns and
    435 bytes because of seven intermediate strings. Ports write the long format in one pass into a
    stack or caller-supplied buffer and allocate at most the final string.
 10. **Keep: one shared string pool.** Deduplicated (Nepali, English) pairs indexed by small
