@@ -39,6 +39,9 @@ export interface PortBenchmark {
   ops: [number, number, number, number, number, number, number, number];
   /** Every other Bikram Sambat library the port measured on B1 and B2, on the same machine. */
   competitors: Competitor[];
+  /** NepDate's own B1 and B2 from the run that timed the competitors, when that run was on another
+   *  machine than `ops` (a competitor that only runs there). Competitors are compared with these. */
+  rivalRun?: { machine: string; b1: number; b2: number };
   source: string;
 }
 
@@ -80,9 +83,11 @@ export const benchmarks: PortBenchmark[] = [
   {
     id: "swift",
     name: "Swift",
-    machine: "GitHub macos-latest runner (Apple M1)",
-    ops: [20.2, 16.9, 17.6, 19.5, 421.9, 32.6, 38.4, 1468.8],
+    machine: `${LAPTOP}, WSL 2, Swift 6.4.1`,
+    ops: [12.6, 10.2, 6.7, 5.7, 359.4, 22.8, 45.2, 1578.1],
+    // Nepali-Date-Picker-SPM ships an arm64 macOS XCFramework only, so it was timed on the runner.
     competitors: [{ name: "Nepali-Date-Picker-SPM", b1: 937.5, b2: 1062.5, agrees: 61 }],
+    rivalRun: { machine: "GitHub's macOS runner (Apple M1)", b1: 20.2, b2: 16.9 },
     source: blob("nepdate-swift", "docs/benchmarks.md"),
   },
   {
@@ -191,7 +196,7 @@ export const competitorCount = languages.reduce((sum, port) => sum + port.compet
 
 /** NepDate's B1 and B2 in the same run as the port's competitors. */
 function rivalBase(port: PortBenchmark) {
-  return { b1: port.ops[0], b2: port.ops[1] };
+  return port.rivalRun ?? { b1: port.ops[0], b2: port.ops[1] };
 }
 
 /** The fastest other library on B1, NepDate's B1 in the same run (`ours`), how many times slower
@@ -202,7 +207,8 @@ export function nearest(port: PortBenchmark) {
   const best = port.competitors.reduce((a, b) => (b.b1 < a.b1 ? b : a));
   const ours = rivalBase(port).b1;
   const wrong = best.agrees === undefined ? undefined : 64 - best.agrees;
-  return { name: best.name, b1: best.b1, ours, times: best.b1 / ours, wrong };
+  const machine = port.rivalRun?.machine;
+  return { name: best.name, b1: best.b1, ours, times: best.b1 / ours, wrong, machine };
 }
 
 /** NepDate beats every competitor on both B1 and B2, unless that competitor gets some of the 64
