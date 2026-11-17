@@ -42,6 +42,12 @@ function holidayWeek(from: NepaliDate) {
 // The converter's day line starts with today's tithi, holiday and events; the script refreshes it
 // for each date the visitor picks.
 const todayInfo = info(today);
+// The public holidays of the next two years, so the hero names today's holiday on the right day
+// even when the page was built weeks before. About 2 KB in the page.
+const holidays = Array.from({ length: 731 }, (_, n) => today.addDays(n)).flatMap((d) => {
+  const day = info(d);
+  return day.isPublicHoliday ? [[d.toJSON(), day.events[0]?.en ?? ""]] : [];
+});
 
 const week = holidayWeek(today).map((d) => {
   const ad = d.toGregorian();
@@ -181,7 +187,12 @@ const jsonLd = {
     <div class="wrap hero-grid">
       <div class="hero-object" data-tabs>
         <div class="object-date">
-          <p class="today-label">Today in Nepal</p>
+          <p class="today-label">
+            Today in Nepal<span class="today-holiday" data-today-holiday hidden={!todayInfo.isPublicHoliday}
+              >{todayInfo.isPublicHoliday ? `Public holiday${todayInfo.events[0] ? `: ${todayInfo.events[0].en}` : ""}` : ""}</span
+            >
+          </p>
+          <script type="application/json" id="nd-holidays" set:html={JSON.stringify(holidays)} />
           <p class="today" data-today>
             <span class="today-ad" aria-hidden="true" data-today-ad>{adPlain}</span>
             <span class="part part-month" lang="ne" data-today-month>{monthName(today.month, "ne")}</span>

@@ -1,0 +1,170 @@
+---
+// The "page not found" page, in the landing shell. A calendar sheet shows a day that cannot exist
+// (one past the end of a month of the current BS year), because no page exists here either. The
+// sheet is built for every month; a small script shows a different one on each visit.
+import { NepaliDate, monthName, toNepaliDigits } from "nepdate-core";
+import Landing from "../layouts/Landing.astro";
+import sectionsCss from "../styles/landing-sections.css?url";
+
+const year = NepaliDate.today().year;
+const sheets = Array.from({ length: 12 }, (_, i) => {
+  const last = NepaliDate.of(year, i + 1, 1).monthLength;
+  return {
+    month: i + 1,
+    ne: monthName(i + 1, "ne"),
+    en: monthName(i + 1),
+    day: last + 1,
+    dayNe: toNepaliDigits(last + 1),
+    last,
+    yearNe: toNepaliDigits(year),
+  };
+});
+const first = sheets[3] as (typeof sheets)[number];
+---
+
+<Landing title="Page not found | NepDate" description="There is no page at this address on nepdate.com.">
+  <section class="lost wrap" aria-labelledby="lost-title">
+    <div class="sheet" aria-hidden="true" data-sheet>
+      <p class="sheet-head"><span data-ne>{first.ne}</span> <span data-year>{first.yearNe}</span></p>
+      <p class="sheet-day" data-day>{first.dayNe}</p>
+      <p class="sheet-stamp">छैन</p>
+    </div>
+    <div class="lost-text">
+      <p class="lost-code">404</p>
+      <h1 id="lost-title">
+        <span data-en>{first.en}</span> <span data-day-en>{first.day}</span> doesn't exist, and neither does this page.
+      </h1>
+      <p>
+        <span data-en>{first.en}</span> has <span data-last>{first.last}</span> days this year, and nothing lives at this
+        address. The link may have a typo, or the page has moved.
+      </p>
+      <ul class="lost-links">
+        <li><a href="/">Home and the date converter</a></li>
+        <li><a href="/docs/">Documentation</a></li>
+        <li><a href="/docs/reference/">API reference</a></li>
+        <li><a href="https://patro.nepdate.com/">This month in the patro</a></li>
+      </ul>
+    </div>
+  </section>
+  <script type="application/json" id="nd-sheets" set:html={JSON.stringify(sheets)} />
+  <script>
+    // A different impossible day on each visit; the HTML already shows one, so this is only a nicety.
+    try {
+      const sheets = JSON.parse(document.getElementById("nd-sheets")?.textContent ?? "[]");
+      const pick = sheets[Math.floor(Math.random() * sheets.length)];
+      if (pick) {
+        const set = (selector: string, text: string) => {
+          for (const node of document.querySelectorAll(selector)) node.textContent = text;
+        };
+        set("[data-ne]", pick.ne);
+        set("[data-en]", pick.en);
+        set("[data-day]", pick.dayNe);
+        set("[data-day-en]", String(pick.day));
+        set("[data-last]", String(pick.last));
+      }
+    } catch {}
+  </script>
+  <link rel="stylesheet" href={sectionsCss} />
+</Landing>
+
+<style>
+  .lost {
+    display: grid;
+    gap: clamp(2rem, 6vw, 4.5rem);
+    align-items: center;
+    padding-block: clamp(3rem, 10vw, 7rem);
+  }
+  @media (min-width: 48rem) {
+    .lost {
+      grid-template-columns: auto 1fr;
+    }
+  }
+  /* A tear-off wall calendar page: the month on a red band, the day large below. */
+  .sheet {
+    position: relative;
+    width: min(16rem, 70vw);
+    justify-self: center;
+    overflow: hidden;
+    border: 1px solid var(--nd-hairline);
+    border-radius: var(--nd-radius-l);
+    background: var(--nd-raised);
+    box-shadow: var(--nd-shadow);
+    rotate: -3deg;
+    text-align: center;
+  }
+  .sheet p {
+    margin: 0;
+  }
+  .sheet-head {
+    padding: 0.7rem 1rem;
+    background: var(--nd-sindoor);
+    color: var(--nd-on-sindoor);
+    font-family: var(--nd-font-deva);
+    font-size: 1.35rem;
+    font-weight: 650;
+  }
+  .sheet-day {
+    padding: 1.25rem 0 1.75rem;
+    font-family: var(--nd-font-deva);
+    font-size: clamp(5rem, 18vw, 7.5rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--nd-ink);
+  }
+  /* The rubber stamp: "छैन", there is none. */
+  .sheet-stamp {
+    position: absolute;
+    right: 0.9rem;
+    bottom: 1.2rem;
+    padding: 0.05em 0.45em;
+    border: 3px solid var(--nd-sindoor);
+    border-radius: var(--nd-radius-s);
+    color: var(--nd-sindoor);
+    font-family: var(--nd-font-deva);
+    font-size: 1.5rem;
+    font-weight: 700;
+    rotate: -14deg;
+    opacity: 0.9;
+  }
+  .lost-code {
+    margin: 0;
+    color: var(--nd-ink-muted);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .lost h1 {
+    margin: 0.35rem 0 1rem;
+    max-width: 20ch;
+    font-size: var(--nd-step-3);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  .lost-text > p:not(.lost-code) {
+    max-width: 38rem;
+    color: var(--nd-ink-muted);
+  }
+  .lost-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 600;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sheet {
+      animation: sheet-swing 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+      transform-origin: 50% 0;
+    }
+    @keyframes sheet-swing {
+      from {
+        rotate: 6deg;
+      }
+      to {
+        rotate: -3deg;
+      }
+    }
+  }
+</style>

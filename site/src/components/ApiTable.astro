@@ -1,0 +1,155 @@
+---
+// One group of the API reference: each feature, its name in the reader's language, and the C#
+// original. Every language's name is in the HTML; ApiControls shows one column at a time.
+import { apiGroups, apiPorts } from "../data/api-reference";
+
+interface Props {
+  /** The spec group prefix: ND, NC, NA, NF, NP, NR, NY or NT. */
+  group: string;
+}
+
+const group = apiGroups.find((g) => g.prefix === Astro.props.group);
+if (!group) throw new Error(`ApiTable: no spec group ${Astro.props.group}`);
+---
+
+<div class="api-ref not-content" data-api-table data-lang="typescript">
+  <p class="api-intro">
+    {group.intro}
+    {group.guide && <> More in <a href={group.guide.href}>{group.guide.label}</a>.</>}
+  </p>
+  <div class="api-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Feature</th>
+          <th scope="col" data-api-lang-name>TypeScript</th>
+          <th scope="col" class="api-cs">C# original</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          group.rows.map((row) => (
+            <tr id={row.id.toLowerCase()} data-api-row>
+              <th scope="row">
+                {row.label}
+                <a class="api-id" href={`#${row.id.toLowerCase()}`} aria-label={`${row.id}, link to ${row.label}`}>
+                  {row.id}
+                </a>
+              </th>
+              {apiPorts.map((port) => (
+                <td data-l={port} class:list={{ "api-missing": row.missing.includes(port) }} set:html={row.names[port]} />
+              ))}
+              <td class="api-cs" set:html={row.names.csharp} />
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="api-empty" hidden>No feature here matches.</p>
+</div>
+
+<style is:global>
+  .api-ref {
+    margin-block: 0.75rem 2rem;
+  }
+  .api-intro {
+    margin: 0 0 0.9rem;
+    color: var(--sl-color-gray-2);
+  }
+  .api-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: var(--nd-radius-m);
+  }
+  .api-ref table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--sl-text-sm);
+    line-height: 1.5;
+  }
+  .api-ref thead th {
+    position: sticky;
+    top: 0;
+    background: var(--sl-color-gray-6);
+    color: var(--sl-color-gray-2);
+    font-weight: 600;
+    text-align: start;
+  }
+  .api-ref :is(th, td) {
+    padding: 0.55rem 0.8rem;
+    vertical-align: top;
+    border-bottom: 1px solid var(--sl-color-hairline);
+  }
+  .api-ref tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+  .api-ref tbody th {
+    width: 34%;
+    font-weight: 500;
+    color: var(--sl-color-white);
+    text-align: start;
+  }
+  .api-ref tbody tr:target > * {
+    background: var(--sl-color-accent-low);
+  }
+  .api-ref code {
+    overflow-wrap: anywhere;
+    font-size: 0.92em;
+    padding: 0.05em 0.3em;
+    border-radius: 4px;
+    background: var(--sl-color-gray-6);
+  }
+  .api-id {
+    display: inline-block;
+    margin-inline-start: 0.45em;
+    color: var(--sl-color-gray-3);
+    font-family: var(--sl-font-mono);
+    font-size: 0.78em;
+    font-weight: 400;
+    text-decoration: none;
+  }
+  .api-id:is(:hover, :focus-visible) {
+    color: var(--sl-color-accent);
+  }
+  .api-cs {
+    width: 30%;
+    color: var(--sl-color-gray-3);
+  }
+  .api-missing {
+    color: var(--sl-color-gray-3);
+    font-style: italic;
+  }
+  .api-empty {
+    color: var(--sl-color-gray-3);
+  }
+  /* One language column at a time; the C# column is hidden when C# is the chosen language. */
+  .api-ref td[data-l] {
+    display: none;
+  }
+  .api-ref[data-lang="csharp"] .api-cs {
+    display: none;
+  }
+  /* A phone has room for the feature and one name; the C# column returns on a wider screen. */
+  @media (max-width: 40rem) {
+    .api-ref .api-cs {
+      display: none;
+    }
+  }
+  .api-ref[data-lang="typescript"] td[data-l="typescript"],
+  .api-ref[data-lang="python"] td[data-l="python"],
+  .api-ref[data-lang="php"] td[data-l="php"],
+  .api-ref[data-lang="java"] td[data-l="java"],
+  .api-ref[data-lang="dart"] td[data-l="dart"],
+  .api-ref[data-lang="kotlin"] td[data-l="kotlin"],
+  .api-ref[data-lang="go"] td[data-l="go"],
+  .api-ref[data-lang="swift"] td[data-l="swift"],
+  .api-ref[data-lang="cpp"] td[data-l="cpp"],
+  .api-ref[data-lang="c"] td[data-l="c"],
+  .api-ref[data-lang="rust"] td[data-l="rust"],
+  .api-ref[data-lang="ruby"] td[data-l="ruby"],
+  .api-ref[data-lang="zig"] td[data-l="zig"],
+  .api-ref[data-lang="csharp"] td[data-l="csharp"] {
+    display: table-cell;
+  }
+</style>

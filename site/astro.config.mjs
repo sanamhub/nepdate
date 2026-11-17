@@ -19,6 +19,8 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "NepDate",
+      // src/pages/404.astro is the site's own "page not found", in the landing shell.
+      disable404Route: true,
       description: `Bikram Sambat (Nepali calendar) libraries for ${languageList}, and the MitiBar desktop calendar.`,
       // The title text beside the logo names the site, so the logo itself is decorative.
       logo: { src: "./src/assets/nepdate.svg", alt: "" },
@@ -66,6 +68,7 @@ export default defineConfig({
           items: [
             { label: "Introduction", link: "/docs/" },
             { label: "Quick start", link: "/docs/quickstart/" },
+            { label: "API reference", link: "/docs/reference/" },
           ],
         },
         {

@@ -112,9 +112,9 @@ export const benchmarks: PortBenchmark[] = [
     machine: `${LAPTOP}, Node.js`,
     ops: [24.3, 22.8, 12.0, 11.4, 136.9, 63.3, 4.8, 351.4],
     competitors: [
-      { name: "world-calendars", b1: 712.2, b2: 757.3 },
-      { name: "nepali-date-converter", b1: 1961.4, b2: 2108.3 },
-      { name: "bikram-sambat", b1: 1917.0, b2: 1372.8 },
+      { name: "world-calendars", b1: 712.2, b2: 757.3, agrees: 60 },
+      { name: "nepali-date-converter", b1: 1961.4, b2: 2108.3, agrees: 61 },
+      { name: "bikram-sambat", b1: 1917.0, b2: 1372.8, agrees: 62 },
     ],
     source: blob("nepdate-typescript", "docs/benchmarks.md"),
   },
