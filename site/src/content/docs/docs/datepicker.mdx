@@ -23,8 +23,8 @@ Type a date in English or Nepali digits, or with the month name (`15 Shrawan 208
 calendar. The form submits the BS date as `YYYY-MM-DD`.
 
 :::caution[Pre-release]
-Published as a pre-release on the `beta` dist-tag, with its own version line. The API may still
-change before 0.1.0.
+Published as a pre-release on the `beta` dist-tag, with its own version line. It moves to 1.0.0
+together with `nepdate-core` 1.0.0.
 :::
 
 ## Add it to a page
@@ -46,7 +46,7 @@ both elements, so the page needs nothing else:
 
 To host it yourself, copy `dist/nepdate-datepicker.js` and `dist/theme.css` from the package, for
 example into an ASP.NET Core `wwwroot/lib/`, and point the two tags at them. The file is about
-10.5 KB gzip.
+12.8 KB gzip.
 
 With a bundler (Vite, webpack, esbuild):
 
@@ -70,13 +70,16 @@ import "nepdate-datepicker/define";
 import "nepdate-datepicker/theme.css";
 ```
 
-That adds about 5.5 KB gzip on top of the core. Use one way per page: the standalone file and
+That adds about 6.7 KB gzip on top of the core. Use one way per page: the standalone file and
 `nepdate-datepicker/define` register the same element names.
 
 ## Frameworks
 
-Render the element, pass the BS date as `value`, and read `event.target.value` on `change`. Each of
-these was run in Chromium, Firefox and WebKit.
+Render the element, pass the BS date as `value`, and read `event.target.value` on `change`. Every
+attribute also has a property of the same name in camelCase (`firstDayOfWeek`, `readOnly`), so
+frameworks that set properties, such as React 19, work too. Properties set before the script that
+defines the elements has run are kept. The React, Vue, Blazor and MVC setups were run in Chromium,
+Firefox and WebKit; the Angular one has not been run.
 
 <Tabs>
   <TabItem label="React 19">
@@ -102,7 +105,20 @@ these was run in Chromium, Firefox and WebKit.
     The form posts the BS date as a string; parse it on the server, for example with
     [NepDate for .NET](/docs/csharp/). The `asp-for` tag helper works only on built-in elements.
   </TabItem>
+  <TabItem label="Angular">
+    Add `CUSTOM_ELEMENTS_SCHEMA` to the component's `schemas`, then:
+
+    ```html
+    <nepdate-input [value]="date" (change)="date = $any($event.target).value"></nepdate-input>
+    ```
+  </TabItem>
 </Tabs>
+
+For TypeScript, the package exports `NepDateInputAttributes` and `NepDateCalendarAttributes` to
+declare the elements in React, Vue or Svelte typings, without depending on any framework's types.
+The [package README](https://github.com/sanamhub/nepdate-typescript/tree/main/packages/nepdate-picker#typescript-in-frameworks)
+has the declaration for each. Editors and tools that read a Custom Elements Manifest find
+`custom-elements.json` in the package.
 
 With server rendering, import `nepdate-datepicker/define` on the client only; the main entry loads
 safely on the server.
@@ -113,14 +129,33 @@ safely on the server.
 |---|---|---|
 | `value` | both | The date, `YYYY-MM-DD` in BS. A form reset returns to it, and a framework can change it at any time. |
 | `min`, `max` | both | Earliest and latest date that can be chosen. |
-| `lang` | both | `en` (default) or `ne` for Nepali names and digits. |
+| `lang` | both | `en` or `ne` for Nepali names and digits. Without it, the nearest ancestor's `lang`, as for native elements. |
 | `first-day-of-week` | both | 0 = Sunday (default) to 6 = Saturday. |
 | `show-gregorian` | both | Shows the AD day under each BS day. |
-| `name`, `required`, `disabled`, `placeholder` | `nepdate-input` | As on a native input. |
+| `name`, `required`, `disabled`, `readonly`, `placeholder` | `nepdate-input` | As on a native input. `readonly` stops typing and the calendar but still submits. |
 
-As properties: `value` (string), `date` (`NepaliDate` or `null`), `isDateDisallowed` (a function
-that disables extra days, such as Saturdays) and `dayParts` (a function that adds part names to a
-day, for example to mark public holidays from `nepdate-patro`). Both elements fire `change`.
+Also as properties: `date` (`NepaliDate` or `null`), `isDateDisallowed` (a function that disables
+extra days, such as Saturdays) and `dayParts` (a function that adds part names to a day, for example
+to mark public holidays from `nepdate-patro`). Both elements fire `change`; the input fires `input`
+too.
+
+## Validation
+
+`nepdate-input` validates like `<input type="date">`: `required`, `min` and `max`, text that isn't a
+date (`badInput`), and a typed date that `isDateDisallowed` refuses. It has `validity`,
+`validationMessage`, `willValidate`, `checkValidity()`, `reportValidity()` and
+`setCustomValidity()`, and the messages are in English or Nepali with the element's language.
+`showPicker()`, `hidePicker()` and `open` control the calendar.
+
+Style its state with custom states: `:state(open)` while the calendar is open, `:state(invalid)`,
+and `:state(user-invalid)`, which, like `:user-invalid`, starts only after the visitor commits a
+date or the form is submitted.
+
+```css
+nepdate-input:state(user-invalid)::part(field) {
+  border-color: crimson;
+}
+```
 
 ## Styling
 
@@ -137,7 +172,10 @@ nepdate-input::part(selected) {
 ```
 
 `theme.css` reads `--nepdate-accent`, `--nepdate-surface`, `--nepdate-text`, `--nepdate-radius` and
-a few more, and uses `light-dark()`, so it follows the page's `color-scheme`.
+a few more, and uses `light-dark()`, so it follows the page's `color-scheme`. It sits in the
+`nepdate-datepicker` cascade layer, so any of your rules outside a layer win over it whatever their
+specificity, and it keeps the chosen day, today and focus visible in forced colors (Windows
+contrast themes).
 
 ## Keyboard and browsers
 
@@ -146,7 +184,8 @@ a month (with Shift, a year), and Enter or Space chooses. In the input, Alt+Down
 calendar and Escape closes it. The pattern is the WAI-ARIA date picker dialog.
 
 Current Chrome, Edge, Firefox and Safari. The elements use custom elements, shadow DOM,
-form-associated elements and the Popover API.
+form-associated elements and the Popover API. The calendar is placed with CSS anchor positioning
+where the browser has it, and with a small script elsewhere.
 
 ## Build your own
 
