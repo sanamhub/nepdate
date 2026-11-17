@@ -339,6 +339,7 @@ dd code {
   box-shadow: var(--nd-shadow);
 }
 .object-date {
+  container-type: inline-size;
   padding: clamp(1.25rem, 4vw, 2.25rem) clamp(1.25rem, 4vw, 2.25rem) clamp(1.25rem, 3vw, 1.75rem);
 }
 
@@ -361,6 +362,14 @@ dd code {
   line-height: 1.2;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
+}
+/* Keep the date on one line: the widest date, Kattik 32 with the year, is 7.34em, so the size
+   never goes above the panel's width divided by 7.7. Without container units it wraps instead. */
+@supports (font-size: 1cqi) {
+  .today {
+    flex-wrap: nowrap;
+    font-size: min(var(--nd-step-display), 13cqi);
+  }
 }
 .part {
   display: inline-block;
