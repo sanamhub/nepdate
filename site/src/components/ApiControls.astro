@@ -79,9 +79,6 @@ import { ports } from "../data/ports";
 
 <style>
   .api-controls {
-    position: sticky;
-    top: calc(var(--sl-nav-height, 3.5rem) + 0.5rem);
-    z-index: 2;
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem 1.25rem;
@@ -92,6 +89,15 @@ import { ports } from "../data/ports";
     border-radius: var(--nd-radius-m);
     background: color-mix(in srgb, var(--sl-color-black) 88%, transparent);
     backdrop-filter: blur(8px);
+  }
+  /* Sticky only where the table of contents is a sidebar; on smaller screens Starlight's own
+     "On this page" bar sits at the top. */
+  @media (min-width: 72rem) {
+    .api-controls {
+      position: sticky;
+      top: calc(var(--sl-nav-height, 3.5rem) + 0.5rem);
+      z-index: 2;
+    }
   }
   label {
     display: grid;

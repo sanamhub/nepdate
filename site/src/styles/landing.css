@@ -344,9 +344,35 @@ dd code {
 }
 
 .today-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
   margin: 0 0 0.35rem;
   color: var(--nd-ink-muted);
   font-weight: 500;
+}
+/* On a public holiday the label says so, in the calendar's own holiday red. */
+.today-holiday {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.1em 0.65em;
+  border-radius: var(--nd-radius-pill);
+  background: color-mix(in srgb, var(--nd-sindoor) 14%, transparent);
+  color: var(--nd-sindoor);
+  font-size: var(--nd-step--1);
+  font-weight: 600;
+}
+.today-holiday::before {
+  content: "";
+  width: 0.45em;
+  height: 0.45em;
+  border-radius: 50%;
+  background: currentColor;
+}
+.today-holiday[hidden] {
+  display: none;
 }
 /* Today's date: the BS month, day and year in the flow, and the AD date they come from laid over
    them; hero-motion.css plays the change once. */
@@ -562,4 +588,33 @@ input {
   .app-links small {
     display: none;
   }
+}
+
+/* The "changa" kites (scripts/changa.ts): above everything, never in the way of a click. */
+.changa-sky {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+}
+.changa-sky svg {
+  position: absolute;
+  top: 0;
+  transform: translateY(110vh);
+}
+.changa-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 51;
+  translate: -50% 0;
+  margin: 0;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--nd-hairline);
+  border-radius: var(--nd-radius-pill);
+  background: var(--nd-raised);
+  box-shadow: var(--nd-shadow);
+  color: var(--nd-ink);
+  font-weight: 600;
 }

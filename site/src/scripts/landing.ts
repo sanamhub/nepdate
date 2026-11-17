@@ -3,6 +3,7 @@
 import { NepaliDate, NepDateError, monthName, toNepaliDigits } from "nepdate-core";
 import "nepdate-datepicker/define";
 import type { NepDateInputElement } from "nepdate-datepicker";
+import { changa } from "./changa";
 
 const adLong = new Intl.DateTimeFormat("en-GB", {
   weekday: "long",
@@ -30,6 +31,23 @@ function showToday() {
   set("[data-today-day]", toNepaliDigits(today.day));
   set("[data-today-year]", toNepaliDigits(today.year));
   set("[data-today-en]", `${adOf(today)} is ${today.long({ pad: false })}.`);
+  showHoliday(today);
+}
+
+/** Names today's public holiday beside "Today in Nepal", from the list the page was built with. */
+function showHoliday(today: NepaliDate) {
+  const chip = document.querySelector<HTMLElement>("[data-today-holiday]");
+  const data = document.getElementById("nd-holidays")?.textContent;
+  if (!chip || !data) return;
+  let holidays: [string, string][] = [];
+  try {
+    holidays = JSON.parse(data);
+  } catch {
+    return;
+  }
+  const found = holidays.find(([day]) => day === today.toJSON());
+  chip.hidden = !found;
+  chip.textContent = found ? `Public holiday${found[1] ? `: ${found[1]}` : ""}` : "";
 }
 
 function tabs(root: HTMLElement) {
@@ -394,5 +412,6 @@ tickAtNepalMidnight();
 monthSpans();
 document.querySelectorAll<HTMLElement>("[data-tabs]").forEach(tabs);
 copyButtons();
+changa();
 const form = document.querySelector<HTMLFormElement>("[data-converter]");
 if (form) converter(form);

@@ -32,7 +32,7 @@ if (!group) throw new Error(`ApiTable: no spec group ${Astro.props.group}`);
             <tr id={row.id.toLowerCase()} data-api-row>
               <th scope="row">
                 {row.label}
-                <a class="api-id" href={`#${row.id.toLowerCase()}`} aria-label={`Link to ${row.label}`}>
+                <a class="api-id" href={`#${row.id.toLowerCase()}`} aria-label={`${row.id}, link to ${row.label}`}>
                   {row.id}
                 </a>
               </th>
@@ -103,7 +103,7 @@ if (!group) throw new Error(`ApiTable: no spec group ${Astro.props.group}`);
   .api-id {
     display: inline-block;
     margin-inline-start: 0.45em;
-    color: var(--sl-color-gray-4);
+    color: var(--sl-color-gray-3);
     font-family: var(--sl-font-mono);
     font-size: 0.78em;
     font-weight: 400;
@@ -129,6 +129,12 @@ if (!group) throw new Error(`ApiTable: no spec group ${Astro.props.group}`);
   }
   .api-ref[data-lang="csharp"] .api-cs {
     display: none;
+  }
+  /* A phone has room for the feature and one name; the C# column returns on a wider screen. */
+  @media (max-width: 40rem) {
+    .api-ref .api-cs {
+      display: none;
+    }
   }
   .api-ref[data-lang="typescript"] td[data-l="typescript"],
   .api-ref[data-lang="python"] td[data-l="python"],
