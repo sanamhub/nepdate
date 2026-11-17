@@ -52,6 +52,9 @@ no releases; ports pin a commit in `shared/VERSION` (ADR-0001). Format:
   promises). The version line is `1.0`.
 - ADR-0011: the performance changes merged after `1.0.0-rc.1` ship in `1.0.0`, as a one-time
   exception to ADR-0009 decision 4.
+- ADR-0012: the C# importer reads month lengths from C# NepDate's `MonthTable.cs` when the
+  checkout has it, and from the older `NepaliToEnglish.cs` and `EnglishToNepali.cs` otherwise.
+  Both layouts give the same `data/`.
 - `spec/BENCHMARK.md` has targets and usage floors for Java, Ruby, C, Dart, PHP and Zig, and
   `spec/PARITY.md` D-11 and `spec/API.md` O-07 name the serialization hooks of Java, Ruby and
   Zig.

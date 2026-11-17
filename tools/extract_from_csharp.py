@@ -1,6 +1,7 @@
 """Importer: C# NepDate data tables to language-neutral JSON under data/.
 
-Why this exists: see docs/adr/0002-canonical-data-and-upstream-first.md.
+Why this exists: see docs/adr/0002-canonical-data-and-upstream-first.md and
+docs/adr/0012-import-month-lengths-from-the-month-table.md.
 data/ is the source of truth for every port. Ports generate their tables
 from a vendored copy of data/, never from the C# repo (docs/adr/0001).
 
@@ -12,11 +13,18 @@ A data file is rewritten only when its content, ignoring "source", changed, so "
 "imported" move only with real data changes. data/UPSTREAM always records the commit last
 imported, and data/NOTICE is rendered from tools/NOTICE.template with that commit.
 
+Month lengths come from one of two upstream layouts:
+  - MonthTable.cs: MonthTable.Start holds the day number of the first day of every BS month,
+    counted from 1 Baisakh 1901 BS = 11 April 1844 AD, and ends with TotalDays.
+  - NepaliToEnglish.cs and EnglishToNepali.cs: the older pair of conversion tables.
+When a checkout has both, they must give the same months.
+
 Checks performed (script exits non-zero on any mismatch):
-  1. NepaliToEnglish month-end AD dates are contiguous with month lengths.
-  2. Every EnglishToNepali entry agrees with the BS->AD map built from (1).
-  3. CalendarOffsets.MonthStart agrees with cumulative month lengths.
-  4. Metadata offsets (tithi/holiday/event) resolve to valid BS dates.
+  1. MonthTable: 3588 months of 29..32 days, and its constants agree with the array.
+     NepaliToEnglish: month-end AD dates are contiguous with month lengths, and every
+     EnglishToNepali entry agrees with the BS->AD map built from them.
+  2. CalendarOffsets.MonthStart agrees with cumulative month lengths.
+  3. Metadata offsets (tithi/holiday/event) resolve to valid BS dates.
 """
 
 from __future__ import annotations
@@ -28,13 +36,30 @@ import re
 import string
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DICT_DIR = Path("src/NepDate/Core/Dictionaries")
+MONTH_TABLE = "MonthTable.cs"
+NEPALI_TO_ENGLISH = "NepaliToEnglish.cs"
+ENGLISH_TO_NEPALI = "EnglishToNepali.cs"
+MIN_YEAR, MAX_YEAR = 1901, 2199
+MONTH_COUNT = (MAX_YEAR - MIN_YEAR + 1) * 12
+EPOCH_AD = dt.date(1844, 4, 11)  # 1 Baisakh 1901 BS, day 0 of MonthTable.Start
 
 TUPLE4 = re.compile(r"\((\d+),\s*(\d+),\s*(\d+),\s*(\d+)\)")
 STRING_PAIR = re.compile(r'\("((?:[^"\\]|\\.)*)",\s*"((?:[^"\\]|\\.)*)"\)')
+INT_CONST = re.compile(r"\bconst\s+int\s+(\w+)\s*=\s*(\d+)\s*;")
+
+
+@dataclass
+class Months:
+    """BS month lengths per year, the AD date each month starts on, and what was checked."""
+
+    lengths: dict[int, list[int]]
+    month_start: dict[tuple[int, int], dt.date]
+    checked: str
 
 
 def unescape(text: str) -> str:
@@ -45,12 +70,20 @@ def read(repo: Path, name: str) -> str:
     return (repo / DICT_DIR / name).read_text(encoding="utf-8-sig")
 
 
+def has(repo: Path, name: str) -> bool:
+    return (repo / DICT_DIR / name).is_file()
+
+
 def int_array(source: str, field: str) -> list[int]:
-    match = re.search(field + r"\s*=\s*new\s+\w+\[\]\s*\{(.*?)\};", source, re.S)
+    match = re.search(r"\b" + field + r"\s*=\s*new\s+\w+\[\]\s*\{(.*?)\};", source, re.S)
     if not match:
         raise SystemExit(f"array {field} not found")
     body = re.sub(r"//[^\n]*", "", match.group(1))
     return [int(x) for x in re.findall(r"\d+", body)]
+
+
+def int_constants(source: str) -> dict[str, int]:
+    return {name: int(value) for name, value in INT_CONST.findall(re.sub(r"//[^\n]*", "", source))}
 
 
 def data_tuples(source: str) -> list[tuple[int, int, int, int]]:
@@ -72,20 +105,42 @@ def head_commit(repo: Path) -> str:
     return result.stdout.strip()
 
 
-def main(argv: list[str] | None = None, root: Path = ROOT, today: dt.date | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Import C# NepDate's data tables into data/.")
-    parser.add_argument("repo", type=Path, help="a checkout of https://github.com/RajuPrasai/NepDate")
-    parser.add_argument("--commit", help="upstream commit of that checkout (default: its git HEAD)")
-    parser.add_argument("--summary", type=Path,
-                        help="write a Markdown list of the changed BS years and months here")
-    args = parser.parse_args(argv)
-    repo: Path = args.repo
-    commit = args.commit or head_commit(repo)
-    today = today or dt.date.today()
+def months_from_month_table(repo: Path) -> Months:
+    """Month lengths from MonthTable.Start, the layout C# NepDate uses since its serial-day core."""
+    source = read(repo, MONTH_TABLE)
+    starts = int_array(source, "Start")
+    constants = int_constants(source)
+    expected = {"MinYear": MIN_YEAR, "MaxYear": MAX_YEAR, "MonthCount": MONTH_COUNT}
+    for name, value in expected.items():
+        if constants.get(name) != value:
+            fail(f"MonthTable.{name} is {constants.get(name)}, expected {value}")
+    if "TotalDays" not in constants:
+        fail("MonthTable.TotalDays not found")
+    if len(starts) != MONTH_COUNT + 1:
+        fail(f"MonthTable.Start has {len(starts)} entries, expected {MONTH_COUNT + 1} "
+             f"({MONTH_COUNT} month starts and TotalDays)")
+    if starts[0] != 0:
+        fail(f"MonthTable.Start begins at {starts[0]}, expected 0")
+    if starts[-1] != constants["TotalDays"]:
+        fail(f"MonthTable.Start ends at {starts[-1]}, but TotalDays is {constants['TotalDays']}")
 
-    # ---- 1. BS month lengths + epoch -------------------------------------
-    n2e = data_tuples(read(repo, "NepaliToEnglish.cs"))
-    min_year, max_year = 1901, 2199
+    lengths: dict[int, list[int]] = {}
+    month_start: dict[tuple[int, int], dt.date] = {}
+    for index in range(MONTH_COUNT):
+        year, month = MIN_YEAR + index // 12, index % 12 + 1
+        length = starts[index + 1] - starts[index]
+        if not 29 <= length <= 32:
+            fail(f"{year}-{month}: length {length} outside 29..32 (MonthTable.Start[{index}])")
+        lengths.setdefault(year, []).append(length)
+        month_start[(year, month)] = EPOCH_AD + dt.timedelta(days=starts[index])
+    return Months(lengths, month_start,
+                  f"OK {MONTH_COUNT} BS months from MonthTable, {starts[-1]} days in total")
+
+
+def months_from_dictionaries(repo: Path) -> Months:
+    """Month lengths from NepaliToEnglish, cross-checked with EnglishToNepali (the older layout)."""
+    n2e = data_tuples(read(repo, NEPALI_TO_ENGLISH))
+    min_year, max_year = MIN_YEAR, MAX_YEAR
     if len(n2e) != (max_year - min_year + 1) * 12:
         fail(f"NepaliToEnglish has {len(n2e)} rows, expected 3588")
 
@@ -104,18 +159,9 @@ def main(argv: list[str] | None = None, root: Path = ROOT, today: dt.date | None
         month_start[(year, month)] = start
         previous_end = end
 
-    epoch_ad = month_start[(min_year, 1)]
+    ad_to_bs = ad_to_bs_map(lengths, month_start)
 
-    def bs_to_ad(year: int, month: int, day: int) -> dt.date:
-        return month_start[(year, month)] + dt.timedelta(days=day - 1)
-
-    ad_to_bs: dict[dt.date, tuple[int, int, int]] = {}
-    for (year, month), start in month_start.items():
-        for day in range(1, lengths[year][month - 1] + 1):
-            ad_to_bs[start + dt.timedelta(days=day - 1)] = (year, month, day)
-
-    # ---- 2. Cross-check EnglishToNepali ----------------------------------
-    e2n = data_tuples(read(repo, "EnglishToNepali.cs"))
+    e2n = data_tuples(read(repo, ENGLISH_TO_NEPALI))
     checked = 0
     for index, (ad_len, ny, nm, nd) in enumerate(e2n):
         ad_year, ad_month = 1844 + (index + 3) // 12, (index + 3) % 12 + 1
@@ -126,8 +172,64 @@ def main(argv: list[str] | None = None, root: Path = ROOT, today: dt.date | None
             fail(f"EnglishToNepali {ad_end}: table says {ny}-{nm}-{nd}, "
                  f"derived {ad_to_bs.get(ad_end)}")
         checked += 1
+    return Months(lengths, month_start, f"OK {len(n2e)} BS months, {checked} AD month-ends cross-checked")
 
-    # ---- 3. Cross-check CalendarOffsets ----------------------------------
+
+def read_months(repo: Path) -> Months:
+    """Pick the layout the checkout has. With both, they must agree month for month."""
+    table = has(repo, MONTH_TABLE)
+    dictionaries = has(repo, NEPALI_TO_ENGLISH) or has(repo, ENGLISH_TO_NEPALI)
+    if dictionaries and not (has(repo, NEPALI_TO_ENGLISH) and has(repo, ENGLISH_TO_NEPALI)):
+        fail(f"{DICT_DIR.as_posix()} has only one of {NEPALI_TO_ENGLISH} and {ENGLISH_TO_NEPALI}")
+    if not table and not dictionaries:
+        fail(f"{DICT_DIR.as_posix()} has neither {MONTH_TABLE} nor {NEPALI_TO_ENGLISH}: "
+             "the upstream layout changed, update tools/extract_from_csharp.py")
+    if not table:
+        return months_from_dictionaries(repo)
+    months = months_from_month_table(repo)
+    if dictionaries:
+        old = months_from_dictionaries(repo)
+        for key in sorted(months.month_start):
+            year, month = key
+            if (months.month_start[key] != old.month_start[key]
+                    or months.lengths[year][month - 1] != old.lengths[year][month - 1]):
+                fail(f"{MONTH_TABLE} and {NEPALI_TO_ENGLISH} disagree at {year}-{month}")
+        months.checked += f"; agrees with {old.checked[3:]}"
+    return months
+
+
+def ad_to_bs_map(lengths: dict[int, list[int]],
+                 month_start: dict[tuple[int, int], dt.date]) -> dict[dt.date, tuple[int, int, int]]:
+    ad_to_bs: dict[dt.date, tuple[int, int, int]] = {}
+    for (year, month), start in month_start.items():
+        for day in range(1, lengths[year][month - 1] + 1):
+            ad_to_bs[start + dt.timedelta(days=day - 1)] = (year, month, day)
+    return ad_to_bs
+
+
+def main(argv: list[str] | None = None, root: Path = ROOT, today: dt.date | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Import C# NepDate's data tables into data/.")
+    parser.add_argument("repo", type=Path, help="a checkout of https://github.com/RajuPrasai/NepDate")
+    parser.add_argument("--commit", help="upstream commit of that checkout (default: its git HEAD)")
+    parser.add_argument("--summary", type=Path,
+                        help="write a Markdown list of the changed BS years and months here")
+    args = parser.parse_args(argv)
+    repo: Path = args.repo
+    commit = args.commit or head_commit(repo)
+    today = today or dt.date.today()
+
+    # ---- 1. BS month lengths + epoch -------------------------------------
+    months = read_months(repo)
+    min_year, max_year = MIN_YEAR, MAX_YEAR
+    lengths, month_start = months.lengths, months.month_start
+    epoch_ad = month_start[(min_year, 1)]
+
+    def bs_to_ad(year: int, month: int, day: int) -> dt.date:
+        return month_start[(year, month)] + dt.timedelta(days=day - 1)
+
+    ad_to_bs = ad_to_bs_map(lengths, month_start)
+
+    # ---- 2. Cross-check CalendarOffsets ----------------------------------
     offsets_src = read(repo, "CalendarOffsets.cs")
     meta_starts = int_array(offsets_src, "MonthStart")
     meta_base = 2001
@@ -141,7 +243,7 @@ def main(argv: list[str] | None = None, root: Path = ROOT, today: dt.date | None
         y, m, d = ad_to_bs[dt.date.fromordinal(base_ordinal + offset)]
         return f"{y:04}-{m:02}-{d:02}"
 
-    # ---- 4. Metadata -----------------------------------------------------
+    # ---- 3. Metadata -----------------------------------------------------
     pool = [(unescape(np_), unescape(en)) for np_, en in STRING_PAIR.findall(read(repo, "CalendarStrings.cs"))]
     days: dict[str, dict] = {}
 
@@ -201,7 +303,7 @@ def main(argv: list[str] | None = None, root: Path = ROOT, today: dt.date | None
         args.summary.write_text("".join(f"- {line}\n" for line in lines), encoding="utf-8", newline="\n")
 
     print(f"OK epoch {min_year}-01-01 BS = {epoch_ad} AD")
-    print(f"OK {len(n2e)} BS months, {checked} AD month-ends cross-checked")
+    print(months.checked)
     print(f"OK {len(meta_starts)} metadata month offsets cross-checked")
     print(f"OK metadata years {min(by_year)}..{max(by_year)}, {len(days)} days")
     print(f"OK {len(changes)} changed BS months; next: py tools/make_vectors.py")

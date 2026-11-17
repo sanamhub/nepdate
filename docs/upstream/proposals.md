@@ -101,6 +101,10 @@ A table of month lengths (3588 bytes) and a table of month-start day numbers, as
 Condition: the existing BenchmarkDotNet suite shows no slowdown, and the exhaustive check
 (`tools/csharp-exhaustive` in the hub) shows all 109,212 days unchanged.
 
+Status: upstream pull request 28 (open) replaces both dictionaries with one table of month-start
+day numbers, `MonthTable.Start`. The hub's importer already reads it, and the exhaustive check on
+that branch shows all 109,212 days unchanged.
+
 ## U-07 Data: BS 2087 has 367 days and 2090 has 364
 
 Already recorded in `data/README.md` ("Known data questions"). Raise with the same evidence.
@@ -141,4 +145,5 @@ unchanged.
 
 `tools/extract_from_csharp.py` reads upstream's generated C# files. When U-03 or U-06 moves or
 reshapes them, the extractor changes in the same week, and the exhaustive check must still show
-zero differences before the hub syncs.
+zero differences before the hub syncs. For U-06 this is done: the extractor reads `MonthTable.cs`
+or the two dictionaries, whichever the checkout has (ADR-0012).

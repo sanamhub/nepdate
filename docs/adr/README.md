@@ -16,6 +16,7 @@ repository. Immutable once accepted; supersede with a new ADR.
 | [0009](0009-what-1.0-promises.md) | What 1.0 promises | Accepted |
 | [0010](0010-worker-for-agents.md) | A small Worker in front of both websites, for agents | Accepted (amends 0005 decision 5 and 0006) |
 | [0011](0011-performance-work-before-1.0.md) | Performance work lands between 1.0.0-rc.1 and 1.0.0 | Accepted (amends 0009 decision 4 for 1.0.0 only) |
+| [0012](0012-import-month-lengths-from-the-month-table.md) | Import month lengths from C# NepDate's month table | Accepted (amends 0002 decision 5) |
 
 New ADR: copy the shape of 0001 (Status, Date, Approved by, Context, Decision, Consequences,
 Alternatives considered) as `NNNN-kebab-title.md`.
