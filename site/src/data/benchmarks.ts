@@ -60,7 +60,7 @@ export const benchmarks: PortBenchmark[] = [
     id: "cpp",
     name: "C++",
     machine: `${LAPTOP}, MSVC`,
-    ops: [6.58, 7.84, 6.81, 4.77, 22.41, 10.01, 11.64, 503.55],
+    ops: [6.76, 8.15, 6.97, 4.73, 22.71, 10.29, 9.44, 369.48],
     competitors: [],
     source: blob("nepdate-cpp", "docs/benchmarks.md"),
   },
