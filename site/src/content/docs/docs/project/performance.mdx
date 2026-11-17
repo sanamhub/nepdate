@@ -42,7 +42,7 @@ note that there is no mature one.
               <span class="sr-only"> benchmark report</span>
             </a>
           </th>
-          <td style="text-align: right; white-space: nowrap">{formatNs(port.ops[0])}</td>
+          <td style="text-align: right; white-space: nowrap">{formatNs(next?.ours ?? port.ops[0])}</td>
           <td>
             {next === null ? (
               "no mature library to compare"
@@ -50,6 +50,7 @@ note that there is no mature one.
               <>
                 <code>{next.name}</code>
                 {next.wrong ? `, wrong on ${next.wrong} of 64` : ""}
+                {next.machine ? `, both on ${next.machine}` : ""}
               </>
             )}
           </td>
@@ -106,10 +107,10 @@ The conversions, arithmetic and patro lookups allocate nothing in Rust, C++, C, 
 ## Reading the numbers
 
 - **Compare within a row of the first table, not across languages.** Each language was measured on
-  its own runtime, and Swift on GitHub's macOS runner (Apple M1), not the laptop the others used
-  (Intel Core i5-12500H).
-- **Some runs were not on a quiet machine.** Each report records the CPU load during its run; the
-  stable release repeats them on an idle machine, pinned to one core, as the spec asks.
+  its own runtime. Every row ran on the same Intel Core i5-12500H laptop, idle and pinned to one
+  core as the spec asks, with one exception: Swift's only competitor ships for macOS alone, so Swift
+  and that library were compared on GitHub's macOS runner (Apple M1). Swift's row in the second
+  table is the laptop, in WSL 2.
 - **Speed is not the reason to pick a date library; correct dates are.** Every port is checked
   against the same 20,360 golden rows and 7,176 month boundaries first
   ([Same answer everywhere](/docs/project/conformance/)), and the benchmarks run only after that.

@@ -77,7 +77,7 @@ const race = languages.map((port) => {
       ours: formatNs(port.ops[0]),
       theirs: "",
       rival: "",
-      wrong: 0,
+      note: "",
       times: "",
       none: true,
       width: "0",
@@ -89,7 +89,13 @@ const race = languages.map((port) => {
     ours: formatNs(next.ours),
     theirs: formatNs(next.b1),
     rival: next.name,
-    wrong: next.wrong,
+    // A library that keeps pace gets what it gets wrong; a comparison from another machine says so.
+    note: [
+      next.wrong ? `It is wrong on ${next.wrong} of the 64 dates.` : "",
+      next.machine ? `Both timed on ${next.machine}, the only place that library runs.` : "",
+    ]
+      .filter(Boolean)
+      .join(" "),
     none: false,
     times:
       next.times < 1.5
@@ -376,7 +382,7 @@ const jsonLd = {
                   <>
                     <span class="race-vs"> against {row.theirs} for </span>
                     <code class="who">{row.rival}</code>
-                    {row.wrong ? <span class="race-note">It is wrong on {row.wrong} of the 64 dates.</span> : null}
+                    {row.note ? <span class="race-note">{row.note}</span> : null}
                   </>
                 )}
               </span>
