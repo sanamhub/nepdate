@@ -29,24 +29,39 @@ def snapshot(root):
             for p in sorted((root / 'data').rglob('*')) if p.is_file()}
 
 
-class ImporterTest(unittest.TestCase):
+class ImporterBase(unittest.TestCase):
+    """A scratch hub root and a fake upstream checkout, with no tests of its own."""
+
     def setUp(self):
-        self.root = scratch_root(self, 'data', 'tools/NOTICE.template')
-        (self.root / 'data/UPSTREAM').write_text(OLD + '\n', encoding='utf-8', newline='\n')
+        self.root = self.fresh_root()
         self.calendar, self.patro = load_docs(ROOT)
         self.repo = Path(tempfile.mkdtemp(prefix='nepdate-upstream-'))
         self.addCleanup(shutil.rmtree, self.repo, ignore_errors=True)
 
-    def run_importer(self, calendar=None, patro=None, commit=OLD, summary=None, today=TODAY):
+    def run_importer(self, calendar=None, patro=None, commit=OLD, summary=None, today=TODAY,
+                     layout=fake_upstream.DICTIONARIES):
+        self.write_upstream(calendar, patro, layout)
+        return self.import_written(commit, summary, today)
+
+    def write_upstream(self, calendar=None, patro=None, layout=fake_upstream.DICTIONARIES):
         if self.repo.exists():
             shutil.rmtree(self.repo)
-        fake_upstream.write(self.repo, calendar or self.calendar, patro or self.patro)
+        fake_upstream.write(self.repo, calendar or self.calendar, patro or self.patro, layout)
+
+    def import_written(self, commit=OLD, summary=None, today=TODAY):
         argv = [str(self.repo), '--commit', commit]
         if summary:
             argv += ['--summary', str(summary)]
         with contextlib.redirect_stdout(io.StringIO()):
             return extract_from_csharp.main(argv, root=self.root, today=today)
 
+    def fresh_root(self):
+        root = scratch_root(self, 'data', 'tools/NOTICE.template')
+        (root / 'data/UPSTREAM').write_text(OLD + '\n', encoding='utf-8', newline='\n')
+        return root
+
+
+class ImporterTest(ImporterBase):
     def test_unchanged_upstream_changes_no_file(self):
         self.run_importer()
         first = snapshot(self.root)
@@ -133,6 +148,90 @@ class ImporterTest(unittest.TestCase):
             extract_from_csharp.main(['--help'], root=self.root)
         self.assertEqual(exit_.exception.code, 0)
         self.assertIn('--summary', out.getvalue())
+
+
+class MonthTableTest(ImporterBase):
+    """The layout C# NepDate moved to: MonthTable.Start instead of the two conversion tables."""
+
+    def assert_fails(self, message):
+        with contextlib.redirect_stderr(io.StringIO()) as err, self.assertRaises(SystemExit) as exit_:
+            self.import_written()
+        self.assertEqual(exit_.exception.code, 1)
+        self.assertIn(message, err.getvalue())
+
+    def table(self, starts, **constants):
+        fake_upstream.write_month_table(self.repo, starts, **constants)
+
+    def test_month_table_gives_the_same_bytes_as_the_dictionaries(self):
+        self.run_importer(commit=NEW)
+        from_dictionaries = snapshot(self.root)
+        self.root = self.fresh_root()
+        self.run_importer(commit=NEW, layout=fake_upstream.MONTH_TABLE)
+        self.assertEqual(snapshot(self.root), from_dictionaries)
+
+    def test_month_table_keeps_every_data_file_byte_for_byte(self):
+        before = snapshot(ROOT)
+        self.run_importer(layout=fake_upstream.MONTH_TABLE)
+        after = snapshot(self.root)
+        for name, content in before.items():
+            if name.startswith(('data/calendar/', 'data/patro/')):
+                self.assertEqual(after[name], content, name)
+
+    def test_month_table_length_change_is_imported(self):
+        calendar = copy.deepcopy(self.calendar)
+        lengths = calendar['month_lengths']['2199']
+        lengths[0], lengths[1] = lengths[0] + 1, lengths[1] - 1
+        self.run_importer(calendar=calendar, commit=NEW, layout=fake_upstream.MONTH_TABLE)
+        written, _ = load_docs(self.root)
+        self.assertEqual(written['month_lengths']['2199'], lengths)
+        self.assertEqual(written['epoch'], {'bs': '1901-01-01', 'ad': '1844-04-11'})
+
+    def test_both_layouts_that_agree_are_imported(self):
+        self.run_importer(layout=fake_upstream.BOTH)
+        self.assertEqual(snapshot(self.root)['data/calendar/bs-calendar.json'],
+                         snapshot(ROOT)['data/calendar/bs-calendar.json'])
+
+    def test_both_layouts_that_disagree_fail(self):
+        self.write_upstream(layout=fake_upstream.BOTH)
+        starts = fake_upstream.month_starts(self.calendar)
+        starts[1] += 1  # 1901-01 one day longer, 1901-02 one day shorter
+        self.table(starts)
+        self.assert_fails('MonthTable.cs and NepaliToEnglish.cs disagree at 1901-1')
+
+    def test_a_wrong_length_fails(self):
+        self.write_upstream(layout=fake_upstream.MONTH_TABLE)
+        starts = fake_upstream.month_starts(self.calendar)
+        starts[1] -= 3  # 1901-01 shrinks to 28 days
+        self.table(starts)
+        self.assert_fails('1901-1: length 28 outside 29..32')
+
+    def test_a_wrong_total_days_fails(self):
+        self.write_upstream(layout=fake_upstream.MONTH_TABLE)
+        starts = fake_upstream.month_starts(self.calendar)
+        self.table(starts, total_days=starts[-1] + 1)
+        self.assert_fails(f'MonthTable.Start ends at {starts[-1]}, but TotalDays is {starts[-1] + 1}')
+
+    def test_a_missing_month_fails(self):
+        self.write_upstream(layout=fake_upstream.MONTH_TABLE)
+        starts = fake_upstream.month_starts(self.calendar)
+        del starts[100]
+        self.table(starts)
+        self.assert_fails('MonthTable.Start has 3588 entries, expected 3589')
+
+    def test_a_wrong_month_count_fails(self):
+        self.write_upstream(layout=fake_upstream.MONTH_TABLE)
+        self.table(fake_upstream.month_starts(self.calendar), month_count=3587)
+        self.assert_fails('MonthTable.MonthCount is 3587, expected 3588')
+
+    def test_neither_layout_fails(self):
+        self.write_upstream(layout=fake_upstream.MONTH_TABLE)
+        (self.repo / fake_upstream.DICT_DIR / 'MonthTable.cs').unlink()
+        self.assert_fails('neither MonthTable.cs nor NepaliToEnglish.cs')
+
+    def test_half_of_the_old_layout_fails(self):
+        self.write_upstream()
+        (self.repo / fake_upstream.DICT_DIR / 'EnglishToNepali.cs').unlink()
+        self.assert_fails('only one of NepaliToEnglish.cs and EnglishToNepali.cs')
 
 
 if __name__ == '__main__':

@@ -93,6 +93,17 @@ class CodeChangesTest(unittest.TestCase):
         self.assertEqual([commit['sha'] for commit in result['code_commits']], [code])
         self.assertEqual(result['code_files'], ['tests/NepDate.Tests/Core/CalendarDataTests.cs'])
 
+    def test_the_switch_to_the_month_table_is_data(self):
+        (self.repo / 'src/NepDate/Core/Dictionaries/NepaliToEnglish.cs').unlink()
+        switch = self.commit('perf: one month table', 'src/NepDate/Core/Dictionaries/MonthTable.cs')
+        result = upstream_sync.code_changes(self.repo, self.first)
+        self.assertEqual(result['commits'][0]['sha'], switch)
+        self.assertEqual(sorted(result['commits'][0]['files']),
+                         ['src/NepDate/Core/Dictionaries/MonthTable.cs',
+                          'src/NepDate/Core/Dictionaries/NepaliToEnglish.cs'])
+        self.assertEqual(result['code_commits'], [])
+        self.assertEqual(result['code_files'], [])
+
     def test_commits_come_oldest_first(self):
         self.commit('one', 'README.md')
         self.commit('two', 'src/NepDate/NepDate.csproj')
