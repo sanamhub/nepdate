@@ -1,0 +1,122 @@
+---
+// The language picker and feature filter above the API reference tables. The chosen language is
+// shared with the docs' language tabs (Starlight keeps their label in localStorage under
+// "starlight-synced-tabs__lang"), and ?lang=<id> in the URL picks one directly.
+import { ports } from "../data/ports";
+---
+
+<div class="api-controls not-content" data-api-controls>
+  <label>
+    <span>Show names in</span>
+    <select data-api-lang>
+      {ports.map((port) => <option value={port.id} selected={port.id === "typescript"}>{port.name}</option>)}
+    </select>
+  </label>
+  <label class="api-filter">
+    <span>Find a feature</span>
+    <input type="search" data-api-filter placeholder="fiscal, parse, holiday…" autocomplete="off" />
+  </label>
+</div>
+
+<script is:inline define:vars={{ names: Object.fromEntries(ports.map((p) => [p.id, p.name])) }}>
+  // The tables come after this script in the page, so it waits for the document.
+  const init = () => {
+    const KEY = "starlight-synced-tabs__lang";
+    const controls = document.querySelector("[data-api-controls]");
+    if (!controls) return;
+    const select = controls.querySelector("[data-api-lang]");
+    const filter = controls.querySelector("[data-api-filter]");
+    const tables = [...document.querySelectorAll("[data-api-table]")];
+    const byName = Object.fromEntries(Object.entries(names).map(([id, name]) => [name, id]));
+
+    const show = (id) => {
+      if (!(id in names)) return;
+      select.value = id;
+      for (const table of tables) {
+        table.dataset.lang = id;
+        const head = table.querySelector("[data-api-lang-name]");
+        if (head) head.textContent = names[id];
+      }
+    };
+
+    let start = new URLSearchParams(location.search).get("lang");
+    if (!start) {
+      try {
+        start = byName[localStorage.getItem(KEY) ?? ""];
+      } catch {}
+    }
+    show(start ?? "typescript");
+
+    select.addEventListener("change", () => {
+      show(select.value);
+      try {
+        localStorage.setItem(KEY, names[select.value]);
+      } catch {}
+      const url = new URL(location.href);
+      url.searchParams.set("lang", select.value);
+      history.replaceState(null, "", url);
+    });
+
+    filter.addEventListener("input", () => {
+      const words = filter.value.toLowerCase().split(/\s+/).filter(Boolean);
+      for (const table of tables) {
+        let shown = 0;
+        for (const row of table.querySelectorAll("[data-api-row]")) {
+          const text = (row.querySelector("th")?.textContent ?? "") + " " +
+            (row.querySelector(`td[data-l="${table.dataset.lang}"]`)?.textContent ?? "");
+          const match = words.every((w) => text.toLowerCase().includes(w));
+          row.hidden = !match;
+          if (match) shown++;
+        }
+        table.querySelector(".api-scroll").hidden = shown === 0;
+        table.querySelector(".api-empty").hidden = shown !== 0;
+      }
+    });
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+</script>
+
+<style>
+  .api-controls {
+    position: sticky;
+    top: calc(var(--sl-nav-height, 3.5rem) + 0.5rem);
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    align-items: end;
+    margin-block: 1.25rem 0.5rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: var(--nd-radius-m);
+    background: color-mix(in srgb, var(--sl-color-black) 88%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  label {
+    display: grid;
+    gap: 0.3rem;
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+    font-weight: 500;
+  }
+  .api-filter {
+    flex: 1 1 14rem;
+  }
+  select,
+  input {
+    min-height: 2.4rem;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: var(--nd-radius-s);
+    background: var(--sl-color-gray-6);
+    color: var(--sl-color-white);
+    font: inherit;
+    font-size: var(--sl-text-base);
+  }
+  select:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 1px;
+  }
+</style>

@@ -1,0 +1,53 @@
+---
+title: API reference
+description: Every feature of the NepDate libraries, with its name in your language next to the C# original.
+tableOfContents:
+  maxHeadingLevel: 2
+---
+
+import ApiControls from "../../../components/ApiControls.astro";
+import ApiTable from "../../../components/ApiTable.astro";
+
+Every language offers the same features under its own naming style. Pick your language to see what
+each one is called there, and the C# original it matches. The list comes from the
+[shared API inventory](https://github.com/sanamhub/nepdate/blob/main/spec/API.md) every port is
+built and tested against.
+
+A row in italics is not offered in that language, with the reason in brackets; the D numbers are
+listed in [Same answer everywhere](/docs/project/conformance/). For every signature, overload and
+type in one language, open its full API list from its own page, for example
+[TypeScript](/docs/typescript/#reference).
+
+<ApiControls />
+
+## Dates, identity and comparison
+
+<ApiTable group="ND" />
+
+## Conversion and serialization
+
+<ApiTable group="NC" />
+
+## Arithmetic
+
+<ApiTable group="NA" />
+
+## Formatting
+
+<ApiTable group="NF" />
+
+## Parsing
+
+<ApiTable group="NP" />
+
+## Ranges
+
+<ApiTable group="NR" />
+
+## Fiscal year
+
+<ApiTable group="NY" />
+
+## Patro
+
+<ApiTable group="NT" />

@@ -66,6 +66,7 @@ export default defineConfig({
           items: [
             { label: "Introduction", link: "/docs/" },
             { label: "Quick start", link: "/docs/quickstart/" },
+            { label: "API reference", link: "/docs/reference/" },
           ],
         },
         {
