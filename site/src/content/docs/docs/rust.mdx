@@ -4,17 +4,14 @@ description: Install and use the nepdate and nepdate-patro crates.
 ---
 
 import { Code } from "@astrojs/starlight/components";
-import { versions } from "../../../data/ports";
+import { versionLine, versions } from "../../../data/ports";
 
 `nepdate` converts between BS and AD, formats and parses Nepali dates, does date arithmetic,
 inclusive ranges and fiscal years. `nepdate-patro` adds tithi, public holidays and events. The core
 is `no_std` with no dependencies by default, its core operations allocate nothing, and it contains
 no `unsafe` code.
 
-:::caution[Release candidate]
-This is <code>{versions.rust}</code>, the release candidate for Rust on crates.io. The API is stable
-from 1.0 (hub ADR-0009).
-:::
+The current release is <code>{versions.rust}</code>. The API is stable from 1.0 (hub ADR-0009).
 
 ## Install
 
@@ -22,12 +19,9 @@ from 1.0 (hub ADR-0009).
   lang="toml"
   title="Cargo.toml"
   code={`[dependencies]
-nepdate = "=${versions.rust}"
-nepdate-patro = "=${versions.rust}"   # only if you need tithi, holidays or events`}
+nepdate = "${versionLine}"
+nepdate-patro = "${versionLine}"   # only if you need tithi, holidays or events`}
 />
-
-Cargo never picks a pre-release for a plain `"0.1"` requirement, so the release candidate is
-pinned exactly.
 
 The MSRV is Rust 1.85. The `std` feature is on by default; `serde`, `chrono` and `jiff` are
 optional. `std` turns on `alloc`, which adds ordered batch conversion and the ranges that return
