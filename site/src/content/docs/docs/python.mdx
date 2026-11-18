@@ -17,20 +17,13 @@ newer. Pure Python, zero runtime dependencies (except `tzdata` on Windows, for `
 - BS 1901-01-01 to 2199-12-30 (AD 1844-04-11 to 2143-04-15), the same results as C# NepDate and
   the other ports.
 
-:::caution[Release candidate]
-This is <code>{PYPI_VERSION}</code>, the release candidate for Python on PyPI. The API is stable
-from 1.0 (hub ADR-0009).
-:::
+The current release is <code>{PYPI_VERSION}</code>. The API is stable from 1.0 (hub ADR-0009).
 
 ## Install
 
 ```sh
-pip install --pre nepdate-core
+pip install nepdate-core
 ```
-
-<p>
-  <code>--pre</code> is needed while only pre-releases exist; pin <code>nepdate-core=={PYPI_VERSION}</code> to stay on this one.
-</p>
 
 ## Dates
 
@@ -235,7 +228,7 @@ parse kinds are `INVALID_CHARACTER`, `WRONG_GROUP_COUNT`, `NUMBER_TOO_LONG`, `AM
 ## Tithi, holidays and events
 
 ```sh
-pip install --pre nepdate-core nepdate-patro
+pip install nepdate-core nepdate-patro
 ```
 
 ```python

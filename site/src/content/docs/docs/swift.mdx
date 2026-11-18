@@ -15,10 +15,7 @@ Pure Swift in the Swift 6 language mode, every type `Sendable`, no dependencies.
 need Foundation; `Date` interop and `FormatStyle` compile in where Foundation exists. Small enough
 for widget and watch extensions. Apple platforms, Linux and Windows are all built in CI.
 
-:::caution[Release candidate]
-This is <code>{versions.swift}</code>, the release candidate for Swift. The API is stable
-from 1.0 (hub ADR-0009).
-:::
+The current release is <code>{versions.swift}</code>. The API is stable from 1.0 (hub ADR-0009).
 
 :::note[Not `Calendar.Identifier.vikram`]
 Foundation's `vikram` calendar (iOS 26 and later) is the Indian lunisolar Vikram calendar, not
@@ -27,9 +24,9 @@ Nepal's solar Bikram Sambat, and its months don't match. Apple has no Nepali cal
 
 ## Install
 
-Add the package to `Package.swift`. SwiftPM only picks a pre-release when the requirement names one:
+Add the package to `Package.swift`:
 
-<Code lang="swift" code={`.package(url: "https://github.com/sanamhub/nepdate-swift", exact: "${versions.swift}")`} />
+<Code lang="swift" code={`.package(url: "https://github.com/sanamhub/nepdate-swift", from: "${versions.swift}")`} />
 
 Then depend on `NepDate`, and on `NepDatePatro` as well for tithi, holidays and events:
 
