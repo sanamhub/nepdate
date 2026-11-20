@@ -170,18 +170,18 @@ export const benchmarks: PortBenchmark[] = [
   },
 ];
 
-/** C# NepDate 2.0.7 on .NET 10, the original every port is compared with. `ops` is the hub's
+/** C# NepDate 2.1.0 on .NET 10, the original every port is compared with. `ops` is the hub's
  *  64-date harness, like every port. The competitors are the three selected by BENCHMARK section 7
  *  and measured in the same run on the same 64 dates. `agrees` is the lower of B1 and B2. */
 export const csharp: PortBenchmark = {
   id: "csharp",
   name: "C#",
   machine: `${LAPTOP}, .NET 10`,
-  ops: [13.27, 18.7, 20.06, 19.3, 139.04, 21.13, 48.63, 3274.5],
+  ops: [5.6, 5.9, 2.79, 2.45, 29.96, 7.28, 16.46, 633.13],
   competitors: [
-    { name: "DateConverterNepali", b1: 393.6, b2: 561.4, agrees: 61 },
-    { name: "NepaliCalendarBS", b1: 12991.9, b2: 182.2, agrees: 63 },
-    { name: "NepaliDateConverter.NETCORE", b1: 21924.7, b2: 45688.7, agrees: 60 },
+    { name: "DateConverterNepali", b1: 419.3, b2: 614.9, agrees: 61 },
+    { name: "NepaliCalendarBS", b1: 12614, b2: 192, agrees: 63 },
+    { name: "NepaliDateConverter.NETCORE", b1: 22174, b2: 46434.4, agrees: 60 },
   ],
   source: blob("nepdate", "docs/benchmarks/dotnet.md"),
 };
