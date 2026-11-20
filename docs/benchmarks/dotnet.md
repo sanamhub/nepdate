@@ -1,6 +1,6 @@
 # C# NepDate baseline
 
-Time and allocation of the NepDate NuGet package 2.0.7 on operations B1 to B8 of
+Time and allocation of the NepDate NuGet package 2.1.0 on operations B1 to B8 of
 [`spec/BENCHMARK.md`](../../spec/BENCHMARK.md), measured with [`tools/dotnet-bench`](../../tools/dotnet-bench/README.md).
 Every port copies its "C# NepDate" column from the .NET 10 column below. How NepDate gets these
 numbers is in [`docs/research/dotnet-internals.md`](../research/dotnet-internals.md).
@@ -22,16 +22,16 @@ the site does not use it.
 | .NET SDK | 11.0.100 (the project targets net10.0) |
 | Runtimes | .NET 10.0.15 (10.0.1526.53008) and .NET 8.0.34 (8.0.3426.52217), X64 RyuJIT x86-64-v3 |
 | BenchmarkDotNet | 0.15.8, default job, `[MemoryDiagnoser]` |
-| NepDate | 2.0.7 from nuget.org (the `lib/net8.0` assembly is used on both runtimes) |
-| Date of run | 2026-11-16 |
-| CPU load before | 3.0 percent average, 5.1 peak (30 one-second samples, the idle gate) |
-| CPU load during | 10.6 percent average, 84.6 peak (366 one-second samples over the 350 s run) |
+| NepDate | 2.1.0 from nuget.org (the `lib/net8.0` assembly is used on both runtimes) |
+| Date of run | 2026-11-20 |
+| CPU load before | 4.9 percent average, 9.7 peak (30 one-second samples, the idle gate) |
+| CPU load during | 15.9 percent average, 63.2 peak (467 one-second samples over the 467 s run) |
 
 The machine was otherwise idle: no other build, test suite or benchmark ran during this session. The
 load is the whole-machine figure; each benchmark process is pinned to logical CPU 2, which accounts
-for about 6 percent of it by itself. One burst of four consecutive samples above 30 percent (up to
-84.6) falls about two minutes in. The per-second samples are in
-[`raw/2026-11-16-dotnet-cpu-samples.txt`](raw/2026-11-16-dotnet-cpu-samples.txt).
+for about 6 percent of it by itself. 35 of the 467 samples are above 30 percent (up to 63.2); the
+longest bursts fall about 70 and 265 seconds in. The per-second samples are in
+[`raw/2026-11-20-dotnet-cpu-samples.txt`](raw/2026-11-20-dotnet-cpu-samples.txt).
 
 ## Command
 
@@ -43,11 +43,11 @@ dotnet run -c Release -f net10.0 --project tools/dotnet-bench -- --filter "*" --
 
 The job sets affinity and the Ultimate Performance GUID, and BenchmarkDotNet restores the active
 plan after the run. The raw reports are
-[`raw/2026-11-16-dotnet-report-github.md`](raw/2026-11-16-dotnet-report-github.md),
-[`raw/2026-11-16-dotnet-report.csv`](raw/2026-11-16-dotnet-report.csv),
-[`raw/2026-11-16-dotnet-competitors-report-github.md`](raw/2026-11-16-dotnet-competitors-report-github.md)
-and [`raw/2026-11-16-dotnet-competitors-report.csv`](raw/2026-11-16-dotnet-competitors-report.csv).
-The console log is [`raw/2026-11-16-dotnet-final.log`](raw/2026-11-16-dotnet-final.log).
+[`raw/2026-11-20-dotnet-report-github.md`](raw/2026-11-20-dotnet-report-github.md),
+[`raw/2026-11-20-dotnet-report.csv`](raw/2026-11-20-dotnet-report.csv),
+[`raw/2026-11-20-dotnet-competitors-report-github.md`](raw/2026-11-20-dotnet-competitors-report-github.md)
+and [`raw/2026-11-20-dotnet-competitors-report.csv`](raw/2026-11-20-dotnet-competitors-report.csv).
+The console log is [`raw/2026-11-20-dotnet-final.log`](raw/2026-11-20-dotnet-final.log).
 
 ## Results
 
@@ -57,14 +57,14 @@ interval. "0" means BenchmarkDotNet measured no allocation.
 
 | ID | Operation | .NET 10 mean ns/op | error ns | bytes/op | .NET 8 mean ns/op | error ns | bytes/op |
 |---|---|---:|---:|---:|---:|---:|---:|
-| B1 | BS to AD | 13.27 | 0.26 | 0 | 12.56 | 0.08 | 0 |
-| B2 | AD to BS | 18.70 | 0.10 | 0 | 23.08 | 0.24 | 0 |
-| B3 | add 1000 days | 20.06 | 0.15 | 0 | 25.84 | 0.20 | 0 |
-| B4 | add 13 months, Clamp | 19.30 | 0.12 | 0 | 21.51 | 0.26 | 0 |
-| B5 | long format, Nepali, weekday | 139.04 | 2.73 | 435 | 205.13 | 6.05 | 435 |
-| B6 | strict parse `YYYY/MM/DD` | 21.13 | 0.10 | 0 | 30.81 | 0.45 | 0 |
-| B7 | patro info | 48.63 | 0.26 | 51 | 52.62 | 0.96 | 51 |
-| B8 | patro month grid | 3,274.50 | 33.24 | 1,429 | 3,333.02 | 27.55 | 1,429 |
+| B1 | BS to AD | 5.60 | 0.10 | 0 | 5.98 | 0.12 | 0 |
+| B2 | AD to BS | 5.90 | 0.11 | 0 | 6.08 | 0.11 | 0 |
+| B3 | add 1000 days | 2.79 | 0.05 | 0 | 2.82 | 0.02 | 0 |
+| B4 | add 13 months, Clamp | 2.45 | 0.04 | 0 | 2.89 | 0.03 | 0 |
+| B5 | long format, Nepali, weekday | 29.96 | 0.39 | 69 | 32.62 | 0.64 | 69 |
+| B6 | strict parse `YYYY/MM/DD` | 7.28 | 0.06 | 0 | 7.27 | 0.15 | 0 |
+| B7 | patro info | 16.46 | 0.33 | 51 | 22.97 | 0.46 | 51 |
+| B8 | patro month grid | 633.13 | 12.64 | 1,429 | 836.61 | 10.42 | 1,429 |
 
 ## Choosing the C# competitors
 
@@ -109,13 +109,13 @@ Bytes/op is B1 / B2.
 
 | Library | Version | B1 mean ns | B1 agrees | B2 mean ns | B2 agrees | bytes/op |
 |---|---|---:|---|---:|---|---:|
-| DateConverterNepali | 1.0.2 | 393.6 | 61 of 64 | 561.4 | 61 of 64 | 689 / 2,125 |
-| NepaliCalendarBS | 1.2.3 | 12,991.9 | 63 of 64 | 182.2 | 63 of 64 | 688 / 32 |
-| NepaliDateConverter.NETCORE | 1.0.4 | 21,924.7 | 61 of 64 | 45,688.7 | 60 of 64 | 20,736 / 20,736 |
+| DateConverterNepali | 1.0.2 | 419.3 | 61 of 64 | 614.9 | 61 of 64 | 689 / 2,125 |
+| NepaliCalendarBS | 1.2.3 | 12,614.0 | 63 of 64 | 192.0 | 63 of 64 | 688 / 32 |
+| NepaliDateConverter.NETCORE | 1.0.4 | 22,174.0 | 61 of 64 | 46,434.4 | 60 of 64 | 20,736 / 20,736 |
 
 NepDate is faster than every selected library on both operations. The closest is NepaliCalendarBS on
-B2 at 182.2 ns against NepDate's 18.70 ns, 9.7 times slower. On B1 it is 12,991.9 ns against
-13.27 ns. DateConverterNepali is 30 times slower on B1 and 30 times slower on B2.
+B2 at 192.0 ns against NepDate's 5.90 ns, 33 times slower. On B1 it is 12,614.0 ns against
+5.60 ns. DateConverterNepali is 75 times slower on B1 and 104 times slower on B2.
 NepaliDateConverter.NETCORE is the slowest of the three and allocates about 20 KB per call.
 
 None of the selected libraries agrees on all 64 dates:

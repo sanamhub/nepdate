@@ -1,7 +1,7 @@
 # tools/dotnet-bench: C# NepDate baseline
 
-BenchmarkDotNet project that measures the NepDate NuGet package (2.0.7, the version pinned in
-`tools/csharp-golden`) on operations B1 to B8 of [`spec/BENCHMARK.md`](../../spec/BENCHMARK.md).
+BenchmarkDotNet project that measures the NepDate NuGet package (2.1.0; `tools/csharp-golden` stays
+on 2.0.7, the version its vectors were recorded from) on operations B1 to B8 of [`spec/BENCHMARK.md`](../../spec/BENCHMARK.md).
 It also measures B1 and B2 for the three C# BS converters selected by
 [`spec/BENCHMARK.md` section 7](../../spec/BENCHMARK.md#7-choosing-competitors) (`Competitors.cs`), so
 the docs compare NepDate with the libraries people use. Results are in
