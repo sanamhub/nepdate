@@ -68,11 +68,13 @@ serial `c0 + i * ((c1 - c0) / 63)`, where `c0..c1` is the patro coverage (PATRO 
 Each port writes `docs/benchmarks.md` with: the machine table above, the toolchain and library
 versions, the exact command, and one table:
 
-| ID | This port ns/op | bytes/op | Competitor A ns/op | agrees | ... | C# NepDate ns/op (from the hub) |
-|---|---|---|---|---|---|---|
+| ID | This port ns/op | bytes/op | Competitor A ns/op | agrees | ... |
+|---|---|---|---|---|---|
 
-The C# column is the **.NET 10** column of the hub's `docs/benchmarks/dotnet.md`, measured
-on the same machine with BenchmarkDotNet and the NepDate version pinned in `tools/dotnet-bench`.
+A port's report carries no C# NepDate numbers, version or date. C# NepDate is measured in the hub
+only (`docs/benchmarks/dotnet.md`, .NET 10, same machine, BenchmarkDotNet, the NepDate version
+pinned in `tools/dotnet-bench`), and the hub's performance page sets every port beside it, so a new
+C# release changes the hub alone.
 Research on why C# NepDate is fast and where it allocates: `docs/research/dotnet-internals.md`.
 
 ## 6. Targets
@@ -86,8 +88,9 @@ Research on why C# NepDate is fast and where it allocates: `docs/research/dotnet
 | Ruby | every operation within 1.5× of the Python port, without YJIT |
 | C, Dart, PHP, Zig | no fixed target: the numbers are reported beside C# NepDate and the selected competitors |
 
-A port that misses its target reports the numbers to the maintainer before release; it doesn't drop
-features to get there.
+The hub checks the targets against C# NepDate on its performance page, from the ports' numbers and
+the hub's C# run. A port that misses its target reports the numbers to the maintainer before release;
+it doesn't drop features to get there.
 
 ## 7. Choosing competitors
 
