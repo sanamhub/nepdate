@@ -44,7 +44,7 @@ export const DATEPICKER_VERSION = "0.1.0-beta.4";
 /** MitiBar's release, tagged in its own repository (it has its own version line). */
 export const MITIBAR_VERSION = "1.1.0";
 /** C# NepDate, the original library the ports are checked against (hub ADR-0003). */
-export const CSHARP_VERSION = "2.0.7";
+export const CSHARP_VERSION = "2.1.0";
 export const MITIBAR_REPO = "https://github.com/sanamhub/mitibar";
 export const MITIBAR_RELEASE = `${MITIBAR_REPO}/releases/tag/v${MITIBAR_VERSION}`;
 
