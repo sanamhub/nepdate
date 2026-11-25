@@ -3,7 +3,7 @@ title: Performance
 description: How fast each port is, measured the same way in every language, against the mature Bikram Sambat libraries in that language.
 ---
 
-import { BENCHMARK_SPEC, OPERATIONS, benchmarks, competitorCount, formatNs, languages, nearest } from "../../../../data/benchmarks";
+import { BENCHMARK_SPEC, OPERATIONS, benchmarks, competitorCount, formatNs, formatRatio, languages, nearest, targets } from "../../../../data/benchmarks";
 
 Every port is benchmarked on the same eight operations and the same 64 dates, defined once in the
 hub's [`spec/BENCHMARK.md`](https://github.com/sanamhub/nepdate/blob/main/spec/BENCHMARK.md). Each
@@ -103,6 +103,40 @@ The C# row is C# NepDate 2.1.0 on .NET 10, the reference ([its report](https://g
 Like every row here it is the hub's 64-date harness. Upstream's single-date benchmark is kept as a
 note in that report and is not used in this table.
 The conversions, arithmetic and patro lookups allocate nothing in Rust, C++, C, Go and Swift.
+
+## Against C# NepDate
+
+Section 6 of the spec sets a time target against C# NepDate for some ports, on BS to AD (B1),
+AD to BS (B2) and patro info (B7). Each cell is the port's time as a multiple of C#'s, from the
+table above. Allocation targets are checked in each port's own report.
+
+<table class="bench">
+  <thead>
+    <tr>
+      <th scope="col">Language</th>
+      <th scope="col">Target</th>
+      <th scope="col" style="text-align: right"><abbr title="BS to AD">B1</abbr></th>
+      <th scope="col" style="text-align: right"><abbr title="AD to BS">B2</abbr></th>
+      <th scope="col" style="text-align: right"><abbr title="Patro info for a day">B7</abbr></th>
+    </tr>
+  </thead>
+  <tbody>
+    {targets.map((t) => (
+      <tr>
+        <th scope="row" style="white-space: nowrap">{t.name}</th>
+        <td>{t.label}</td>
+        {t.ratios.map((r, i) => (
+          <td style="text-align: right; white-space: nowrap">
+            {formatRatio(r)} {t.met[i] ? "met" : "missed"}
+          </td>
+        ))}
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+The other ports have no time target against C#: Python and Ruby are measured against their own
+language, and C, Dart, PHP and Zig report their numbers without one.
 
 ## Reading the numbers
 

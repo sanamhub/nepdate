@@ -231,3 +231,30 @@ export function formatNs(ns: number): string {
   return `${(ns / 1e6).toFixed(2)} ms`;
 }
 
+
+/** `spec/BENCHMARK.md` section 6: the ports with a time target against C# NepDate on B1, B2 and B7.
+ *  `limit` is the highest allowed port/C# ratio; "faster" targets need a ratio below 1. */
+const CSHARP_TARGETS: { id: string; limit: number; label: string }[] = [
+  { id: "rust", limit: 1, label: "faster than C#" },
+  { id: "cpp", limit: 1, label: "faster than C#" },
+  { id: "go", limit: 1.5, label: "within 1.5 times" },
+  { id: "swift", limit: 1.5, label: "within 1.5 times" },
+  { id: "kotlin", limit: 1.5, label: "within 1.5 times" },
+  { id: "java", limit: 1.5, label: "within 1.5 times" },
+  { id: "typescript", limit: 3, label: "within 3 times" },
+];
+
+/** Each targeted port's B1, B2 and B7 as a multiple of C# NepDate's, worked out from `csharp.ops`,
+ *  so a new C# version changes only that row. Time only; allocation is in each port's report. */
+export const targets = CSHARP_TARGETS.map((t) => {
+  const port = benchmarks.find((b) => b.id === t.id);
+  if (!port) throw new Error(`benchmarks.ts: no benchmark for target ${t.id}`);
+  const ratios = [0, 1, 6].map((i) => port.ops[i] / csharp.ops[i]);
+  const met = ratios.map((r) => (t.limit === 1 ? r < 1 : r <= t.limit));
+  return { name: port.name, label: t.label, ratios, met };
+});
+
+/** Formats a port/C# ratio: 0.43×, 2.6×. */
+export function formatRatio(r: number): string {
+  return `${r.toFixed(r < 1 ? 2 : 1)}×`;
+}

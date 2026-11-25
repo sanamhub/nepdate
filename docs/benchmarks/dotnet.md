@@ -2,7 +2,8 @@
 
 Time and allocation of the NepDate NuGet package 2.1.0 on operations B1 to B8 of
 [`spec/BENCHMARK.md`](../../spec/BENCHMARK.md), measured with [`tools/dotnet-bench`](../../tools/dotnet-bench/README.md).
-Every port copies its "C# NepDate" column from the .NET 10 column below. How NepDate gets these
+The site's performance page compares every port with the .NET 10 column below; the ports' own
+reports carry no C# numbers. How NepDate gets these
 numbers is in [`docs/research/dotnet-internals.md`](../research/dotnet-internals.md).
 
 The competitors are chosen by [BENCHMARK section 7](../../spec/BENCHMARK.md#7-choosing-competitors).
