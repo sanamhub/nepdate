@@ -17,17 +17,12 @@ hierarchy with a `kind` symbol.
 - Ruby has no time zone database in its standard library, so a clock function takes a fixed offset
   or a clock you inject. Nepal's +05:45 is the documented default.
 
-:::caution[Release candidate]
-This is <code>{RUBY_VERSION}</code>, the release candidate for Ruby on RubyGems. The API is stable from 1.0 (hub ADR-0009).
-:::
+The current release is <code>{RUBY_VERSION}</code>. The API is stable from 1.0 (hub ADR-0009).
 
 ## Install
 
 <Code lang="sh" code={`gem install nepdate -v ${RUBYGEMS_VERSION}
 gem install nepdate-patro -v ${RUBYGEMS_VERSION}`} />
-
-RubyGems spells this candidate <code>{RUBYGEMS_VERSION}</code>; the tag and changelog keep the
-family spelling <code>{RUBY_VERSION}</code>.
 
 ```ruby
 require "nepdate"

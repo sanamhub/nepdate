@@ -11,8 +11,8 @@ export const versionLine: string = versionsJson.line;
 /** Each SDK's latest released version, in the order spec/versions.json lists them. */
 export const versions = versionsJson.sdks;
 export type Sdk = keyof typeof versions;
-/** The release candidate every port publishes at the 1.0 line. */
-export const RELEASE_VERSION = "1.0.0-rc.1";
+/** The release every port publishes at the 1.0 line. */
+export const RELEASE_VERSION = "1.0.0";
 /**
  * The same version as PyPI spells it (PEP 440): 1.0.0-rc.1 is 1.0.0rc1, 1.1.0-beta.1 is 1.1.0b1.
  * This is the site's copy of the mapping in tools/version_line.py.
@@ -40,7 +40,7 @@ function rubygems(version: string): string {
 }
 
 /** The date picker is a UI component outside the SDK line and keeps its own version (ADR-0007 decision 6). */
-export const DATEPICKER_VERSION = "0.1.0-beta.4";
+export const DATEPICKER_VERSION = "1.0.0";
 /** MitiBar's release, tagged in its own repository (it has its own version line). */
 export const MITIBAR_VERSION = "1.1.0";
 /** C# NepDate, the original library the ports are checked against (hub ADR-0003). */
@@ -126,8 +126,8 @@ date.long();        // "Shrawan 15, 2081"`,
     repo: "nepdate-python",
     core: "nepdate-core",
     patro: "nepdate-patro",
-    install: "pip install --pre nepdate-core",
-    patroInstall: "pip install --pre nepdate-patro",
+    install: "pip install nepdate-core",
+    patroInstall: "pip install nepdate-patro",
     installLang: "sh",
     registry: { label: "PyPI", href: "https://pypi.org/project/nepdate-core/" },
     api: { label: "API.md", href: `${gh("nepdate-python")}/blob/main/docs/API.md` },
@@ -144,8 +144,8 @@ date.long()     # 'Shrawan 15, 2081'`,
     repo: "nepdate-php",
     core: "sanamhub/nepdate",
     patro: "sanamhub/nepdate-patro",
-    install: `composer require sanamhub/nepdate:${versions.php}`,
-    patroInstall: `composer require sanamhub/nepdate-patro:${versions.php}`,
+    install: "composer require sanamhub/nepdate",
+    patroInstall: "composer require sanamhub/nepdate-patro",
     installLang: "sh",
     registry: { label: "Packagist", href: "https://packagist.org/packages/sanamhub/nepdate" },
     api: { label: "API.md", href: `${gh("nepdate-php")}/blob/main/docs/API.md` },
@@ -180,8 +180,8 @@ date.toLongString();  // "Shrawan 15, 2081"`,
     repo: "nepdate-dart",
     core: "nepdate",
     patro: "nepdate_patro",
-    install: `dart pub add nepdate:${versions.dart}`,
-    patroInstall: `dart pub add nepdate_patro:${versions.dart}`,
+    install: "dart pub add nepdate",
+    patroInstall: "dart pub add nepdate_patro",
     installLang: "sh",
     registry: { label: "pub.dev", href: "https://pub.dev/packages/nepdate" },
     api: { label: "API.md", href: `${gh("nepdate-dart")}/blob/main/docs/API.md` },
@@ -237,7 +237,7 @@ fmt.Println(d.Format("MMMM d, yyyy", nepdate.English))`,
     repo: "nepdate-swift",
     core: "NepDate",
     patro: "NepDatePatro",
-    install: `.package(url: "https://github.com/sanamhub/nepdate-swift", exact: "${versions.swift}")`,
+    install: `.package(url: "https://github.com/sanamhub/nepdate-swift", from: "${versions.swift}")`,
     patroInstall: `.product(name: "NepDatePatro", package: "nepdate-swift")`,
     installLang: "swift",
     registry: { label: "Swift Package Index", href: "https://swiftpackageindex.com/sanamhub/nepdate-swift" },
@@ -292,8 +292,8 @@ nepdate_to_ad(d, &ad);                   // 2024-07-30`,
     repo: "nepdate-rust",
     core: "nepdate",
     patro: "nepdate-patro",
-    install: `cargo add nepdate@=${versions.rust}`,
-    patroInstall: `cargo add nepdate-patro@=${versions.rust}`,
+    install: "cargo add nepdate",
+    patroInstall: "cargo add nepdate-patro",
     installLang: "sh",
     registry: { label: "crates.io", href: "https://crates.io/crates/nepdate" },
     api: { label: "docs.rs", href: "https://docs.rs/nepdate" },
